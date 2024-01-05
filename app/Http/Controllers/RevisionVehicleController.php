@@ -11,24 +11,26 @@ class RevisionVehicleController extends Controller
 {
     public function index()
     {
-        $findRevisionVehicle = RevisionVehicle::all();
-        
-        return response()->json($findRevisionVehicle);    
+        $findRevisionVehicle = RevisionVehicle::with(['owner', 'vehicle'])->get();
+        return $findRevisionVehicle;  
     }
 
     public function store(Request $request, string $idVehicle)
     {
         $findVehicle = Vehicle::where('id', $idVehicle)->first();
         
+        
         if(!$findVehicle){
             return response()->json(["message" => "Veiculo não encontrado"], 404);
         };
+        
+        // return $findVehicle;
 
         $data = $request->validate([
             'type_revision' => '',
             'description' => '',
             'value' => '',
-            'owner_id' => ''
+            'owner_id' => '',
         ]);
 
         $findOwner = Owner::where('id', $data['owner_id'])->first();

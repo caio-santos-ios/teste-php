@@ -11,6 +11,8 @@ class OwnerController extends Controller
     {
         $owners = Owner::all();
 
+        // $token = csrf_token();
+
         return response()->json($owners);
     }
 
@@ -27,12 +29,12 @@ class OwnerController extends Controller
         $findOwner = Owner::where('cpf', $data['cpf'])->first();
 
         if($findOwner){
-            return response()->json(["message" => "Usuário já cadastrado"], 40);
+            return response()->json($findOwner, 200);
         };
         
         $owner = Owner::create($data);
 
-        return response()->json($findOwner, 201);
+        return response()->json($owner, 201);
     }
 
     public function show(string $id)
