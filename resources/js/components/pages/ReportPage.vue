@@ -14,6 +14,7 @@
 <style>
     .maain_report {
         min-height: 100vh;
+        width: 95vw;
         display: flex; 
     }
 </style>

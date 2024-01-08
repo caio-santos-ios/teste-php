@@ -1,5 +1,5 @@
 <template>
-    <main class="maain_home">
+    <main class="main_home">
         <Aside />
         <Dashboard />
     </main>
@@ -12,8 +12,9 @@
 </script>
 
 <style>
-    .maain_home {
+    .main_home {
         min-height: 100vh;
         display: flex;   
+        width: 95vw;
     }
 </style>

@@ -127,8 +127,8 @@
         display: flex;
         flex-flow: wrap;
         justify-content: center;
+        align-items: center;
         gap: 1rem;
-        width: 80%;
         margin: 0 auto;
         padding: 2rem;
     }
@@ -137,14 +137,13 @@
         display: flex;
         flex-flow: column;
         align-items: center;
-        background-color: white;
         margin: 0 auto;
-        width: 50rem;
         border-radius: 1.5rem;
         padding: 1rem;
         position: relative;
         min-height: 62rem;
-        min-width: 53rem;
+        width: 100%;
+        background-color: white;
 
         > h2 {
             text-align: center;
@@ -223,7 +222,6 @@
         width: 100%;
         flex-flow: row wrap;
         padding-top: 0.8rem;
-        background-color: red;
         height: 5rem;
         
         > p, i {
@@ -267,6 +265,13 @@
         outline: none;
         border-radius: 1rem;
         padding: 0.5rem;
+    }
+
+    @media (min-width: 550px) {
+        .container_master {
+            width: 100%;
+            max-width: 60rem;
+        }
     }
 
 </style>

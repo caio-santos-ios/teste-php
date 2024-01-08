@@ -4,7 +4,6 @@ import ListOwner from './components/ListOwner.vue'
 import Home from './components/pages/Home.vue'
 import ReportPage from './components/pages/ReportPage.vue'
 import Dashboard from './components/Dashboard.vue'
-import ContainerInsights from './components/ContainerInsights.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
 import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
 import FormRegisterVehicle from './components/FormRegister/FormRegisterVehicle.vue'
@@ -26,7 +25,6 @@ app.component('home-page', Home)
 app.component('report-page', ReportPage)
 app.component('dashboard', Dashboard)
 app.component('list-owner', ListOwner)
-app.component('container-insights', ContainerInsights)
 app.component('form-register-generic', FormRegister)
 app.component('form-register-revision', FormRegisterVerision)
 app.component('form-register-owner', FormRegisterOwner)

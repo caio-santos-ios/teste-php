@@ -26,12 +26,11 @@
         justify-content: flex-end;
         transition: 1s;
         padding: 5rem 0;
-        display: none;
     }
     
     aside:hover{
         transition: 1s;
-        width: 15rem;
+        width: 10rem;
 
         .name_option {
             display: flex;
@@ -76,11 +75,5 @@
 
     .name_option {
         display: none;
-    }
-
-    @media (min-width: 750px) {
-        aside {
-            display: flex;
-        }   
     }
 </style>

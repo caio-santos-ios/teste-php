@@ -15,8 +15,6 @@
             <button value="media-tempo" @click="addFilter" class="btn_filter">
                 Media de tempo
                 <i class="fa-regular fa-clock"></i>
-                <span>{{{ timeAverage
- }}}</span>
             </button>
         </div>
     </div>
@@ -34,7 +32,6 @@
             <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
             <p>{{ item.vehicle.model }}</p>
             <p>R$ {{ item.value }}</p> 
-            
             <i v-if="!isUpdate" :id="item.id" @click="finishRevision" class="fa-regular fa-square-check"></i>
             <i v-if="isUpdate" :id="item.id" @click="saveUpdateRevision" class="fa-solid fa-check"></i>
             <i :id="item.id" @click="updateRevision" class="fa-solid fa-pen-to-square"></i>
@@ -73,6 +70,7 @@
 
     const addFilter = async (e) => {
         const typeFilter = e.target.value
+        console.log(e.target.value)
 
         if(typeFilter === undefined){ 
             myFilter.value = ''
