@@ -10,6 +10,8 @@
     import { Chart } from 'chart.js/auto';
     import { computed } from 'vue';
     import { useStore } from 'vuex';
+    
+    const props = defineProps(['foo'])
 
     const baseURL = 'http://localhost:8000/revision';
 
@@ -28,7 +30,7 @@
           f.value = response.data.filter(item => item.owner.gender === 'masculino').length;
           initialGraphic()
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       })
 
@@ -62,10 +64,8 @@
   
   <style>
     .my_graphic {
-        background-color: white;
         height: 50%;
-        width: 100%;
-        max-width: 60rem;
+        width: 40rem;
         border-radius: 1.5rem;
         padding: 1rem;
         margin-bottom: 1rem;

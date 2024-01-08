@@ -16,6 +16,10 @@
         box-sizing: border-box;
     }
 
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
     body {
         background-color: #cbd5e1;
         font-family: 'Roboto', sans-serif;

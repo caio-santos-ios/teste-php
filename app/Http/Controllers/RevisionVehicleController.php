@@ -12,6 +12,7 @@ class RevisionVehicleController extends Controller
     public function index()
     {
         $findRevisionVehicle = RevisionVehicle::with(['owner', 'vehicle'])->get();
+        
         return $findRevisionVehicle;  
     }
 
@@ -19,24 +20,16 @@ class RevisionVehicleController extends Controller
     {
         $findVehicle = Vehicle::where('id', $idVehicle)->first();
         
-        
         if(!$findVehicle){
-            return response()->json(["message" => "Veiculo não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Veiculo não encontrado"], 404));
         };
         
-        // return $findVehicle;
-
-        $data = $request->validate([
-            'type_revision' => '',
-            'description' => '',
-            'value' => '',
-            'owner_id' => '',
-        ]);
+        $data = $request->input();
 
         $findOwner = Owner::where('id', $data['owner_id'])->first();
         
         if(!$findOwner){
-            return response()->json(["message" => "Usuário não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Proprietario não encontrado"], 404));
         };
 
         $revision = $findVehicle->revisionVehicles()->create($data);
@@ -49,7 +42,7 @@ class RevisionVehicleController extends Controller
         $findRevision = RevisionVehicle::find($id);
 
         if(!$findRevision){
-            return response()->json(["message" => "Revisão não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Revisão não encontrado"], 404));
         };
 
         return response()->json($findRevision);
@@ -57,7 +50,19 @@ class RevisionVehicleController extends Controller
 
     public function update(Request $request, string $id)
     {
-        //
+        $findRevision = RevisionVehicle::find($id);
+
+        if(!$findRevision){
+            throw new HttpResponseException(response()->json(["message" => "Revisão não encontrado"], 404));
+        };
+
+        $data = $request->input();
+
+        $revisionUpdate = RevisionVehicle::find($id);
+
+        $revisionUpdate->update($data);
+
+        return response()->json($revisionUpdate);
     }
 
     public function destroy(string $id)
@@ -65,7 +70,7 @@ class RevisionVehicleController extends Controller
         $findRevision = RevisionVehicle::find($id);
 
         if(!$findRevision){
-            return response()->json(["message" => "Revisão não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Revisão não encontrado"], 404));
         };
 
         $findRevision->delete();

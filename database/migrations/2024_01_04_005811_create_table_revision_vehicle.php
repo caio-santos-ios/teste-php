@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('revision_vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('type_revision');
-            $table->string('value');
-            $table->string('description');
-            $table->string('is_done')->default(false);
+            $table->decimal('value', $precision = 8, $scale = 2);
+            $table->text('description');
+            $table->boolean('is_done')->default(false);
             $table->foreignId('owner_id')->contrained();
             $table->foreignId('vehicle_id')->contrained();
             $table->timestamps();

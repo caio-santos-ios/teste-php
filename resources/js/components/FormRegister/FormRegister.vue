@@ -3,32 +3,22 @@
         <slot></slot>
     </form>
 </template>
-
+<script setup>
+</script>
 <style>
     .form_register {
-        min-height: 50%;
-        background-color: white;
         padding: 1rem;
         border-radius: 1.5rem;
         display: flex;
         flex-flow: wrap;
         gap: 1rem;
     }
-
-    .form_register {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 1.5rem;
-        display: flex;
-        flex-flow: wrap;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
+    
     label {
         display: flex;
         flex-flow: column;
         width: 48%;
+        height: 5rem;
         
         > input {
             height: 3rem;

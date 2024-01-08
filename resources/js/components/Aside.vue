@@ -24,7 +24,7 @@
         width: 5rem;
         display: flex;
         justify-content: flex-end;
-        transition: transform 0.2s ease-in-out;
+        transition: 1s;
         padding: 5rem 0;
         display: none;
     }

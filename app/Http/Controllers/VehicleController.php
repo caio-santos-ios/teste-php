@@ -21,17 +21,12 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'model' => '',
-            'year' => '',
-            'plate' => '',
-            'owner_id' => ''
-        ]);
+        $data = $request->input();
 
         $owner = Owner::find($data['owner_id']);
 
         if(!$owner){
-            return response()->json(["message" => "Usuário não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Proprietario não encontrado"], 404));
         };
 
         $vehicle = $owner->vehicles()->create($data);
@@ -44,7 +39,7 @@ class VehicleController extends Controller
         $findVehicle = Vehicle::find($id);
 
         if(!$findVehicle){
-            return response()->json(["message" => "Veiculo não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Veiculo não encontrado"], 404));
         };
 
         $vehiclesOwner = $findVehicle->with('revisionVehicles')->get();
@@ -57,8 +52,16 @@ class VehicleController extends Controller
         $findVehicle = Vehicle::find($id);
 
         if(!$findVehicle){
-            return response()->json(["message" => "Veiculo não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Veiculo não encontrado"], 404));
         };
+
+        $data = $request->input();
+
+        $vehicleUpdate = Vehicle::find($id);
+
+        $vehicleUpdate->update($data);
+
+        return response()->json($vehicleUpdate);
     }
 
     public function destroy(string $id)
@@ -66,7 +69,7 @@ class VehicleController extends Controller
         $findVehicle = Vehicle::find($id);
 
         if(!$findVehicle){
-            return response()->json(["message" => "Veiculo não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Veiculo não encontrado"], 404));
         };
 
         $findVehicle->delete();

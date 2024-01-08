@@ -1,9 +1,11 @@
 <template>
     <div class="insights">
-        <Graphic />
-        <FormRegisterOwner />
-        <FormRegisterVehicle />
-        <FormRegisterRevision />
+        <!--
+            <Graphic />
+            <FormRegisterOwner />
+            <FormRegisterVehicle />
+            <FormRegisterRevision />
+        -->
     </div>
 </template>
 
@@ -20,7 +22,7 @@
 
     const myRegister = computed(() => store.getters.myRegister);
 
-    const baseURL = 'http://localhost:8000/revision';
+    const baseURL = 'http://localhost:8000/revisions';
 
     const list = ref('')
 

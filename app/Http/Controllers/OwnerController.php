@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Models\Owner;
 
 class OwnerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $owners = Owner::all();
+            
+        $cpf = $request->query('cpf');
 
-        // $token = csrf_token();
+        if($cpf){
+            $owner = Owner::where('cpf', 'like', '%' . $cpf . '%')->get();
+
+            return response()->json($owner);
+        }
 
         return response()->json($owners);
     }
@@ -19,12 +26,7 @@ class OwnerController extends Controller
     public function store(Request $request)
     {
         
-        $data = $request->validate([
-            'name' => '',
-            'cpf' => '',
-            'age' => '',
-            'gender' => ''
-        ]);
+        $data = $request->input();
 
         $findOwner = Owner::where('cpf', $data['cpf'])->first();
 
@@ -42,7 +44,7 @@ class OwnerController extends Controller
         $findOwner = Owner::find($id);
 
         if(!$findOwner){
-            return response()->json(["message" => "Usuário não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Usuário não encontrado"], 404));
         };
 
         return response()->json($findOwner);
@@ -53,17 +55,16 @@ class OwnerController extends Controller
         $findOwner = Owner::find($id);
 
         if(!$findOwner){
-            return response()->json(["message" => "Usuário não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Usuário não encontrado"], 404));
         };
 
-        $data = $request->validate([
-            'name' => '',
-            'cpf' => '',
-            'age' => '',
-            'gender' => ''
-        ]);
+        $data = $request->input();
 
-        return response()->json($data);
+        $ownerUpdate = Owner::find($id);
+
+        $ownerUpdate->update($data);
+
+        return response()->json($ownerUpdate);
     }
 
     public function destroy(string $id)
@@ -71,8 +72,10 @@ class OwnerController extends Controller
         $findOwner = Owner::find($id);
 
         if(!$findOwner){
-            return response()->json(["message" => "Usuário não encontrado"], 404);
+            throw new HttpResponseException(response()->json(["message" => "Usuário não encontrado"], 404));
         };
+
+        $findOwner->vehicles()->delete();
 
         $findOwner->delete();
 

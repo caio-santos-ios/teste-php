@@ -2,14 +2,17 @@ import { createStore } from "vuex";
 
 export default createStore({
     state: {
-        owner: {},
+        owners: [],
         revision: [],
         isRegisted: false,
         idVehicle: null,
     },
     mutations: {
         selectedOwner(state, newOwner) {
-            state.owner = newOwner
+            state.owners.push(newOwner)
+        },
+        clearListOwners(state){
+            state.owners = []
         },
         setRegister(state) {
             state.isRegisted = !state.isRegisted
@@ -22,7 +25,7 @@ export default createStore({
         }
     },
     getters: {
-        myOwner: (store) => store.owner,
+        myOwners: (store) => store.owners,
         myRegister: (store) => store.isRegisted,
         myIdVehicle: (store) => store.idVehicle,  
         myRevision: (store) => store.revision

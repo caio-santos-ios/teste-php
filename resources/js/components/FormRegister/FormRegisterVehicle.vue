@@ -1,15 +1,15 @@
 <template>
-    <FormRegister v-if="myRegister" @submit.prevent="registerVehicle()">
-        <label for="model">Modelo do carro
-            <input type="text" placeholder="modelo do carro" v-model="model">
+    <FormRegister @submit.prevent="registerVehicle()">
+        <label for="model">Marca do carro
+            <input required type="text" placeholder="marca do carro" v-model="model">
         </label>
         
         <label for="year">Ano do carro
-            <input type="text" placeholder="ano do carro" v-model="year">
+            <input maxlength="6" required type="text" placeholder="ano do carro" v-model="year">
         </label>
 
         <label for="plate">Placa do carro
-            <input type="text" placeholder="placa do carro" v-model="plate">
+            <input maxlength="7" required type="text" placeholder="placa do carro" v-model="plate">
         </label>
 
         <button type="submit" class="btn_register" :disabled="isFinish">Cadastrar</button>
@@ -37,16 +37,23 @@
     const year = ref('')    
 
     const registerVehicle = async () => {
+        const idOwner = JSON.parse(localStorage.getItem('id'))
+
         const myVehicle = {
             model: model.value,
             year: year.value,
             plate: plate.value,
-            owner_id: store.getters.myOwner.id
+            owner_id: idOwner
         }
         try {
             const response = await axios.post(`${baseURL}/vehicles`, myVehicle)
             store.commit('setIdVehicle', response.data.id)
-            isFinish.value = true
+            toast.success("Carro cadastrdo")
+
+            model.value = ''
+            year.value = ''
+            plate.value = ''
+
         } catch (error) {
             console.log(error)
         }

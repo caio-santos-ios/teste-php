@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('cpf');
-            $table->string('age');
-            $table->string('gender');
+            $table->integer('age');
+            $table->enum('gender', ['masculino', 'feminino']);
             $table->timestamps();
         });
     }

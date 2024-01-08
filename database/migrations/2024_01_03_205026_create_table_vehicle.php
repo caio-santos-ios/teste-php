@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('model');
-            $table->string('year');
+            $table->integer('year');
             $table->string('plate');
             $table->foreignId('owner_id')->constrained();
             $table->timestamps();

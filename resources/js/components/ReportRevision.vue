@@ -8,32 +8,44 @@
                 Marca
                 <i class="fa-brands fa-buromobelexperte"></i>
             </button>
-            <button value="name" @click="addFilter" class="btn_filter">
-                Nome cliente
-                <i class="fa-solid fa-arrow-up-wide-short"></i>
+            <button value="owner" @click="addFilter" class="btn_filter">
+                Proprietario
+                <i class="fa-solid fa-child"></i>
+            </button>
+            <button value="media-tempo" @click="addFilter" class="btn_filter">
+                Media de tempo
+                <i class="fa-regular fa-clock"></i>
+                <span>{{{ timeAverage
+ }}}</span>
             </button>
         </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Proprietario</th>
-                <th>Entrada</th>
-                <th>Marca</th>
-                <th>Tipo de manunteção</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-                <td>{{ item.owner.name }}</td>
-                <td>{{ item.created_at.slice(0, 10) }}</td>
-                <td>{{ item.vehicle.model }}</td>
-                <td>{{ item.type_revision }}</td>
-                <td>R$ {{ item.value }}</td>                  
-            </tr>
-        </tbody>
-    </table>
+    <ul class="list_owner">
+        <li class="header_title">
+            <p>Proprietario</p>
+            <p>Entrada</p>
+            <p>Marca</p>
+            <p>Valor</p>    
+            <i></i>      
+            <i></i>  
+        </li>   
+        <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
+            <p>{{ item.owner.name }}</p>
+            <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
+            <p>{{ item.vehicle.model }}</p>
+            <p>R$ {{ item.value }}</p> 
+            
+            <i v-if="!isUpdate" :id="item.id" @click="finishRevision" class="fa-regular fa-square-check"></i>
+            <i v-if="isUpdate" :id="item.id" @click="saveUpdateRevision" class="fa-solid fa-check"></i>
+            <i :id="item.id" @click="updateRevision" class="fa-solid fa-pen-to-square"></i>
+            <form :id="item.id" class="form_update_report">
+                <input disabled class="input_update" type="text" :value="item.owner.name">
+                <input disabled class="input_update" type="text" :value="item.created_at.slice(0, 10)">
+                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.type_revision : inputType" @input="inputType = $event.target.value">
+                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.value : inputValue" @input="inputValue = $event.target.value">
+            </form>
+        </li>
+    </ul>
     <div class="footer_page_report">
         <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
         <span>Página {{ currentPage }} de {{ totalPages }}</span>
@@ -44,39 +56,85 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
+    import { update, saveUpdate, formateDate } from './Report.vue';
+    import { toast } from 'vue3-toastify';
+    import 'vue3-toastify/dist/index.css';
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
-    const filter = ref('')
-    const itemsPerPage = 18
+    const myFilter = ref('')
+    const itemsPerPage = 10
     const currentPage = ref(1) 
+    const isUpdate = ref(false)
+    const timeAverage = ref(0)
 
-    const addFilter = (e) => {
+    const inputType = ref('')
+    const inputValue = ref('')
+
+    const addFilter = async (e) => {
         const typeFilter = e.target.value
-        
-        if(typeFilter === undefined) request()
 
-        if(typeFilter === 'name'){
-            filter.value = typeFilter
-            orderName(listSelected.value)   
+        if(typeFilter === undefined){ 
+            myFilter.value = ''
+            const list = await newRequest()
+            listSelected.value = list
         } 
 
-        if(typeFilter === 'model'){
-            const contadorObjetos = {};
-            const objetosDuplicados = [];
+        if(typeFilter === 'owner'){
+            const list = await newRequest()
 
-            listSelected.value.map((el) => {
-                if(objetosDuplicados.length > 0){
-                    console.log(el.vehicle.model)
+            const filterModel = (listOwner) => {
+                let count = {}
+                let owner = []
+
+                listOwner.forEach(el => {
+                    const id = el.owner.id;
+                    count[id] = (count[id] || 0) + 1
+                })
+
+                for (const id in count) {
+                    if (count[id] > 1) {
+                        const myListOwner = listOwner.filter(el => el.owner.id === parseInt(id))
+                        owner.push(...myListOwner);
+                    }
                 }
 
-                console.log()
-            })
-            
-            orderModel(listSelected.value)
-        } 
+                return owner;
+            }
+
+            return listSelected.value = filterModel(list)
+        }
+
+        if(typeFilter === 'model'){
+            const list = await newRequest()
+
+            const filterModel = (listModel) => {
+                let count = {}
+                let modelCar = []
+
+                listModel.forEach(el => {
+                    const id = el.vehicle.id;
+                    count[id] = (count[id] || 0) + 1
+                })
+
+                for (const id in count) {
+                    if (count[id] > 1) {
+                        const myListModel = listModel.filter(el => el.vehicle.id === parseInt(id))
+                        modelCar.push(...myListModel);
+                    }
+                }
+
+                return modelCar;
+            }
+
+            return listSelected.value = filterModel(list)
+        }
+
+        if(typeFilter === 'media-tempo'){
+            console.log("AQui")
+        }
     }
-    
+
     const paginatedListReport = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
         const endPage = startPage + itemsPerPage
@@ -97,37 +155,10 @@
         }
     }
 
-    const orderName = (list) => {
-        list.sort((a, b) => {
-            const nameA = a.owner.name.toLocaleUpperCase()
-            const nameB = b.owner.name.toLocaleUpperCase()
-
-            if (nameA > nameB) { return 1 }
-
-            if (nameA < nameB) { return -1}
-
-            return 0;
-        })
-    }
-
-    const orderModel = (list) => {
-        list.sort((a, b) => {
-            const nameA = a.vehicle.model.toLocaleUpperCase()
-            const nameB = b.vehicle.model.toLocaleUpperCase()
-
-            if (nameA > nameB) { return 1 }
-
-            if (nameA < nameB) { return -1}
-
-            return 0;
-        })
-    }
-
-
-    const request = async () => {
+    const newRequest = async () => {
         try {
-            const response = await axios.get(`${baseURL}/revision`)
-            listSelected.value = response.data 
+            const response = await axios.get(`${baseURL}/revisions`)
+            return response.data
         } catch (error) {
             console.log(error)
         }
@@ -135,23 +166,76 @@
 
     onMounted(async () => {
         try {
-            const response = await axios.get(`${baseURL}/revision`)
-            console.log(response.data)
-            listSelected.value = response.data 
+            const response = await axios.get(`${baseURL}/revisions`)
+            
+            response.data.map((el) => {
+                if(!el.is_done){
+                    listSelected.value.push(el) 
+                }
+            })
         } catch (error) {
             console.log(error)
         }
     })
 
+    const calculeedAgeAverage = (total, qtd) => {
+        const result = total / qtd
+        return result
+    }
+
+    const finishRevision = async (e) => {
+        toast.success("Revisão finalizada")
+        const filter = listSelected.value.filter(el => el.id != e.target.id)
+        listSelected.value = filter 
+        saveUpdate(e.target.id, 'revisions', { is_done: true })
+    }
+
+    const updateRevision = (e) => {
+        update(e.target.id)
+        isUpdate.value = !isUpdate.value
+
+        const revision = listSelected.value.find(el => el.id == e.target.id)
+        inputType.value = revision.type_revision
+        inputValue.value = revision.value
+    }
+    
+    const saveUpdateRevision = async (e) => {
+        isUpdate.value = !isUpdate.value
+        
+        const revisionUpdate = {
+            type_revision: inputType.value,
+            value: inputValue.value
+        }
+
+        const indexRevision = listSelected.value.findIndex(el => el.id == e.target.id)
+        listSelected.value[indexRevision].type_revision = inputType.value
+        listSelected.value[indexRevision].value = inputValue.value
+        
+        await saveUpdate(e.target.id, 'revisions', revisionUpdate)
+    }
 </script>
 
 <style>
     .filter {
+        display: flex;
         align-items: center;
-        > span {
-            border-radius: 0.3rem;
-            padding: 0.5rem;
-            border: 1px solid;
-        }
+        justify-content: center;
+            > P {
+                border-radius: 0.3rem;
+                padding: 0.5rem;
+                border: 1px solid;
+            }
+    }
+
+    .list_owner {
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        position: relative;
+        margin: 0 auto;
+        height: 100%;
+        width: 100%;
     }
 </style>
