@@ -11,7 +11,8 @@
             <ReportRevision v-if="reportSelect === 'Revisões'" />
             <ReportOwner v-if="reportSelect === 'Pessoas'" />
         </div>
-        <Graphic :foo="[]" />
+        <GraphicBar :f="percentageGender.f" :m="percentageGender.m" :title="'% veiculos por sexo'" v-if="reportSelect === 'Veiculos'" />
+        <GraphicBar :f="percentageAge.f" :m="percentageAge.m" :title="'Média de idade por sexo'" v-if="reportSelect === 'Pessoas'" />
     </div>
 </template>
 
@@ -19,15 +20,82 @@
     import ReportVehicle from './ReportVehicle.vue';
     import ReportRevision from './ReportRevision.vue';
     import ReportOwner from './ReportOwner.vue'
-    import Graphic from './Graphic.vue';
-    import { ref } from 'vue';
-
-    const itemOpen = ref(false)
+    import GraphicBar from './GraphicBar.vue'
+    import { ref, onMounted } from 'vue';
 
     const reportSelect = ref('Veiculos')
 
     const alterReport = (e) => reportSelect.value = e.target.value
 
+    const percentageGender = ref({f: 0, m: 0})
+    const percentageAge = ref({f: 0, m: 0})
+    const idOwner = ref('')
+    const sumPercentage = (value1, value2) => {
+        const result = 100 / value1
+
+        const resulFinish = Number(result) * Number(value2) 
+
+        return {
+            m: parseInt(resulFinish),
+            f: parseInt(100 - resulFinish)
+        }
+    }
+
+    onMounted(async () => {
+        try {
+            const res = await axios.get(`${baseURL}/vehicles`)
+            
+            const h = res.data.filter(el => el.owner.gender === 'masculino')
+            const m = res.data.filter(el => el.owner.gender === 'feminino')
+
+            percentageGender.value = sumPercentage(res.data.length, h.length)
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    onMounted(async () => {
+        try {
+            const res = await axios.get(`${baseURL}/owners`)
+            
+            const h = res.data.filter(el => el.gender === 'masculino')
+            const m = res.data.filter(el => el.gender === 'feminino')
+
+            const sumAgeH = h.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            const ageH = sumAgeH / h.length
+
+            const sumAgeM = m.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            const ageM = sumAgeM / m.length
+            
+            
+            percentageAge.value = {
+                f: parseInt(ageM),
+                m: parseInt(ageH) 
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    onMounted(async () => {
+        try {
+            const res = await axios.get(`${baseURL}/revisions`)
+            res.data.map(el => {
+                
+                idOwner.value = el.owner.id
+            })
+
+            const response = await axios.get(`${baseURL}/owners/${idOwner.value}`)
+            console.log(response.data)
+
+
+            
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    
 </script>
 
 <script>
@@ -51,6 +119,7 @@
     export const update = (id) => {
         const myItem = document.querySelectorAll(`.item_report`)
         const myForm = document.querySelectorAll(`.form_update_report`)
+
         myItem.forEach((el) => {
             if(!itemOpen.value) {
                 if(el.id == id){
@@ -124,13 +193,14 @@
     }
     
     .container_master {
+        height: 100%;
         display: flex;
         flex-flow: wrap;
         justify-content: center;
-        align-items: center;
         gap: 1rem;
         margin: 0 auto;
         padding: 2rem;
+        width: 80%;
     }
     
     .report {
@@ -142,7 +212,7 @@
         padding: 1rem;
         position: relative;
         min-height: 62rem;
-        width: 100%;
+        width: 50rem;
         background-color: white;
 
         > h2 {
@@ -270,7 +340,6 @@
     @media (min-width: 550px) {
         .container_master {
             width: 100%;
-            max-width: 60rem;
         }
     }
 

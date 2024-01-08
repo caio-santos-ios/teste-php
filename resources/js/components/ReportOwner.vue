@@ -12,7 +12,6 @@
                 Mulher
                 <i class="fa-solid fa-person-dress"></i>
             </button>
-            <P>Media de idade: {{ parseInt(ageAverage) }}</P>
         </div>
     </div>
     <ul class="list_owner">
@@ -66,7 +65,6 @@
     const inputCpf = ref('')
     const inputGender = ref('')
     const inputAge = ref('')
-    const itemOpen = ref('')  
 
     const addFilter = async (e) => {
         const typeFilter = e.target.value

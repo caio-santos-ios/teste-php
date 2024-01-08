@@ -5,7 +5,7 @@
         </label>
         
         <label for="year">Ano do carro
-            <input maxlength="6" required type="text" placeholder="ano do carro" v-model="year">
+            <input maxlength="4" required type="text" placeholder="ano do carro" v-model="year">
         </label>
 
         <label for="plate">Placa do carro

@@ -89,7 +89,7 @@ onMounted(async () => {
 
 watch(mySearch, async () => {
   if(!mySearch) return 
-
+    
   try {
     const response = await axios.get(`${baseURL}/owners?cpf=${mySearch.value}`);
     listOwner.value = response.data;

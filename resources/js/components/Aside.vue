@@ -20,7 +20,7 @@
 <style>
     aside {
         background-color: white;
-        min-height: 100%;
+        min-height: 100vh;
         width: 5rem;
         display: flex;
         justify-content: flex-end;

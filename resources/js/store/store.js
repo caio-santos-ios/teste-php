@@ -5,7 +5,7 @@ export default createStore({
         owners: [],
         revision: [],
         isRegisted: false,
-        idVehicle: null,
+        idVehicle: null
     },
     mutations: {
         selectedOwner(state, newOwner) {
@@ -28,6 +28,6 @@ export default createStore({
         myOwners: (store) => store.owners,
         myRegister: (store) => store.isRegisted,
         myIdVehicle: (store) => store.idVehicle,  
-        myRevision: (store) => store.revision
+        myRevision: (store) => store.revision,
     }
 })

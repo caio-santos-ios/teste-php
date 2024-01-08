@@ -52,6 +52,8 @@
             name: name.value, cpf: cpf.value, age: age.value, gender: gender.value
         }
         
+        if(!gender.value) return toast.error("Marque o genero")
+
         try {
             const response = await axios.post(`${baseURL}/owners`, owner)
             
@@ -59,6 +61,7 @@
             cpf.value = ''
             age.value = ''
             gender.value = ''
+
             if(response.status === 200){
                 toast.error("Cliente já está cadastrado, faça uma busca");
             }else{

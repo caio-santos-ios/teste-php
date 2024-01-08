@@ -41,7 +41,7 @@ class OwnerController extends Controller
 
     public function show(string $id)
     {
-        $findOwner = Owner::find($id);
+        $findOwner = Owner::with(['revisionVehicles', 'vehicles'])->first();
 
         if(!$findOwner){
             throw new HttpResponseException(response()->json(["message" => "Usuário não encontrado"], 404));

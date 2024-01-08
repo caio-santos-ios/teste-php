@@ -33,7 +33,6 @@
             <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
             <p>{{ item.model }}</p>
             <p>{{ item.plate }}</p>
-            
             <i v-if="!isUpdate && !isCreate" :id="item.id" @click="deleteVehicle" class="fa-solid fa-trash"></i>
             <i v-if="isUpdate && !isCreate" :id="item.id" @click="saveUpdateVehicle" class="fa-solid fa-check"></i>
             <i v-if="!isUpdate && isCreate" :id="item.id" @click="saveCreateRevision" class="fa-solid fa-check"></i>
@@ -67,6 +66,7 @@
     import { update, destroy, saveUpdate, formateDate } from './Report.vue';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
+    import { useStore } from 'vuex';
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
@@ -83,6 +83,11 @@
     const inputDescription = ref('')
     const inputTypeRevision = ref('')
     const inputValue = ref('')
+
+    const percentageM = ref(0)
+    const percentageF = ref(0)
+
+    const store = useStore()
 
     const addFilter = async (e) => {
         const typeFilter = e.target.value
@@ -106,7 +111,7 @@
             const res = await newRequest()
             const h = res.filter(el => el.owner.gender === 'masculino')
             const m = res.filter(el => el.owner.gender === 'feminino')
-
+            
             if(h.length > m.length){
                 listSelected.value = h
             }else {
@@ -174,6 +179,10 @@
         try {
             const response = await axios.get(`${baseURL}/vehicles`)
             listSelected.value = response.data 
+            const h = response.data.filter(el => el.owner.gender === 'masculino')
+            const m = response.data.filter(el => el.owner.gender === 'feminino')
+
+            sumPercentage(response.data.length, h.length)
         } catch (error) {
             console.log(error)
         }

@@ -1,5 +1,5 @@
 <template>
-    <main class="maain_report">
+    <main class="main_report">
         <Aside />
         <Report />
     </main>
@@ -12,7 +12,7 @@
 </script>
 
 <style>
-    .maain_report {
+    .main_report {
         min-height: 100vh;
         width: 95vw;
         display: flex; 
