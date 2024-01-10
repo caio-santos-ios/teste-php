@@ -23,7 +23,7 @@
     import GraphicBar from './GraphicBar.vue'
     import { ref, onMounted } from 'vue';
 
-    const reportSelect = ref('Veiculos')
+    const reportSelect = ref('Revisões')
 
     const alterReport = (e) => reportSelect.value = e.target.value
 
@@ -84,12 +84,6 @@
                 
                 idOwner.value = el.owner.id
             })
-
-            const response = await axios.get(`${baseURL}/owners/${idOwner.value}`)
-            console.log(response.data)
-
-
-            
         } catch (error) {
             console.log(error)
         }
@@ -108,6 +102,73 @@
 
     export const formateDate = (data) => `${data.substring(8, 10)}/${data.substring(5, 7)}/${data.substring(0, 4)}`;
 
+    export const openItem = (id, typeForm) => {
+        const myForm = document.querySelectorAll(`.form_report_${typeForm}`)        
+        myForm.forEach((el) => {    
+            if(el.id == id){
+                setTimeout(() => {
+                    el.classList.toggle('form_open')
+                }, 355)
+            }
+        })
+
+        const myItem = document.querySelectorAll('.item_report')        
+        myItem.forEach((el) => {            
+            if(!itemOpen.value) {
+                if(el.id == id){
+                    itemOpen.value = id
+                    el.classList.toggle('open_item_report')
+                    return 
+                }
+            }
+
+            if(el.id == id){
+                el.classList.toggle('open_item_report')
+            }else {
+                el.classList.remove('open_item_report')
+            }            
+        })
+    }
+
+    export const closeItem = () => {
+        const myForm = document.querySelectorAll('form')        
+        myForm.forEach((el) => {    
+            el.classList.remove('form_open')
+        })
+
+        const myItem = document.querySelectorAll(`.item_report`)        
+        myItem.forEach((el) => {                       
+            el.classList.remove('open_item_report')
+        })
+    }
+
+    export const create = async (id, url, payloadCreate) => {
+        try {
+            const response = await axios.post(`${baseURL}/${url}/${id}`, payloadCreate)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    export const createRevision = async (id, payload) => {
+        try {
+            const response = await axios.post(`${baseURL}/revisions/${id}`, payload)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    export const update = async (id, url, payloadUpdate) => {
+        try {
+            const response = await axios.patch(`${baseURL}/${url}/${id}`, payloadUpdate)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     export const destroy = async (id, url) => {
         try {
             await axios.delete(`${baseURL}/${url}/${id}`)
@@ -115,66 +176,7 @@
             console.log(error)
         }
     }
-
-    export const update = (id) => {
-        const myItem = document.querySelectorAll(`.item_report`)
-        const myForm = document.querySelectorAll(`.form_update_report`)
-
-        myItem.forEach((el) => {
-            if(!itemOpen.value) {
-                if(el.id == id){
-
-                    itemOpen.value = id 
-                    el.classList.toggle('open_item_report')
-                    return 
-                }
-            } 
-            
-            if(id == el.id){
-                el.classList.toggle('open_item_report')
-            }else{
-                el.classList.remove('open_item_report')
-            }
-        })
-
-        myForm.forEach((el) => {
-            if(!itemOpen.value){
-                itemOpen.value = id
-                setTimeout(() => {
-                    el.classList.toggle('form_update_report_open')
-                }, 350)
-                return
-            }
-            
-            if(id == el.id){
-                setTimeout(() => {
-                    el.classList.toggle('form_update_report_open')
-                }, 350);
-            }else {
-                el.classList.remove('form_update_report_open')
-            }
-        })
-
-    }
-
-    export const saveUpdate = async (id, url, payloadUpdate) => {
-        const myItem = document.querySelectorAll('.item_report')
-        const myForm = document.querySelectorAll('.form_update_report')
-
-        myItem.forEach(el => {
-            el.classList.remove('open_item_report')
-        })
-        
-        myForm.forEach(el => {
-            el.classList.remove('form_update_report_open')
-        })
-
-        try {
-            await axios.patch(`${baseURL}/${url}/${id}`, payloadUpdate)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+   
     
 </script>
 <style>
@@ -200,7 +202,6 @@
         gap: 1rem;
         margin: 0 auto;
         padding: 2rem;
-        width: 80%;
     }
     
     .report {
@@ -211,9 +212,10 @@
         border-radius: 1.5rem;
         padding: 1rem;
         position: relative;
-        min-height: 62rem;
-        width: 50rem;
+        min-height: 63rem;
         background-color: white;
+        width: 100%;
+        max-width: 50rem;
 
         > h2 {
             text-align: center;
@@ -251,7 +253,7 @@
         gap: 2rem;
         width: 30rem;
         padding: 2rem;
-        position: absolute;
+        position: static;
         bottom: 1rem;    
 
         > button {
@@ -265,7 +267,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0 0.5rem;
-        
+
         > p, i {
             display: flex;
             justify-content: center;
@@ -281,38 +283,6 @@
         }
     }
 
-    .item_report {
-        display: flex;
-        justify-content: space-between;
-        gap: 0.2rem;
-        border-radius: 1rem;
-        transition: 1s;
-        border: 1px solid;
-        padding: 0 0.5rem;
-        width: 100%;
-        flex-flow: row wrap;
-        padding-top: 0.8rem;
-        height: 5rem;
-        
-        > p, i {
-            display: flex;
-            justify-content: center;
-            text-align: center;
-            padding-top: 0.4rem;
-        }
-        > i {
-            width: 2rem;
-        }
-        > p {
-            width: 8rem;
-        }
-    }
-
-    .open_item_report {
-        height: 10rem;
-        transition: 1s;
-    }
-
     .item_report:hover {
         background-color: rgb(179, 179, 179);
         border: 1px solid;
@@ -324,18 +294,98 @@
 
     .form_update_report_open {
         display: flex;
+        flex-flow: column;
         gap: 1rem;
         padding: 1rem 0;
         height: 5rem;
-    }
+        }
 
     .input_update {
-        width: 11rem;
         height: 3rem;
         outline: none;
         border-radius: 1rem;
         padding: 0.5rem;
     }
+
+
+    /* FORM REPORT */
+    .form_report_create {
+        display: none;
+    }
+
+    .form_report_update {
+        display: none;
+    }
+
+    .form_open {
+        display: flex;
+        width: 100%;
+        padding: 1rem;
+        display: flex;
+        flex-flow: wrap;
+        gap: 1rem;
+        border-radius: 0 0 1.5rem 1.5rem;
+
+        > input {
+            padding: 0.5rem;
+            height: 2.5rem;
+            width: 100%;
+        }
+    }
+
+    /* ITEM REPORT */
+    .item_report {
+        gap: 0.2rem;
+        border-radius: 1rem;
+        transition: 1s;
+        border: 1px solid;
+        padding: 0.5rem;
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        background-color: #d2d2d2;
+        height: 8rem;
+
+        > .title_report_item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+            width: 100%;
+            max-width: 40rem;
+            
+            > p {
+                width: 6rem;
+            }
+        }
+        
+        > #report_icons {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            gap: 1rem;
+            width: 100%;
+            
+            > p, i {
+                display: flex;
+                justify-content: center;
+                text-align: center;
+                padding-top: 0.4rem;
+            }
+            > i {
+                width: 2rem;
+            }
+            > p {
+                width: 5rem;
+            }
+        }
+    }
+
+    .open_item_report {
+        height: 30rem;
+        transition: 1s;
+    }
+
 
     @media (min-width: 550px) {
         .container_master {
@@ -343,4 +393,12 @@
         }
     }
 
+    @media (min-width: 915px) {
+        .item_report {
+            > #report_icons {
+                display: block;
+                width: 2rem;
+            }              
+        }
+    }
 </style>

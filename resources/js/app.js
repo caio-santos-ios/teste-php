@@ -1,7 +1,7 @@
 import { createApp } from "vue"
 import '@fortawesome/fontawesome-free/css/all.css';
 import ListOwner from './components/ListOwner.vue'
-import Home from './components/pages/Home.vue'
+import HomePage from './components/pages/HomePage.vue'
 import ReportPage from './components/pages/ReportPage.vue'
 import Dashboard from './components/Dashboard.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
@@ -19,7 +19,7 @@ const app = createApp()
 
 app.use(store);
 
-app.component('home-page', Home)
+app.component('home-page', HomePage)
 app.component('report-page', ReportPage)
 app.component('dashboard', Dashboard)
 app.component('list-owner', ListOwner)

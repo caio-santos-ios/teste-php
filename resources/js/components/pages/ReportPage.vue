@@ -1,5 +1,5 @@
 <template>
-    <main class="main_report">
+    <main id="main_report">
         <Aside />
         <Report />
     </main>
@@ -12,9 +12,32 @@
 </script>
 
 <style>
-    .main_report {
+    p, i {
+        font-size: 0.7rem;
+    }
+
+    h2 {
+        font-size: 1rem;
+    }
+
+    .main_home {
         min-height: 100vh;
-        width: 95vw;
-        display: flex; 
+        display: block;
+    }
+
+    @media (min-width: 915px) {
+        p, i {
+        font-size: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        #main_report {
+            min-height: 100vh;
+            display: flex;   
+            width: 95vw;
+        }
     }
 </style>

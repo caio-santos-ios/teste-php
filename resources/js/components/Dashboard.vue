@@ -3,7 +3,6 @@
     <div class="dashbord">
         <ListOwner />
         <FormRegisterOwner />  
-        <GraphicBar />
     </div>
 </template>
 
@@ -11,7 +10,6 @@
 <script setup>
     import ListOwner from './ListOwner.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
-    import GraphicBar from './GraphicBar.vue';
 </script>
 
 <style>

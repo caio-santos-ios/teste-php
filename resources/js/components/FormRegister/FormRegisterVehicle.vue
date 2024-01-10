@@ -38,7 +38,7 @@
 
     const registerVehicle = async () => {
         const idOwner = JSON.parse(localStorage.getItem('id'))
-
+        console.log(idOwner)
         const myVehicle = {
             model: model.value,
             year: year.value,
@@ -58,5 +58,8 @@
             console.log(error)
         }
     }
-
 </script>
+
+<style>
+  
+</style>

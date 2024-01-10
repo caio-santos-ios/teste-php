@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div id="container">
     <div class="header_container">
       <h4 class="title">Clientes Cadastrados</h4>
       <section class="container_search">
@@ -8,19 +8,20 @@
       </section>
     </div>
     <ul class="list_items">
-      <li class="header_title">
+      <li id="header_title">
         <p>Nome</p>
         <p>CPF</p>
         <p>Idade</p>
         <p>Sexo</p>
-        <p></p>
       </li>
-      <li class="item" :id="item.id" v-for="item in paginatedListVehicles" :key="item.id">
-        <div class="item_header">
-          <p>{{ item.name }}</p>
-          <p>{{ item.cpf }}</p>
-          <p>{{ item.age }}</p> 
-          <p>{{ item.gender }}</p>
+      <li class="item_is_open" :id="item.id" v-for="item in paginatedListVehicles" :key="item.id">
+        <div class="item_container">
+          <div id="item_header">
+            <p>{{ item.name }}</p>
+            <p>{{ item.cpf }}</p>
+            <p>{{ item.age }}</p> 
+            <p>{{ item.gender }}</p>
+          </div>
           <i :id="item.id" @click="addCar" class="fa-solid fa-car btn_add_car">
             <span :id="item.id">Adicionar</span>
           </i>
@@ -51,7 +52,7 @@ const isDone = ref(0)
 const isFinish = ref(0)
 const itemOpen = ref('')  
 
-const itemsPerPage = 10
+const itemsPerPage = 7
 const currentPage = ref(1)
 
 const paginatedListVehicles = computed(() => {
@@ -104,41 +105,38 @@ watch(store.getters.myOwners, () => {
 })
 
 const addCar = (e) => {
-  const itemOwner = document.querySelectorAll(".item")
+  const itemOwner = document.querySelectorAll(".item_is_open")
   const form = document.querySelectorAll(".form_register")
-
+  
+  itemOpen.value = e.target.id 
+  localStorage.setItem('id', JSON.stringify(e.target.id))
+  
   form.forEach((el) => {
     if(!itemOpen.value && e.target.id == el.id) {
-      itemOpen.value = e.target.id 
       setTimeout(() => {
         el.classList.toggle('open_form_register')
       }, 200)
 
       return 
     } 
-
     if(e.target.id == el.id){
       setTimeout(() => {
         el.classList.toggle('open_form_register')
       }, 200)
-      }else{
-        el.classList.remove('open_form_register')
+    }else{
+      el.classList.remove('open_form_register')
     }
   })
-  
-  itemOwner.forEach((el) => {
 
+  itemOwner.forEach((el) => {
     if(!itemOpen.value) {
-      itemOpen.value = e.target.id 
       el.classList.toggle('open_item')      
       return 
     } 
     
     if(e.target.id == el.id){
-      localStorage.setItem('id', JSON.stringify(e.target.id))
       el.classList.toggle('open_item')
     }else{
-      localStorage.setItem('id', JSON.stringify(e.target.id))
       el.classList.remove('open_item')
     }
 
@@ -148,9 +146,7 @@ const addCar = (e) => {
 </script>
 
 <style>
-.container {
-  min-height: 63rem;
-  width: 47rem;
+#container {
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -159,6 +155,9 @@ const addCar = (e) => {
   padding: 1.5rem;
   position: relative;
   margin: 0 auto;
+  width: 100%;
+  max-width: 50rem;
+  min-height: 56rem;
 }
 
 .header_container {
@@ -166,6 +165,8 @@ const addCar = (e) => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  font-size: 0.8rem;
 }
 
 .container_insights {
@@ -199,7 +200,12 @@ const addCar = (e) => {
 .search {
   border: none;
   outline: none;
+  width: 100%;
   background-color: transparent;
+}
+
+.search::placeholder {
+  font-size: 0.6rem;
 }
 
 .title {
@@ -211,58 +217,81 @@ const addCar = (e) => {
   display: flex;
   flex-flow: column;
   gap: 1rem;
+  font-size: 0.7rem;
 }
 
-.item {
-  display: flex;
-  flex-flow: wrap;
+#header_title {
   padding: 0.5rem;
-  height: 4rem;
-  transition: 1s;
-  
-  p {
-    width: 8rem;
+  display: flex;
+  justify-content: space-between;
+
+  > p {
+    width: 7rem;
     text-align: center;
   }
 }
 
+.item_is_open {
+  padding: 0.5rem;
+  list-style: none;
+  background-color: #d6d6d6;
+  border-radius: 1rem;
+  height: 5.5rem;
+  transition: 1s;
+  
+  p {
+    text-align: center;
+    width: 7rem;
+  }
+}
+
 .item:hover{
-  background-color: #a4a4a4;
   border-radius: 1rem;
 }
 
-.header_title:hover {
-  background-color: transparent;
+.item_container {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+#item_header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > p {
+    width: 7rem;
+  }
 }
 
 .open_item {
-  height: 21rem;
+  height: 26.5rem;
   transition: 1s;
 }
 
-.item_header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-  height: 3rem;
-}
 
 .btn_add_car{
-  background-color: #3838fa;
+  background-color: green;
   color: white;
   font-weight: 700;
   border: none;
   border-radius: 0.5rem;
-  margin: 0.5rem 0;
-  height: 3rem;
-  min-width: 9rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
+  padding: 0.3rem;
+  min-width: 2rem;
+  height: 2rem;
+
+  > span {
+    margin: 0 auto;
+  }
 }
 
 .footer_page {
@@ -283,27 +312,55 @@ const addCar = (e) => {
 
 }
 
-.form_register {
-  width: 40rem;
-  transition: 1s;
-  background-color: white;
-  display: none;
-  height: 5rem;
-  border: 1px solid;
-}
-
 .open_form_register {
   transition: 1s;
   width: 100%;
   display: flex;
-  height: 12rem;
+  height: 20rem;
 }
 
-@media (min-width: 950px) {
-  .fa-car {
-    > p {
+
+@media (min-width: 500px) {
+  .btn_add_car {
+    min-width: 6rem;
+
+    > span {
       display: flex;
     }
+  }
+}
+
+@media (min-width: 600px) {
+  #header_title {
+    width: 80%;
+  }
+  
+  .item_container {
+    margin-top: 1.2rem;
+    justify-content: space-between;
+    gap: 0;
+
+    > i {
+      align-self: center;
+    }
+  }
+
+  #item_header {
+    width: 80%;
+  }
+}
+
+@media (min-width: 915px) {
+  #container {
+    width: 50rem;
+  }
+
+  .header_container {
+    font-size: 1rem;
+  }
+  
+  .list_items {
+    font-size: 0.9rem;
   }
 }
 </style>

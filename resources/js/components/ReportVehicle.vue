@@ -20,36 +20,39 @@
     </div>
     <ul class="list_vehicle">
         <li class="header_title">
-            <p>Proprietario</p>
-            <p>Entrada</p>
-            <p>Marca</p>
-            <p>Placa</p>
-            <i></i>
-            <i></i>
-            <i></i>
+            <div>
+                <p>Proprietario</p>
+                <p>Entrada</p>
+                <p>Marca</p>
+                <p>Placa</p>    
+            </div>
         </li>
         <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-            <p>{{ item.owner.name }}</p>
-            <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
-            <p>{{ item.model }}</p>
-            <p>{{ item.plate }}</p>
-            <i v-if="!isUpdate && !isCreate" :id="item.id" @click="deleteVehicle" class="fa-solid fa-trash"></i>
-            <i v-if="isUpdate && !isCreate" :id="item.id" @click="saveUpdateVehicle" class="fa-solid fa-check"></i>
-            <i v-if="!isUpdate && isCreate" :id="item.id" @click="saveCreateRevision" class="fa-solid fa-check"></i>
-            <i v-if="!isCreate" :id="item.id" @click="updateVehicle" class="fa-solid fa-pen-to-square"></i>
-            <i v-if="!isCreate" :id="item.id" @click="createRevision" class="fa-regular fa-square-plus"></i>
-            <i v-if="isCreate" :id="item.id" @click="cancelCreateRevision" class="fa-solid fa-xmark"></i>
-            <form :id="item.id" class="form_update_report">
-                <input disabled class="input_update" type="text" :value="item.owner.name">
-                <input disabled class="input_update" type="text" :value="item.created_at.slice(0, 10)">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.model : inputModel" @input="inputModel = $event.target.value">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.plate : inputPlate" @input="inputPlate = $event.target.value">
+            <div class="title_report_item">
+                <p>{{ item.owner.name }}</p>
+                <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
+                <p>{{ item.model }}</p>
+                <p>{{ item.plate }}</p>
+            </div>
+            <div id="report_icons">
+                <i v-if="isFinish && selectedItem == item.id" @click="finished" class="fa-solid fa-check"></i>
+                <i v-if="isCancel && selectedItem == item.id" @click="canceled" class="fa-solid fa-xmark"></i>
+                <i v-if="isCreate && !isFinish || selectedItem != item.id" :id="item.id" @click="updated" class="atualizar fa-solid fa-pen-to-square"></i>
+                <i v-if="isUpdate && !isFinish || selectedItem != item.id" :id="item.id" @click="created" class="criar fa-regular fa-square-plus"></i>
+                <i v-if="isDeleted || selectedItem != item.id" :id="item.id" @click="deleted" class="fa-regular fa-trash-can"></i>
+            </div>
+
+            <form :id="item.id" class="form_report_update">
+                <input disabled type="text" :value="item.owner.name">
+                <input disabled type="text" :value="formateDate(item.created_at.slice(0, 10))">
+                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.model : inputModel" @input="inputModel = $event.target.value">
+                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.plate : inputPlate" @input="inputPlate = $event.target.value">
             </form>
 
-            <form :id="item.id" class="form_create_revision">
-                <input required v-model="inputDescription" placeholder="Descrição da revisão" class="input_update" type="text">
-                <input required v-model="inputTypeRevision" placeholder="Tipo da revisão" class="input_update" type="text">
-                <input required v-model="inputValue" placeholder="Valor cobrado" class="input_update" type="number">
+            <form :id="item.id" class="form_report_create">
+                <input required v-model="inputDescription" placeholder="Descrição da revisão" type="text">
+                <input required v-model="inputTypeRevision" placeholder="Tipo da revisão" type="text">
+                <input required v-model="inputValue" placeholder="Valor cobrado" type="number">
             </form>
         </li>
     </ul>
@@ -63,7 +66,7 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
-    import { update, destroy, saveUpdate, formateDate } from './Report.vue';
+    import { createRevision, update, destroy, formateDate, openItem, closeItem } from './Report.vue';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
     import { useStore } from 'vuex';
@@ -72,22 +75,24 @@
     const listSelected = ref([]) 
     const itemOpen = ref('')
     const filter = ref('')
-    const itemsPerPage = 10
+    const itemsPerPage = 5
     const currentPage = ref(1) 
-    const isUpdate = ref(false)
-    const isCreate = ref(false)
+    
+    const selectedItem = ref('')
+    const isUpdate = ref(true)
+    const isCreate = ref(true)
+    const isDeleted = ref(true)
+    const isCancel = ref(false)
+    const isFinish = ref(false)
+
     const inputModel = ref('')
     const inputPlate = ref('')
 
+    const inputIdVehicle = ref('')
     const inputIdOwner = ref('')
     const inputDescription = ref('')
     const inputTypeRevision = ref('')
     const inputValue = ref('')
-
-    const percentageM = ref(0)
-    const percentageF = ref(0)
-
-    const store = useStore()
 
     const addFilter = async (e) => {
         const typeFilter = e.target.value
@@ -178,6 +183,7 @@
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/vehicles`)
+
             listSelected.value = response.data 
             const h = response.data.filter(el => el.owner.gender === 'masculino')
             const m = response.data.filter(el => el.owner.gender === 'feminino')
@@ -188,141 +194,148 @@
         }
     })
 
-    const createRevision = async (e) => {
-        isCreate.value = true
-        if(isUpdate.value){
-            isUpdate.value = false
-            itemOpen.value = e.target.id
-            const myForm = document.querySelectorAll(`.form_update_report`)
-            myForm.forEach((el) => {
-                el.classList.remove('form_update_report_open')
-            })
-        }
+    const finished = async () => {
+        if(isCreate.value){   
+            if(!inputDescription.value || !inputTypeRevision.value || !inputValue.value) return toast.error("Preencha todos os campos")
 
-        const myItem = document.querySelectorAll(`.item_report`)
-        const myForm = document.querySelectorAll(`.form_create_revision`)
-        
-        const vehicle = listSelected.value.find(el => el.id == e.target.id)
-        inputIdOwner.value = vehicle.owner_id
-        
-        myItem.forEach((el) => {
-            if(!itemOpen.value) {
-                itemOpen.value = e.target.id 
-                el.classList.toggle('open_item_report')
-                return 
-            } 
-            
-            if(e.target.id == el.id){
-                el.classList.toggle('open_item_report')
-            }else{
-                el.classList.remove('open_item_report')
+            const revision = {
+                type_revision: inputTypeRevision.value,
+                description: inputDescription.value,
+                value: inputValue.value,
+                vehicle_id: inputIdVehicle.value,
+                owner_id: inputIdOwner.value,
+            }    
+            toast.success("Revisão criada")
+            await createRevision(inputIdVehicle.value, revision)
+        } else {
+            const indexVehicle = listSelected.value.findIndex((el, i) => el.id == inputIdVehicle.value)
+
+            if(!inputPlate.value && inputModel.value){
+                const response = await update(inputIdVehicle.value, 'vehicles', {model: inputModel.value})
+                listSelected.value[indexVehicle].model = response.data.model
+            } else if(!inputModel.value && inputPlate.value) {
+                const response = await update(inputIdVehicle.value, 'vehicles', {plate: inputPlate.value})
+                listSelected.value[indexVehicle].plate = response.data.plate
+                return
+            } else if(inputModel.value && inputPlate.value) {
+                const response = await update(inputIdVehicle.value, 'vehicles', { plate: inputPlate.value, model: inputModel.value })
+                listSelected.value[indexVehicle].model = response.data.model
+                listSelected.value[indexVehicle].plate = response.data.plate
             }
-        })
+        }
+        
+        inputIdOwner.value = ''
+        inputIdVehicle.value = ''
+        selectedItem.value = ''
+        isFinish.value = false
+        isCreate.value = true
+        isUpdate.value = true
+        closeItem()
+    }
 
-        myForm.forEach((el) => {
-            if(!itemOpen.value){
-                itemOpen.value = e.target.id
-                setTimeout(() => {
-                    el.classList.toggle('form_create_revision_open')
-                }, 350)
+    const canceled = (e) => {
+        closeItem()
+        isFinish.value = false
+        isCancel.value = false
+        isCreate.value = true
+        isUpdate.value = true
+        isDeleted.value = true
+        selectedItem.value = ''
+        inputIdOwner.value = ''
+        inputIdVehicle.value = ''
+    }
+
+    const created = (e) => {
+        const vehicle = listSelected.value.find(el => el.id == e.target.id)
+
+        inputIdOwner.value = vehicle.owner.id
+        inputIdVehicle.value = vehicle.id
+
+        if(selectedItem.value) {
+            closeItem()
+            if(selectedItem.value == e.target.id){
+                openItem(e.target.id, 'create')
+                isFinish.value = true
+                isCancel.value = true
+                isUpdate.value = false
+                isCreate.value = true
+                isDeleted.value = false
                 return
             }
-            
-            if(e.target.id == el.id){
-                setTimeout(() => {
-                    el.classList.toggle('form_create_revision_open')
-                }, 350);
-            }else {
-                el.classList.remove('form_create_revision_open')
-            }
-        })       
-    }
 
-    const saveCreateRevision = async (e) => {
-        if(e.target.id != itemOpen.value) return
-
-        const revision = {
-            type_revision: inputTypeRevision.value,
-            value: inputValue.value,
-            description: inputDescription.value,
-            owner_id: inputIdOwner.value
+            selectedItem.value = e.target.id
+            isCreate.value = true
+            isUpdate.value = true
+            isDeleted.value = false
+            isCancel.value = true
+            isFinish.value = true
+            openItem(e.target.id, 'create')
+            return
         }
 
-        if(revision.description && revision.type_revision && revision.value){
-            try {
-                await axios.post(`${baseURL}/revisions/${e.target.id}`, revision)
+        selectedItem.value = e.target.id
+        openItem(e.target.id, 'create')
+        isFinish.value = true
+        isCancel.value = true
+        isUpdate.value = false
+        isCreate.value = true
+        isDeleted.value = false
+    }
 
-                toast.success("Revisão criada com sucesso")
+    const updated = (e) => { 
+        inputIdVehicle.value = e.target.id
+
+        if(selectedItem.value) {
+            closeItem()
+            if(selectedItem.value == e.target.id){
+                openItem(e.target.id, 'update')
+                isFinish.value = true
+                isCancel.value = true
+                isUpdate.value = true
                 isCreate.value = false
-
-                const myItem = document.querySelectorAll(`.item_report`)
-                myItem.forEach((el) => {
-                    el.classList.remove('open_item_report')
-                })
-
-                const myForm = document.querySelectorAll(`.form_create_revision`)
-                myForm.forEach((el) => {
-                    el.classList.remove('form_create_revision_open')
-                })
-            } catch (error) {
-                console.log(error)
+                isDeleted.value = false
+                return
             }
-        }else{
-            toast.error("Preencha todos os campos")
+
+            selectedItem.value = e.target.id
+            isCreate.value = true
+            isUpdate.value = true
+            isDeleted.value = false
+            isCancel.value = true
+            isFinish.value = true
+            openItem(e.target.id, 'update')
+            return
         }
 
-    }
-
-    const cancelCreateRevision = (e) => {
-        if(e.target.id != itemOpen.value) return
-
-        isCreate.value = false
-        
-        const myItem = document.querySelectorAll(`.item_report`)
-        myItem.forEach((el) => {
-            el.classList.remove('open_item_report')
-        })
-
-        const myForm = document.querySelectorAll(`.form_create_revision`)
-        myForm.forEach((el) => {
-            setTimeout(() => {
-                el.classList.remove('form_create_revision_open')
-            }, 350)
-        })
-    }
-
-    const updateVehicle = (e) => {
-        itemOpen.value = e.target.id
-        update(e.target.id)
+        selectedItem.value = e.target.id
+        openItem(e.target.id, 'update') 
+        isFinish.value = true
+        isCancel.value = true
         isUpdate.value = true
-        
-        const vehicle = listSelected.value.find(el => el.id == e.target.id)
-
-        inputModel.value = vehicle.model
-        inputPlate.value = vehicle.plate
+        isCreate.value = false
+        isDeleted.value = false
     }
 
-    const saveUpdateVehicle = async (e) => {
-        if(e.target.id != itemOpen.value) return
-        
-        isUpdate.value = !isUpdate.value
-        
-        const vehicleUpdate = {
-           model: inputModel.value,
-           plate: inputPlate.value
+    const deleted = async (e) => {
+        if(selectedItem.value) {
+            closeItem()
+            isFinish.value = false
+            isCancel.value = false
+            isCreate.value = true
+            isUpdate.value = true
+            isDeleted.value = true
+            confirm("Deseja deletar este veiculo?")
+            return
         }
-
-        const indexVehicle = listSelected.value.findIndex(el => el.id == e.target.id)
-        listSelected.value[indexVehicle].model = inputModel.value
-        listSelected.value[indexVehicle].plate = inputPlate.value
         
-        await saveUpdate(e.target.id, 'vehicles', vehicleUpdate)
-    }
+        const result = confirm("Deseja deletar este veiculo?")
+        
+        if(result){ 
+            const list = listSelected.value.filter(el => el.id != e.target.id)
+            listSelected.value = list
 
-    const deleteVehicle = async (e) => {
-        const filter = listSelected.value.filter(el => el.id != e.target.id)
-        listSelected.value = filter
-        await destroy(e.target.id, 'vehicles')
+            await destroy(e.target.id, 'vehicles')
+        }
     }
 </script>
 
@@ -342,31 +355,24 @@
 
     .header_title {
         width: 100%;
-        display: flex;
-        flex-flow: row;
         gap: 2rem;
-        justify-content: center;
+        
+        > div {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 40rem;
 
+            > p {
+                width: 5.5rem;
+            }
+        }
     }
 
-    .item_create_revision {
-        height: 3rem;
-    }
-
-    .open_item_create_revision {
-        height: 10rem;
-        transition: 1s;
-    }
-
-    .form_create_revision {
-        display: none;
-    }
-
-    .form_create_revision_open {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem 0;
-        height: 5rem;
+    @media (min-width: 915px) {
+        .form_create_revision_open {
+            flex-flow: row;
+        }
     }
 
 </style>

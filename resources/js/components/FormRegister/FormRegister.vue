@@ -7,28 +7,32 @@
 </script>
 <style>
     .form_register {
+        margin: 1rem 0;
         padding: 1rem;
-        border-radius: 1.5rem;
-        display: flex;
+        display: none;
         flex-flow: wrap;
-        gap: 1rem;
+        gap: 1.5rem;
+        transition: 1s;
+        border: 1px solid rgb(156, 156, 156);
     }
     
     label {
+        height: 3rem;
         display: flex;
-        flex-flow: column;
-        width: 48%;
-        height: 5rem;
+        flex-flow: wrap;
+        gap: 0.2rem;
+        width: 100%;
+        margin: 0.1rem 0;
         
         > input {
-            height: 3rem;
-            outline: none;
-            border: 1px solid #cbd5e1;;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            border: none;
+            width: 100%;
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid;
         }
     }
-
+        
     .gender {
         display: flex;
         flex-flow: column;
@@ -54,5 +58,11 @@
     
     .btn_register:disabled {
         background-color: #a2a2f4;
+    }
+
+    @media (min-width: 915px) {
+        .form_register {
+            height: 1rem;
+        }
     }
 </style>

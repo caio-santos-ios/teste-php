@@ -26,7 +26,7 @@ class OwnerController extends Controller
     public function store(Request $request)
     {
         
-        $data = $request->input();
+        $data = $request->all();
 
         $findOwner = Owner::where('cpf', $data['cpf'])->first();
 
@@ -58,7 +58,7 @@ class OwnerController extends Controller
             throw new HttpResponseException(response()->json(["message" => "Usuário não encontrado"], 404));
         };
 
-        $data = $request->input();
+        $data = $request->all();
 
         $ownerUpdate = Owner::find($id);
 

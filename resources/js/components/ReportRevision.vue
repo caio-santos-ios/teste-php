@@ -20,26 +20,34 @@
     </div>
     <ul class="list_owner">
         <li class="header_title">
-            <p>Proprietario</p>
-            <p>Entrada</p>
-            <p>Marca</p>
-            <p>Valor</p>    
-            <i></i>      
-            <i></i>  
+            <div>
+                <p>Proprietario</p>
+                <p>Entrada</p>
+                <p>Marca</p>
+                <p>Valor</p>    
+            </div>
         </li>   
         <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-            <p>{{ item.owner.name }}</p>
-            <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
-            <p>{{ item.vehicle.model }}</p>
-            <p>R$ {{ item.value }}</p> 
-            <i v-if="!isUpdate" :id="item.id" @click="finishRevision" class="fa-regular fa-square-check"></i>
-            <i v-if="isUpdate" :id="item.id" @click="saveUpdateRevision" class="fa-solid fa-check"></i>
-            <i :id="item.id" @click="updateRevision" class="fa-solid fa-pen-to-square"></i>
-            <form :id="item.id" class="form_update_report">
-                <input disabled class="input_update" type="text" :value="item.owner.name">
-                <input disabled class="input_update" type="text" :value="item.created_at.slice(0, 10)">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.type_revision : inputType" @input="inputType = $event.target.value">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.value : inputValue" @input="inputValue = $event.target.value">
+            <div class="title_report_item">
+                <p>{{ item.owner.name }}</p>
+                <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
+                <p>{{ item.vehicle.model }}</p>
+                <p>R$ {{ item.value }}</p> 
+            </div>
+            <div id="report_icons">
+                <i v-if="isFinish || selectedItem == item.id" :id="item.id" @click="finished" class="fa-solid fa-check"></i>
+                <i v-if="isCancel || selectedItem == item.id" @click="canceled" class="fa-solid fa-xmark"></i>
+                <i v-if="isUpdate && !isFinish || selectedItem != item.id" :id="item.id" @click="finishedRevision" class="fa-regular fa-square-check"></i>
+                <i v-if="isUpdate && !isFinish || selectedItem != item.id" :id="item.id" @click="updated" class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <form :id="item.id" class="form_report_update">
+                <input disabled type="text" :value="item.owner.name">
+                <input disabled type="text" :value="formateDate(item.created_at.slice(0, 10))">
+                <input disabled type="text" :value="item.vehicle.model">
+                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.type_revision : inputType" @input="inputType = $event.target.value">
+                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.description : inputDescription" @input="inputDescription = $event.target.value">
+                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.value : inputValue" @input="inputValue = $event.target.value">
+
             </form>
         </li>
     </ul>
@@ -53,20 +61,25 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
-    import { update, saveUpdate, formateDate } from './Report.vue';
+    import { update, formateDate, openItem, closeItem } from './Report.vue';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
     const myFilter = ref('')
-    const itemsPerPage = 10
+    const itemsPerPage = 7
     const currentPage = ref(1) 
-    const isUpdate = ref(false)
     const timeAverage = ref(0)
+
+    const selectedItem = ref('')
+    const isUpdate = ref(true)
+    const isCancel = ref(false)
+    const isFinish = ref(false)
 
     const inputType = ref('')
     const inputValue = ref('')
+    const inputDescription = ref('')
 
     const addFilter = async (e) => {
         const typeFilter = e.target.value
@@ -165,7 +178,6 @@
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/revisions`)
-            
             response.data.map((el) => {
                 if(!el.is_done){
                     listSelected.value.push(el) 
@@ -181,35 +193,60 @@
         return result
     }
 
-    const finishRevision = async (e) => {
-        toast.success("Revisão finalizada")
-        const filter = listSelected.value.filter(el => el.id != e.target.id)
-        listSelected.value = filter 
-        saveUpdate(e.target.id, 'revisions', { is_done: true })
+    const finishedRevision = async (e) => {
+        const result = confirm("Revisão finalizada?")
+        if(result){ 
+            const list = listSelected.value.filter(el => el.id != e.target.id)
+            listSelected.value = list
+
+            await update(e.target.id, 'revisions', { is_done: true })
+        }
     }
 
-    const updateRevision = (e) => {
-        update(e.target.id)
-        isUpdate.value = !isUpdate.value
-
+    const finished = async (e) => {
         const revision = listSelected.value.find(el => el.id == e.target.id)
-        inputType.value = revision.type_revision
-        inputValue.value = revision.value
-    }
-    
-    const saveUpdateRevision = async (e) => {
-        isUpdate.value = !isUpdate.value
-        
         const revisionUpdate = {
-            type_revision: inputType.value,
-            value: inputValue.value
+            description: !inputDescription.value ? revision.description : inputDescription.value,
+            value: !inputValue.value ? revision.value: inputValue.value,
+            type_revision: !inputType.value ? revision.type_revision : inputType.value
+        }
+        
+        const response = await update(e.target.id, 'revisions', revisionUpdate)
+       
+        const indexRevision = listSelected.value.findIndex(el => el.id == e.target.id)
+
+        listSelected.value[indexRevision].type_revision = response.data.type_revision
+        listSelected.value[indexRevision].value = response.data.value
+        listSelected.value[indexRevision].description = response.data.description
+        
+        closeItem()
+        isFinish.value = false
+        isCancel.value = false
+        selectedItem.value = ''
+    }
+
+    const updated = async (e) => {
+        if(!selectedItem.value){
+            isCancel.value = false
+            isUpdate.value = false
+            selectedItem.value = e.target.id
+            openItem(e.target.id, 'update')
+            return
         }
 
-        const indexRevision = listSelected.value.findIndex(el => el.id == e.target.id)
-        listSelected.value[indexRevision].type_revision = inputType.value
-        listSelected.value[indexRevision].value = inputValue.value
-        
-        await saveUpdate(e.target.id, 'revisions', revisionUpdate)
+        closeItem()
+        selectedItem.value = ''
+        isCancel.value = false
+        isFinish.value = false
+        isUpdate.value = false
+    }
+
+    const canceled = () => {
+        closeItem()
+        isFinish.value = false
+        isCancel.value = false
+        isUpdate.value = true
+        selectedItem.value = ''
     }
 </script>
 

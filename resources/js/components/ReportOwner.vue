@@ -16,28 +16,32 @@
     </div>
     <ul class="list_owner">
         <li class="header_title">
-            <p>Nome</p>
-            <p>Cpf</p>
-            <p>Sexo</p>
-            <p>idade</p>    
-            <i></i>      
-            <i></i>  
+            <div>
+                <p>Nome</p>
+                <p>Cpf</p>
+                <p>Sexo</p>
+                <p>idade</p>    
+            </div>  
         </li>   
         <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-            <p>{{ item.name }}</p>
-            <p>{{ item.cpf }}</p>
-            <p>{{ item.gender }}</p>
-            <p>{{ item.age }}</p> 
+            <div class="title_report_item">
+                <p>{{ item.name }}</p>
+                <p>{{ item.cpf }}</p>
+                <p>{{ item.gender }}</p>
+                <p>{{ item.age }}</p> 
+            </div>
+            <div id="report_icons">
+                <i v-if="isFinish && selectedItem == item.id" @click="finished" class="fa-solid fa-check"></i>
+                <i v-if="isCancel && selectedItem == item.id" @click="canceled" class="fa-solid fa-xmark"></i>                
+                <i v-if="isCreate && !isFinish || selectedItem != item.id" :id="item.id" @click="updated" class="atualizar fa-solid fa-pen-to-square"></i>
+                <i v-if="isDeleted || selectedItem != item.id" :id="item.id" @click="deleted" class="fa-regular fa-trash-can"></i>
+            </div>
             
-            <i v-if="!isUpdate" :id="item.id" @click="deleteOwner" class="fa-solid fa-trash"></i>
-            <i v-if="isUpdate" :id="item.id" @click="saveUpdateOwner" class="fa-solid fa-check"></i>
-            <i :id="item.id" @click="updateOwner" class="fa-solid fa-pen-to-square"></i>
-            
-            <form :id="item.id" class="form_update_report">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.name : inputName" @input="inputName = $event.target.value">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.cpf : inputCpf" @input="inputCpf = $event.target.value">
-                <input disabled class="input_update" type="text" :value="item.gender">
-                <input :disabled="!isUpdate" class="input_update" type="text" :value="isUpdate ? item.age : inputAge" @input="inputAge = $event.target.value">
+            <form :id="item.id" class="form_report_update">
+                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.name : inputName" @input="inputName = $event.target.value">
+                <input disabled type="text" :value="item.cpf">
+                <input disabled type="text" :value="item.gender">
+                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.age : inputAge" @input="inputAge = $event.target.value">
             </form>
         </li>
     </ul>
@@ -51,18 +55,24 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
-    import { update, saveUpdate, destroy } from './Report.vue';
+    import { openItem, closeItem, update, destroy } from './Report.vue';
     
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
     const myFilter = ref('')
-    const itemsPerPage = 10
+    const itemsPerPage = 5
     const currentPage = ref(1) 
     const ageAverage = ref(0)
+
+    const inputIdOwner = ref('')
+    const selectedItem = ref('')
     const isUpdate = ref(false)
+    const isDeleted = ref(true)
+    const isCancel = ref(false)
+    const isFinish = ref(false)
+
     const inputName = ref('')
-    const inputCpf = ref('')
     const inputGender = ref('')
     const inputAge = ref('')
 
@@ -160,42 +170,89 @@
         return result
     }
 
-    
-    const updateOwner = (e) => {
-        update(e.target.id)
-        isUpdate.value = !isUpdate.value
-        
-        const owner = listSelected.value.find(el => el.id == e.target.id)
-        
-        inputName.value = owner.name
-        inputCpf.value = owner.cpf
-        inputGender.value = owner.gender
-        inputAge.value = owner.age
-    }
-    
-    const saveUpdateOwner = async (e) => {
-        isUpdate.value = !isUpdate.value
+    const finished = async () => {
+        const indexOwner = listSelected.value.findIndex((el) => el.id == inputIdOwner.value)
 
+        const owner = listSelected.value.find((el) => el.id == inputIdOwner.value)
+        
         const ownerUpdate = {
-            name: inputName.value,
-            cpf: inputCpf.value,
-            gender: inputGender.value,
-            age: inputAge.value
+            name: !inputName.value ? owner.name : inputName.value,
+            age: !inputAge.value ? owner.age : inputName.value,
+            gender: !inputGender.value ? owner.gender : inputName.value
+        }
+
+        const response = await update(inputIdOwner.value, 'owners', ownerUpdate)
+
+        listSelected.value[indexOwner].name = response.data.name
+        listSelected.value[indexOwner].gender = response.data.gender
+        listSelected.value[indexOwner].age = response.data.age
+        
+        selectedItem.value = ''
+        isFinish.value = false
+        isUpdate.value = true
+        closeItem()
+    }
+
+    const canceled = (e) => {
+        closeItem()
+        isFinish.value = false
+        isCancel.value = false
+        isUpdate.value = true
+        isDeleted.value = true
+        selectedItem.value = ''
+    }
+
+    const updated = (e) => { 
+        inputIdOwner.value = e.target.id
+
+        if(selectedItem.value) {
+            closeItem()
+            if(selectedItem.value == e.target.id){
+                openItem(e.target.id, 'update')
+                isFinish.value = true
+                isCancel.value = true
+                isUpdate.value = true
+                isDeleted.value = false
+                return
+            }
+
+            selectedItem.value = e.target.id
+            isUpdate.value = true
+            isDeleted.value = false
+            isCancel.value = true
+            isFinish.value = true
+            openItem(e.target.id, 'update')
+            return
+        }
+
+        selectedItem.value = e.target.id
+        openItem(e.target.id, 'update') 
+        isFinish.value = true
+        isCancel.value = true
+        isUpdate.value = true
+        isDeleted.value = false
+    }    
+
+    const deleted = async (e) => {
+        if(selectedItem.value) {
+            closeItem()
+            isFinish.value = false
+            isCancel.value = false
+            isCreate.value = true
+            isUpdate.value = true
+            isDeleted.value = true
+            confirm("Deseja deletar este cliente?")
+            return
         }
         
-        const indexOwner = listSelected.value.findIndex(el => el.id == e.target.id)
-        listSelected.value[indexOwner].name = ownerUpdate.name
-        listSelected.value[indexOwner].cpf = ownerUpdate.cpf
-        listSelected.value[indexOwner].gender = ownerUpdate.gender
-        listSelected.value[indexOwner].age = ownerUpdate.age
+        const result = confirm("Deseja deletar este cliente?")
         
-        await saveUpdate(e.target.id, 'owners', ownerUpdate)
-    }
-  
-    const deleteOwner = async (e) => {
-        const filter = listSelected.value.filter(el => el.id != e.target.id)
-        listSelected.value = filter 
-        destroy(e.target.id, 'owners')
+        if(result){ 
+            const list = listSelected.value.filter(el => el.id != e.target.id)
+            listSelected.value = list
+
+            await destroy(e.target.id, 'owners')
+        }
     }
 </script>
 

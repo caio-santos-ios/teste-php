@@ -20,42 +20,18 @@
 <style>
     aside {
         background-color: white;
-        min-height: 100vh;
-        width: 5rem;
-        display: flex;
-        justify-content: flex-end;
-        transition: 1s;
-        padding: 5rem 0;
+        padding: 1rem 0;
     }
     
-    aside:hover{
-        transition: 1s;
-        width: 10rem;
-
-        .name_option {
-            display: flex;
-        }
-
-        .option_aside {
-            justify-content: flex-start;
-            width: 100%;
-            font-size: 1rem;
-        }
-    }
-
     .menu_aside {
-        height: 100%;
         display: flex;
-        flex-flow: column;
         align-items: center;
-        gap: 1rem;
-        padding: 0 0.2rem;
+        justify-content: space-between;
+        padding: 0 1rem;
     }
-
 
     .option_aside {
         padding: 0.5rem;
-        width: 4rem;
         list-style: none;
         display: flex;
         align-items: center;
@@ -65,7 +41,7 @@
         border: none;
         color: black;
         text-decoration: none;
-        font-size: 1.5rem;
+        font-size: 1rem;
     }   
 
     .option_aside:hover {
@@ -74,6 +50,38 @@
     }
 
     .name_option {
-        display: none;
+        display: flex;
+    }
+
+    @media (min-width: 915px) {
+        aside {
+            transition: 1s;
+            width: 5rem;
+        }
+
+        aside:hover{
+            transition: 1s;
+            width: 10rem;
+            
+            .name_option {
+                display: flex;
+            }
+            
+            .option_aside {
+                justify-content: flex-start;
+                width: 100%;
+                font-size: 1rem;
+            }
+        }
+
+        .menu_aside {
+            flex-flow: column;
+            justify-content: flex-start;
+            padding: 1rem;
+        }
+
+        .name_option {
+            display: none;
+        }       
     }
 </style>

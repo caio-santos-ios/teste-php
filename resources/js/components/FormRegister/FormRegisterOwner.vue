@@ -1,5 +1,5 @@
 <template>
-     <form class="form_register_owner" @submit.prevent="registerOwner()">
+     <FormRegister id="form_register_owner" @submit.prevent="registerOwner()">
         <label for="name">Nome cliente
             <input required type="text" placeholder="Nome do cliente" v-model="name">
         </label>
@@ -13,17 +13,20 @@
             <input maxlength="3" required @input="verifyAge()" type="text" placeholder="Idade do cliente" v-model="age">
         </label>
         
-        <div class="gender">
-            <input value="masculino" type="radio" id="m" v-model="gender" />
-            <label required for="m">Masculino</label>
-        </div>
-        <div class="gender">
-            <input value="feminino" type="radio" id="f" v-model="gender" />
-            <label required for="f">Feminino</label>
-        </div>
+        <label id="gender">
+            <p>Sexo</p>
+            <div class="gender">
+                <input value="masculino" type="radio" id="m" v-model="gender" />
+                <label required for="m">Masculino</label>
+            </div>
+            <div class="gender">
+                <input value="feminino" type="radio" id="f" v-model="gender" />
+                <label required for="f">Feminino</label>
+            </div>
+        </label>
         
         <button type="submit" class="btn_register" >Cadastrar</button>
-    </form> 
+    </FormRegister> 
 </template>
 
 <script setup>
@@ -32,6 +35,7 @@
     import 'vue3-toastify/dist/index.css';
     import { ref, watchEffect } from 'vue';
     import { useStore } from 'vuex';
+    import FormRegister from './FormRegister.vue'; 
     
     const store = useStore()
 
@@ -115,56 +119,29 @@
 </script>
 
 <style>
-    .form_register_owner {
-        padding: 1rem;
-        border-radius: 1.5rem;
+    #form_register_owner {
         display: flex;
-        flex-flow: wrap;
-        gap: 1rem;
         background-color: white;
-        width: 47rem;
-        height: 20rem;
-    }
-    
-    label {
-        display: flex;
-        flex-flow: column;
-        width: 48%;
-        height: 5rem;
-        
-        > input {
-            height: 3rem;
-            outline: none;
-            border: 1px solid #cbd5e1;;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-        }
-    }
-
-    .gender {
-        display: flex;
-        flex-flow: column;
-        justify-content: center;
-    }
-
-    .btn_register, .btn_finish {
-        padding: 1rem;
+        height: 30rem;
+        width: 100%;
+        max-width: 50rem;
         border: none;
-        border-radius: 1rem;
-        background-color: #2929e0;
-        color: white;
-        font-size: 1rem;
-        width: 48%;
-        height: 4rem;
-        margin: 0 auto;
+        border-radius: 1.5rem;
     }
 
-    .btn_finish {
-        height: 4rem;
-        width: 60%;
-    }
-    
-    .btn_register:disabled {
-        background-color: #a2a2f4;
+    #gender {
+        display: flex;
+
+        > p {
+            width: 100%;
+        }
+        
+        > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 5rem;
+            height: 2rem;
+        }
     }
 </style>

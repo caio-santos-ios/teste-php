@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!myRegister" class="graphic_bar">
+    <div class="graphic_bar">
       <canvas id="bar"></canvas>
     </div>
   </template>
@@ -53,17 +53,12 @@
         margin-bottom: 1rem;
         display: flex;
         justify-content: center;
-        width: 50rem; 
-    }
-
-    #bar {
         width: 100%;
-        height: 10rem;
+        max-width: 50rem;
     }
 
     @media (min-width: 1562px) {
         .graphic_bar {
-            max-width: 85rem;
         }
     }
   </style>
