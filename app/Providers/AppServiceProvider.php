@@ -12,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        URL::forceSchema('https');
+        // URL::forceSchema('https');
+        $this->app['request']->server->set('https', 'on');
     }
 
     /**
