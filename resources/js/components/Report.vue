@@ -394,7 +394,7 @@
         }
     }
 
-    @media (min-width: 915px) {
+    @media (min-width: 985px) {
         .item_report {
             > #report_icons {
                 display: block;
