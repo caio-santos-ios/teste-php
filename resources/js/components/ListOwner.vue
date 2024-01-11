@@ -83,7 +83,10 @@ onMounted(async () => {
     const response = await axios.get(`${baseURL}/owners`);
     listOwner.value = response.data;
     loading.value = false
+    console.log(response.data)
   } catch (error) {
+    toast.error("Erro ao carregar os clientes")
+    loading.value = false
     console.error(error);
   }
 });
