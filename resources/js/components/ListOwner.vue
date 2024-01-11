@@ -82,11 +82,7 @@ onMounted(async () => {
   try {
     const response = await axios.get(`${baseURL}/owners`);
     listOwner.value = response.data;
-    response.data.forEach((el, i, arr) => {
-      if (el.isDone === '0') return isDone.value = arr.length;
-      isFinish.value = arr.length;
-      loading.value = false
-    });
+    loading.value = false
   } catch (error) {
     console.error(error);
   }

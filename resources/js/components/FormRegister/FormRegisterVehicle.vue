@@ -12,7 +12,8 @@
             <input maxlength="7" required type="text" placeholder="placa do carro" v-model="plate">
         </label>
 
-        <button type="submit" class="btn_register" :disabled="isFinish">Cadastrar</button>
+        <button v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">Cadastrar</button>
+        <button v-if="!loading" :disabled="!isCreateBtn" type="submit" class="btn_register"><Loading style="height: 3rem; width: 3rem;" /></button>
     </FormRegister> 
 </template>
 
@@ -37,7 +38,12 @@
     const plate = ref('')
     const year = ref('')    
 
+    const isCreateBtn = ref(true)
+    const loading = ref(true) 
+
     const registerVehicle = async () => {
+        isCreateBtn.value = false
+        loading.value = false
         const idOwner = JSON.parse(localStorage.getItem('id'))
         const myVehicle = {
             model: model.value,
@@ -49,12 +55,13 @@
             const response = await axios.post(`${baseURL}/vehicles`, myVehicle)
             store.commit('setIdVehicle', response.data.id)
             toast.success("Carro cadastrdo")
-
+            loading.value = (true)
             model.value = ''
             year.value = ''
             plate.value = ''
 
         } catch (error) {
+            loading.value = (true)
             console.log(error)
         }
     }
