@@ -32,7 +32,7 @@
     const myIdVehicle = computed(() => store.getters.myIdVehicle);
 
 
-    const baseURL = 'http://localhost:8000'
+    const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com'
     const isFinish = ref(false)
     const model = ref('')
     const plate = ref('')

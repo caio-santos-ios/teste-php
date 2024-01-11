@@ -44,7 +44,7 @@
     import { useStore } from 'vuex';
     import { ref, computed } from 'vue';
 
-    const baseURL = 'http://localhost:8000'
+    const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com'
 
     const store = useStore()
 
