@@ -96,7 +96,7 @@
     import { ref } from 'vue';
     import axios from 'axios';
 
-    const baseURL = 'http://localhost:8000';    
+    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
 
     const itemOpen = ref('');
 

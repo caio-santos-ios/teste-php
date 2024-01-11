@@ -47,7 +47,7 @@ import Loading from './Loading.vue';
 
 const store = useStore()
 
-const baseURL = 'http://localhost:8000';
+const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';
 const mySearch = ref('')
 const listOwner = ref([])
 const itemOpen = ref('') 
