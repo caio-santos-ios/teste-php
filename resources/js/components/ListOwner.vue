@@ -79,10 +79,8 @@ const nextPage = () => {
 }
 
 onMounted(async () => {
-  
-  
   try {
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = 'ryzC3FfpfCUVmkWlgAfLQtWNp5XCJm6weavFNozC';
+    // axios.defaults.headers.common['X-CSRF-TOKEN'] = 'ryzC3FfpfCUVmkWlgAfLQtWNp5XCJm6weavFNozC';
 
     const response = await axios.get(`${baseURL}owners`);
     console.log(response)
