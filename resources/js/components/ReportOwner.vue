@@ -62,7 +62,7 @@
 
     const loading = ref(true)
 
-    const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com';    
+    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
     const listSelected = ref([]) 
     const myFilter = ref('')
     const itemsPerPage = 5

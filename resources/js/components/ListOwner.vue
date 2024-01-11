@@ -30,6 +30,9 @@
       </li>
       <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
     </ul>
+    <div v-if="data">
+      <pre>{{ data }}</pre>
+    </div>
     <div class="footer_page">
       <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
       <span>Página {{ currentPage }} de {{ totalPages }}</span>
@@ -47,7 +50,7 @@ import Loading from './Loading.vue';
 
 const store = useStore()
 
-const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com';
+const baseURL = 'https://intermedio.onrender.com';
 const mySearch = ref('')
 const listOwner = ref([])
 const isDone = ref(0)
@@ -83,11 +86,9 @@ onMounted(async () => {
     const response = await axios.get(`${baseURL}/owners`);
     listOwner.value = response.data;
     loading.value = false
-    console.log(response.data)
   } catch (error) {
-    toast.error("Erro ao carregar os clientes")
-    loading.value = false
-    console.error(error);
+    loading.value = false;
+    console.log(error)
   }
 });
 

@@ -42,7 +42,7 @@
     
     const store = useStore()
 
-    const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com'
+    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com'
 
     const btnSubmit = ref(true)
     const name = ref('')
@@ -72,7 +72,7 @@
             gender.value = ''
             isCreateBtn.value = true
             loading.value = false
-
+            console.log(response)
             if(response.status === 200){
                 loading.value = false
                 isCreateBtn.value = true

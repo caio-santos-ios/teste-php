@@ -96,7 +96,7 @@
     import { ref } from 'vue';
     import axios from 'axios';
 
-    const baseURL = 'http://https://controle-veiculo-c89a5c476b29.herokuapp.com';    
+    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
 
     const itemOpen = ref('');
 
@@ -181,7 +181,6 @@
 </script>
 <style>
     .header_report {
-        background-color: red;
         width: 100%;
         height: 5rem;
         display: flex;
