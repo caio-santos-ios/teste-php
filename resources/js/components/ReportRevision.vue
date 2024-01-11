@@ -19,7 +19,7 @@
         </div>
     </div>
     <ul class="list_owner">
-        <li class="header_title">
+        <li v-if="!loading" class="header_title">
             <div>
                 <p>Proprietario</p>
                 <p>Entrada</p>
@@ -50,10 +50,12 @@
 
             </form>
         </li>
+        <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+        <h2 v-if="!loading && listSelected.length === 0">Sem Revisões</h2>
     </ul>
     <div class="footer_page_report">
         <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-        <span>Página {{ currentPage }} de {{ totalPages }}</span>
+        <span>Página {{ currentPage }} de {{     totalPages }}</span>
         <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
     </div>
 </template>
@@ -64,6 +66,9 @@
     import { update, formateDate, openItem, closeItem } from './Report.vue';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
+    import Loading from './Loading.vue';
+
+    const loading = ref(true)
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
@@ -178,20 +183,22 @@
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/revisions`)
-            response.data.map((el) => {
-                if(!el.is_done){
-                    listSelected.value.push(el) 
-                }
-            })
+
+            loading.value = false
+            if(response.data.length > 0){
+                response.data.map((el) => {
+                    if(!el.is_done){
+                        listSelected.value.push(el) 
+                    }
+                })
+            }else {
+                listSelected.value = []
+            }
         } catch (error) {
             console.log(error)
+            loading.value = false
         }
     })
-
-    const calculeedAgeAverage = (total, qtd) => {
-        const result = total / qtd
-        return result
-    }
 
     const finishedRevision = async (e) => {
         const result = confirm("Revisão finalizada?")

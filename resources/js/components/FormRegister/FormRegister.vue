@@ -40,6 +40,9 @@
     }
 
     .btn_register, .btn_finish {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         padding: 1rem;
         border: none;
         border-radius: 1rem;

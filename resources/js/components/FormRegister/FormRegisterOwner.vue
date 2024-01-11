@@ -25,7 +25,9 @@
             </div>
         </label>
         
-        <button type="submit" class="btn_register" >Cadastrar</button>
+        <button v-if="!loading" :disabled="!isCreateBtn" type="submit" class="btn_register">Cadastrar</button>
+        <button v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register"><LoadingVue style="height: 3rem; width: 3rem;" /></button>
+
     </FormRegister> 
 </template>
 
@@ -36,6 +38,7 @@
     import { ref, watchEffect } from 'vue';
     import { useStore } from 'vuex';
     import FormRegister from './FormRegister.vue'; 
+    import LoadingVue from '../Loading.vue';
     
     const store = useStore()
 
@@ -48,10 +51,13 @@
     const gender = ref('')
     const validatedCpf = ref(false)
     const validatedAge = ref(false)
-    
+    const isCreateBtn = ref(true)
+    const loading = ref(false)
 
-    
     const registerOwner = async () => {
+        isCreateBtn.value = false
+        loading.value = true
+
         const owner = {
             name: name.value, cpf: cpf.value, age: age.value, gender: gender.value
         }
@@ -60,19 +66,27 @@
 
         try {
             const response = await axios.post(`${baseURL}/owners`, owner)
-            
             name.value = ''
             cpf.value = ''
             age.value = ''
             gender.value = ''
+            isCreateBtn.value = true
+            loading.value = false
 
             if(response.status === 200){
+                loading.value = false
+                isCreateBtn.value = true
                 toast.error("Cliente já está cadastrado, faça uma busca");
             }else{
                 toast.success("Cliente cadastrado");
+                loading.value = false
+                isCreateBtn.value = true
                 store.commit('selectedOwner', response.data)
             }
         } catch (error) {
+            isCreateBtn.value = true
+            loading.value = false
+            toast.error("Desculpe, tente criar novamente")
             console.log(error)
         }
     }
@@ -114,7 +128,6 @@
             if(validatedCpf.value && validatedAge.value) return btnSubmit.value = false
         }
     })
-    console.log(store.getters.myOwners)
     
 </script>
 

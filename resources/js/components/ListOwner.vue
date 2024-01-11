@@ -14,7 +14,7 @@
         <p>Idade</p>
         <p>Sexo</p>
       </li>
-      <li class="item_is_open" :id="item.id" v-for="item in paginatedListVehicles" :key="item.id">
+      <li v-if="!loading" class="item_is_open" :id="item.id" v-for="item in paginatedListVehicles" :key="item.id">
         <div class="item_container">
           <div id="item_header">
             <p>{{ item.name }}</p>
@@ -28,6 +28,7 @@
         </div>
         <FormRegisterVehicle :id="item.id" />
       </li>
+      <Loading style="height: 80%; width: 80%;" v-if="loading"/>
     </ul>
     <div class="footer_page">
       <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
@@ -42,6 +43,7 @@ import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
+import Loading from './Loading.vue';
 
 const store = useStore()
 
@@ -50,7 +52,8 @@ const mySearch = ref('')
 const listOwner = ref([])
 const isDone = ref(0)
 const isFinish = ref(0)
-const itemOpen = ref('')  
+const itemOpen = ref('') 
+const loading = ref(true) 
 
 const itemsPerPage = 7
 const currentPage = ref(1)
@@ -82,6 +85,7 @@ onMounted(async () => {
     response.data.forEach((el, i, arr) => {
       if (el.isDone === '0') return isDone.value = arr.length;
       isFinish.value = arr.length;
+      loading.value = false
     });
   } catch (error) {
     console.error(error);
@@ -214,6 +218,7 @@ const addCar = (e) => {
 
 .list_items {
   width: 100%;
+  height: 90%;
   display: flex;
   flex-flow: column;
   gap: 1rem;

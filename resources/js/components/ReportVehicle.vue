@@ -19,7 +19,7 @@
         </div>
     </div>
     <ul class="list_vehicle">
-        <li class="header_title">
+        <li v-if="!loading" class="header_title">
             <div>
                 <p>Proprietario</p>
                 <p>Entrada</p>
@@ -27,7 +27,7 @@
                 <p>Placa</p>    
             </div>
         </li>
-        <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
+        <li v-if="!loading" class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
             <div class="title_report_item">
                 <p>{{ item.owner.name }}</p>
                 <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
@@ -55,6 +55,8 @@
                 <input required v-model="inputValue" placeholder="Valor cobrado" type="number">
             </form>
         </li>
+        <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+        <h2 v-if="!loading && listSelected.length === 0">Sem Veiculos</h2>
     </ul>
     <div class="footer_page_report">
         <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
@@ -69,11 +71,12 @@
     import { createRevision, update, destroy, formateDate, openItem, closeItem } from './Report.vue';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
-    import { useStore } from 'vuex';
+    import Loading from './Loading.vue';
+
+    const loading = ref(true)
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
-    const itemOpen = ref('')
     const filter = ref('')
     const itemsPerPage = 5
     const currentPage = ref(1) 
@@ -183,13 +186,13 @@
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/vehicles`)
-
             listSelected.value = response.data 
             const h = response.data.filter(el => el.owner.gender === 'masculino')
             const m = response.data.filter(el => el.owner.gender === 'feminino')
-
+            loading.value = false
             sumPercentage(response.data.length, h.length)
         } catch (error) {
+            loading.value = false
             console.log(error)
         }
     })

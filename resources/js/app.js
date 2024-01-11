@@ -14,6 +14,7 @@ import store from "./store/store"
 import ReportVehicle from './components/ReportVehicle.vue'
 import ReportOwner from './components/ReportOwner.vue'
 import ReportRevision from './components/ReportRevision.vue'
+import Loading from './components/Loading.vue'
 
 const app = createApp()
 
@@ -32,5 +33,6 @@ app.component('report', Report)
 app.component('report-vehicle', ReportVehicle)
 app.component('report-owner', ReportOwner)
 app.component('report-revision', ReportRevision)
+app.component('loading', Loading)
 
 app.mount('#app')

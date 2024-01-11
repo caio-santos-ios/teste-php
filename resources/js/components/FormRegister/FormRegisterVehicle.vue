@@ -23,6 +23,7 @@
     import 'vue3-toastify/dist/index.css';
     import { useStore } from 'vuex';
     import { ref, computed } from 'vue';
+    import Loading from '../Loading.vue';
 
     const store = useStore()
 
@@ -38,7 +39,6 @@
 
     const registerVehicle = async () => {
         const idOwner = JSON.parse(localStorage.getItem('id'))
-        console.log(idOwner)
         const myVehicle = {
             model: model.value,
             year: year.value,

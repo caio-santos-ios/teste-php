@@ -23,7 +23,7 @@
                 <p>idade</p>    
             </div>  
         </li>   
-        <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
+        <li v-if="!loading" class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
             <div class="title_report_item">
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
@@ -44,6 +44,8 @@
                 <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.age : inputAge" @input="inputAge = $event.target.value">
             </form>
         </li>
+        <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+        <h2 v-if="!loading && listSelected.length === 0">Faça o cadastro de clientes</h2>
     </ul>
     <div class="footer_page_report">
         <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
@@ -56,7 +58,9 @@
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
     import { openItem, closeItem, update, destroy } from './Report.vue';
-    
+    import Loading from './Loading.vue';
+
+    const loading = ref(true)
 
     const baseURL = 'http://localhost:8000';    
     const listSelected = ref([]) 
@@ -160,8 +164,10 @@
         try {
             const response = await axios.get(`${baseURL}/owners`)
             listSelected.value = response.data 
+            loading.value = false
         } catch (error) {
             console.log(error)
+            loading.value = false
         }
     })
 
