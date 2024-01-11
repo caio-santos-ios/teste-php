@@ -55,11 +55,10 @@
         justify-content: center;
         width: 100%;
         max-width: 50rem;
+        height: 40rem;
     }
 
     @media (min-width: 1562px) {
-        .graphic_bar {
-        }
     }
   </style>
   
