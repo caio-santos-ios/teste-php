@@ -9,6 +9,11 @@ use App\Http\Controllers\ReportController;
 use App\Http\Middleware\OwnerExisty;
 
 Route::resource('/', HomeController::class);
+Route::get('/acess', function(){
+    $token = csrf_token();
+
+    return response()->json($token);
+});
 Route::resource('/report', ReportController::class);
 
 Route::resource('/owners', OwnerController::class);

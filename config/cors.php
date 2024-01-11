@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['http://localhost:8000', 'https://controle-veiculo-c89a5c476b29.herokuapp.com/'],
 
     'allowed_origins_patterns' => [],
 
