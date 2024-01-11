@@ -42,7 +42,7 @@
     
     const store = useStore()
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com'
+    const baseURL = 'http://localhost:8000'
 
     const btnSubmit = ref(true)
     const name = ref('')
@@ -57,6 +57,7 @@
     const registerOwner = async () => {
         isCreateBtn.value = false
         loading.value = true
+        console.log(store.getters.myIsOpenForm)
 
         const owner = {
             name: name.value, cpf: cpf.value, age: age.value, gender: gender.value
@@ -70,9 +71,10 @@
             cpf.value = ''
             age.value = ''
             gender.value = ''
+
             isCreateBtn.value = true
             loading.value = false
-            console.log(response)
+            
             if(response.status === 200){
                 loading.value = false
                 isCreateBtn.value = true

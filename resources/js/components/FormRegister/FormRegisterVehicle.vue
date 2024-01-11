@@ -5,7 +5,7 @@
         </label>
         
         <label for="year">Ano do carro
-            <input maxlength="4" required type="text" placeholder="ano do carro" v-model="year">
+            <input maxlength="4" required type="number" placeholder="ano do carro" v-model="year">
         </label>
 
         <label for="plate">Placa do carro
@@ -23,7 +23,7 @@
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
     import { useStore } from 'vuex';
-    import { ref, computed } from 'vue';
+    import { ref, computed, watch } from 'vue';
     import Loading from '../Loading.vue';
 
     const store = useStore()
@@ -32,7 +32,7 @@
     const myIdVehicle = computed(() => store.getters.myIdVehicle);
 
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com'
+    const baseURL = 'http://localhost:8000'
     const isFinish = ref(false)
     const model = ref('')
     const plate = ref('')
@@ -41,9 +41,17 @@
     const isCreateBtn = ref(true)
     const loading = ref(true) 
 
+    watch(year, () => {
+        const newYear = String(year.value)
+        if(newYear.length > 4){
+            year.value = Number(newYear.slice(0, 4))
+        }
+    })
+
     const registerVehicle = async () => {
         isCreateBtn.value = false
         loading.value = false
+
         const idOwner = JSON.parse(localStorage.getItem('id'))
         const myVehicle = {
             model: model.value,
@@ -51,18 +59,21 @@
             plate: plate.value,
             owner_id: idOwner
         }
+
         try {
             const response = await axios.post(`${baseURL}/vehicles`, myVehicle)
             store.commit('setIdVehicle', response.data.id)
+            store.commit('setIsOpenForm')
             toast.success("Carro cadastrdo")
-            loading.value = (true)
+            isCreateBtn.value = true
+            loading.value = true
             model.value = ''
             year.value = ''
             plate.value = ''
 
         } catch (error) {
-            loading.value = (true)
-            console.log(error)
+            isCreateBtn.value = true
+            loading.value = true
         }
     }
 </script>

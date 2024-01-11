@@ -96,7 +96,7 @@
     import { ref } from 'vue';
     import axios from 'axios';
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
+    const baseURL = 'http://localhost:8000';    
 
     const itemOpen = ref('');
 
@@ -213,7 +213,7 @@
         border-radius: 1.5rem;
         padding: 1rem;
         position: relative;
-        min-height: 63rem;
+        min-height: 68.5rem;
         background-color: white;
         width: 100%;
         max-width: 50rem;

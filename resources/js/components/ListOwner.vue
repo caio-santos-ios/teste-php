@@ -40,18 +40,16 @@
 
 <script setup>
 import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
-import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import Loading from './Loading.vue';
 
 const store = useStore()
 
-const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';
+const baseURL = 'http://localhost:8000';
 const mySearch = ref('')
 const listOwner = ref([])
-const isDone = ref(0)
-const isFinish = ref(0)
 const itemOpen = ref('') 
 const loading = ref(true) 
 
@@ -81,8 +79,6 @@ const nextPage = () => {
 onMounted(async () => {
   try {
     const response = await axios.get(`${baseURL}/owners`);
-    console.log(response)
-
     listOwner.value = response.data;
     loading.value = false
   } catch (error) {

@@ -5,7 +5,8 @@ export default createStore({
         owners: [],
         revision: [],
         isRegisted: false,
-        idVehicle: null
+        idVehicle: null,
+        isOpenForm: false
     },
     mutations: {
         selectedOwner(state, newOwner) {
@@ -22,6 +23,9 @@ export default createStore({
         },
         setRevision(state, value){
             state.revision = value
+        }, 
+        setIsOpenForm(state){
+            state.isOpenForm = !state.isOpenForm
         }
     },
     getters: {
@@ -29,5 +33,6 @@ export default createStore({
         myRegister: (store) => store.isRegisted,
         myIdVehicle: (store) => store.idVehicle,  
         myRevision: (store) => store.revision,
+        myIsOpenForm: (store) => store.isOpenForm
     }
 })

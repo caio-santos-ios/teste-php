@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://controle-veiculo-c89a5c476b29.herokuapp.com'),
+    'url' => env('APP_URL', 'http://localhost:8000'),
 
     'asset_url' => env('ASSET_URL'),
 
