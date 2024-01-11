@@ -47,7 +47,7 @@ import Loading from './Loading.vue';
 
 const store = useStore()
 
-const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com/';
+const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';
 const mySearch = ref('')
 const listOwner = ref([])
 const isDone = ref(0)
@@ -80,9 +80,7 @@ const nextPage = () => {
 
 onMounted(async () => {
   try {
-    // axios.defaults.headers.common['X-CSRF-TOKEN'] = 'ryzC3FfpfCUVmkWlgAfLQtWNp5XCJm6weavFNozC';
-
-    const response = await axios.get(`${baseURL}owners`);
+    const response = await axios.get(`${baseURL}/owners`);
     console.log(response)
 
     listOwner.value = response.data;
