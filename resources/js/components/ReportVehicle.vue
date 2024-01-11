@@ -55,7 +55,7 @@
                 <input required v-model="inputValue" placeholder="Valor cobrado" type="number">
             </form>
         </li>
-        <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+        <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
         <h2 v-if="!loading && listSelected.length === 0">Sem Veiculos</h2>
     </ul>
     <div class="footer_page_report">

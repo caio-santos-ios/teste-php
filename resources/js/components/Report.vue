@@ -181,11 +181,13 @@
 </script>
 <style>
     .header_report {
+        background-color: red;
         width: 100%;
         height: 5rem;
         display: flex;
         justify-content: space-around;
-
+        flex-flow: wrap;
+        gap: 1rem;
         > button {
             padding: 0.5rem;
             border-radius: 0.5rem;

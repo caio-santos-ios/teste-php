@@ -28,7 +28,7 @@
         </div>
         <FormRegisterVehicle :id="item.id" />
       </li>
-      <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+      <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
     </ul>
     <div class="footer_page">
       <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>

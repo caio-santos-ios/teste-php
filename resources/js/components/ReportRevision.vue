@@ -50,7 +50,7 @@
 
             </form>
         </li>
-        <Loading style="height: 80%; width: 80%;" v-if="loading"/>
+        <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
         <h2 v-if="!loading && listSelected.length === 0">Sem Revisões</h2>
     </ul>
     <div class="footer_page_report">
@@ -261,7 +261,9 @@
     .filter {
         display: flex;
         align-items: center;
+        flex-flow: wrap;
         justify-content: center;
+
             > P {
                 border-radius: 0.3rem;
                 padding: 0.5rem;
