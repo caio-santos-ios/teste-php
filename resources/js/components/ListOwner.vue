@@ -47,7 +47,9 @@ import Loading from './Loading.vue';
 
 const store = useStore()
 
-const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';
+const apiUrl = import.meta.env.VITE_LINK_API;
+
+const baseURL = '';
 const mySearch = ref('')
 const listOwner = ref([])
 const itemOpen = ref('') 
@@ -78,7 +80,7 @@ const nextPage = () => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`${baseURL}/owners`);
+    const response = await axios.get(`${apiUrl}/owners`);
     listOwner.value = response.data;
     loading.value = false
   } catch (error) {
