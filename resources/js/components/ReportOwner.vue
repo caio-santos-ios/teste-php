@@ -1,7 +1,12 @@
 <template>
-    <div class="container_filter">
-        <div class="filter">
-            <button value="" @click="addFilter" class="btn_filter">
+    <section>
+        <button>Cadastrar cliente</button>
+        
+    </section>
+    <!--
+        <div class="container_filter">
+            <div class="filter">
+                <button value="" @click="addFilter" class="btn_filter">
                 <i class="fa-solid fa-filter-circle-xmark"></i>
             </button>
             <button value="masculino" @click="addFilter" class="btn_filter">
@@ -52,6 +57,7 @@
         <span>Página {{ currentPage }} de {{ totalPages }}</span>
         <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
     </div>
+    -->
 </template>
 
 <script setup>
@@ -263,6 +269,22 @@
 </script>
 
 <style>
+    section {
+        background-color: red;
+        width: 95vw;
+        margin: 0 auto;
+        padding-top: 5rem;
+    }
+
+    @media (min-width: 920px) {
+        section {
+            background-color: red;
+            width: 70vw;
+            margin: 0 auto;
+            padding: 0;
+        }
+    }
+
     .filter {
         display: flex;
         align-items: center;

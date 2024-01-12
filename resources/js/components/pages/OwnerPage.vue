@@ -1,14 +1,13 @@
 <template>
     <main id="main_report">
         <Aside />
-        <Report />
+        <ReportOwner />
     </main>
 </template>
 
 <script setup>
     import Aside from '../Aside.vue';
-    import Report from '../Report.vue'
-
+    import ReportOwner from '../ReportOwner.vue';
 </script>
 
 <style>

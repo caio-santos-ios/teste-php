@@ -12,16 +12,16 @@
 </script>
 
 <style>
-    .main_home {
+    #main_home {
         min-height: 100vh;
+        width: 95vw;
         display: block;   
     }
-
+    
     @media (min-width: 915px) {
         #main_home {
             min-height: 100vh;
             display: flex;   
-            width: 95vw;
         }
     }
 

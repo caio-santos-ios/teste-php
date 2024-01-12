@@ -1,8 +1,11 @@
 import { createApp } from "vue"
 import '@fortawesome/fontawesome-free/css/all.css';
-import ListOwner from './components/ListOwner.vue'
+
 import HomePage from './components/pages/HomePage.vue'
-import ReportPage from './components/pages/ReportPage.vue'
+import OwnerPage from './components/pages/OwnerPage.vue'
+
+
+import ListOwner from './components/ListOwner.vue'
 import Dashboard from './components/Dashboard.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
 import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
@@ -15,13 +18,15 @@ import ReportVehicle from './components/ReportVehicle.vue'
 import ReportOwner from './components/ReportOwner.vue'
 import ReportRevision from './components/ReportRevision.vue'
 import Loading from './components/Loading.vue'
+import ModalCreate from './components/ModalCreate.vue'
 
 const app = createApp()
 
 app.use(store);
 
 app.component('home-page', HomePage)
-app.component('report-page', ReportPage)
+app.component('owner-page', OwnerPage)
+
 app.component('dashboard', Dashboard)
 app.component('list-owner', ListOwner)
 app.component('form-register-generic', FormRegister)
@@ -34,5 +39,6 @@ app.component('report-vehicle', ReportVehicle)
 app.component('report-owner', ReportOwner)
 app.component('report-revision', ReportRevision)
 app.component('loading', Loading)
+app.component('modal-create', ModalCreate)
 
 app.mount('#app')
