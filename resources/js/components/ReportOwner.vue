@@ -7,15 +7,15 @@
             <button v-on:click="openModal" id="btn_add_client">Cadastrar cliente</button>
         </div>
         <ListOwner :titles="['Cliente', 'Veiculos', 'Veiculos em Revisão']">
-            <Loading v-if="!loading" style="height: 7rem; width: 7rem;"/>
+            <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
 
-            <li v-if="loading" id="item_list" v-for="item in paginatedListVehicles">
+            <li id="item_list" v-for="item in paginatedListVehicles">
                 <p>{{ item.name }}</p>
                 <p>{{ item.vehicles.length }}</p>
                 <p>{{ item.revision_vehicles.length }}</p>
             </li>
 
-            <div class="footer_page">
+            <div id="footer_page">
                 <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
                 <span>Página {{ currentPage }} de {{ totalPages }}</span>
                 <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
@@ -88,7 +88,7 @@
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/stores'
 
-    const loading = ref(true)
+    const loading = ref(false)
 
     const modal = useModalOpen()
     const list = useListOwner()
@@ -110,7 +110,7 @@
         }
     });
 
-    const itemsPerPage = 15
+    const itemsPerPage = 16
     const currentPage = ref(1) 
 
     const paginatedListVehicles = computed(() => {

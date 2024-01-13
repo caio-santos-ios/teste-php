@@ -170,7 +170,8 @@ const addCar = (e) => {
   align-items: center;
   gap: 0.5rem;
   background-color: white;
-  height: 40rem;
+  height: 41rem;
+  position: relative;
 }
 
 /* titulo dos itens e o item da lista */
@@ -185,6 +186,27 @@ const addCar = (e) => {
     width: 10rem;
     text-align: center;
   }
+}
+
+/* o footer dos relatorio */
+#footer_page {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  position: absolute;
+  bottom: 1rem;
+
+  > button {
+    padding: 0.3rem;
+  }
+}
+
+@media (min-width: 915px) {
+  /* lista */
+  #list {
+   height: 49rem;
+  } 
 }
 
 /*
