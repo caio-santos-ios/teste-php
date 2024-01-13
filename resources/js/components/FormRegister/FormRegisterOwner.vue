@@ -1,21 +1,21 @@
 <template>
     <FormRegister id="form_register_owner" @submit.prevent="registerOwner()">
         <label for="name">Nome cliente
-            <input required type="text" placeholder="Nome do cliente" v-model="owner.name">
+            <input :disabled="loading" required type="text" placeholder="Nome do cliente" v-model="owner.name">
         </label>
 
         <label for="cpf">
         CPF
-            <input required maxlength="11" minlength="11" type="text" @input="validatedCpf" placeholder="Cpf do cliente" v-model="owner.cpf">
+            <input :disabled="loading" required maxlength="11" minlength="11" type="text" @input="validatedCpf" placeholder="Cpf do cliente" v-model="owner.cpf">
         </label>
 
         <label for="age">Idade cliente
-            <input  required maxlength="3" type="text" @input="validatedAge" placeholder="Idade do cliente" v-model="owner.age">
+            <input :disabled="loading"  required maxlength="3" type="text" @input="validatedAge" placeholder="Idade do cliente" v-model="owner.age">
         </label>
         
         <label for="gender">
             Sexo
-            <select required id="gender" v-model="owner.gender">
+            <select :disabled="loading" required id="gender" v-model="owner.gender">
                 <option value="">Selecione o sexo</option>
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
@@ -39,7 +39,7 @@
     import { ref } from 'vue';
     import FormRegister from './FormRegister.vue'; 
     import LoadingVue from '../Loading.vue';
-    import { useModalOpen, useListOwner } from '../../store/stores'
+    import { useModalOpen, useListOwner } from '../../store/store'
     
     const modal = useModalOpen()
     const list = useListOwner()
@@ -64,14 +64,6 @@
 
         try {
             const response = await axios.post(`${apiUrl}/owners`, owner.value)
-            /*
-            owner = {
-                name: '',
-                cpf: '',
-                age: '',
-                gender: ''
-            }  
-            */
             list.listOwner.push(response.data)
             isCreateBtn.value = true
             loading.value = false
@@ -89,8 +81,8 @@
     }
 
     const validatedCpf = () => {
-        owner.value.cpf = owner.value.cpf.replace(/[^\d]/g, '');
-        owner.value.cpf = owner.value.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        owner.value.cpf = owner.value.cpf.replace(/[^\d]/g, '')
+        owner.value.cpf = owner.value.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
     }
 
     const validatedAge = () => {    

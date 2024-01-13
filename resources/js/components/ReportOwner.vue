@@ -1,21 +1,22 @@
 <template>
-    <ModalCreate v-if="modal.isOpenModal">
-        <FormRegisterOwner />
-    </ModalCreate>
+    <Modal v-if="modal.isOpenModal">
+        <FormRegisterOwner v-if="isCreate" />
+        <FormUpdateOwner v-if="isUpdate" />
+    </Modal>
     <section>
         <div id="header_report">
-            <button v-on:click="openModal" id="btn_add_client">Cadastrar cliente</button>
-            <input id="search" placeholder="Busque pelo cpf do cliente" type="text">
+            <button v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
+            <input :disabled="loading" maxlength="11" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
         </div>
-        <List :titles="['Cliente', 'Veiculos', 'Veiculos em Revisão']">
-            <Loading v-if="!loading" style="height: 7rem; width: 7rem;"/>
-
+        <List :titles="['Cliente', 'CPF', 'Veiculos', 'Veiculos em Revisão']">
+            <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
             <li id="item_list" v-for="item in paginatedListVehicles">
                 <p>{{ item.name }}</p>
+                <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
                 <p>{{ item.revision_vehicles.length }}</p>
                 <i :id="item.id" class="fa-solid fa-trash"></i>                
-                <i :id="item.id" class="fa-solid fa-pen-to-square"></i>
+                <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
                 <i :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
 
@@ -23,7 +24,7 @@
                 <button @click="prevPage" :disabled="currentPage === 1">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                <span>{{ currentPage }} de {{ totalPages }}</span>
                 <button @click="nextPage" :disabled="totalPages <= 1">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -89,28 +90,40 @@
 
 <script setup>
     import axios from 'axios';
-    import { ref, onMounted, computed } from 'vue';
+    import { ref, onMounted, computed, watch } from 'vue';
     import List from './List.vue';
-    import ModalCreate from './ModalCreate.vue';
+    import Modal from './Modal.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
+    import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue'
     import Loading from './Loading.vue';
-    import { useModalOpen, useListOwner } from '../store/stores'
+    import { useModalOpen, useListOwner } from '../store/store'
 
     const loading = ref(true)
-
+    const search = ref('')
+    const isCreate = ref(false)
+    const isUpdate = ref(false)
     const modal = useModalOpen()
     const list = useListOwner()
     const listOwner = ref([])
+
     const apiUrl = import.meta.env.VITE_LINK_API;
-    
-    const openModal = () => modal.openModal()
-    console.log(loading.value)
+
+    const openModalCreate = () => {
+        modal.openModal()
+        isCreate.value = true
+        isUpdate.value = false
+    } 
+
+    const openModalUpdate = () => {
+        modal.openModal()
+        isCreate.value = false
+        isUpdate.value = true
+    }
 
     onMounted(async () => {
         try {
-            const response = await axios.get(`${apiUrl}/owners`);
+            const response = await axios.get(`${apiUrl}/owners`)
             loading.value = false
-            console.log(loading.value)
             response.data.map((el) => {
                 listOwner.value.push(el)
                 // list.addOwnerList(el)
@@ -119,7 +132,20 @@
             loading.value = false
             console.log(error)
         }
-    });
+    })
+
+    watch(search, async () => {
+        search.value = search.value.replace(/[^\d]/g, '');
+        // search.value = search.value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+
+        try {
+            const response = await axios.get(`${apiUrl}/owners?cpf=${search.value}`)
+            listOwner.value = response.data
+            console.log(response.data)
+        } catch (error) {
+            console.log(error)
+        }
+    })
 
     const itemsPerPage = 16
     const currentPage = ref(1) 
@@ -130,7 +156,7 @@
         return listOwner.value.slice(startIndex, endIndex);
     })
 
-    const totalPages = computed(() => Math.ceil(listOwner.value.length / itemsPerPage));
+    const totalPages = computed(() => Math.ceil(listOwner.value.length / itemsPerPage))
    
     const prevPage = () => {
         if (currentPage.value > 1) {
@@ -143,7 +169,6 @@
             currentPage.value++
         }
     }
-
 /*
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
@@ -374,7 +399,6 @@
         align-items: center;
         justify-content: center;
         flex-flow: wrap;
-        max-width: 40rem;
         width: 100%;
         gap: 0.5rem;
     }
@@ -404,6 +428,7 @@
 
         /* header do relatorio */ 
         #header_report {
+            width: 55rem;
             justify-content: space-between;
         }
 

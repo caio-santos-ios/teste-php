@@ -163,7 +163,6 @@ const addCar = (e) => {
 /* lista */
 #list {
   width: 100%;
-  max-width: 40rem;
   margin: 0 auto;
   display: flex;
   flex-flow: column;
@@ -183,7 +182,7 @@ const addCar = (e) => {
   width: 100%;
 
   > p {
-    width: 10rem;
+    width: 8rem;
     text-align: center;
   }
   
@@ -232,8 +231,16 @@ const addCar = (e) => {
 @media (min-width: 915px) {
   /* lista */
   #list {
-   height: 51rem;
+    height: 51rem;
+    width: 55rem;
   } 
+
+  /* titulo dos itens e o item da lista */
+  #title_list, #item_list {
+    > p {
+      width: 15rem;
+    }
+  }
 
   /* o footer dos relatorio */
   #footer_page {

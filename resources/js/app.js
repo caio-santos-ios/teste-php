@@ -14,17 +14,15 @@ import FormRegisterVehicle from './components/FormRegister/FormRegisterVehicle.v
 import FormRegisterVerision from './components/FormRegister/FormRegisterRevision.vue'
 import GraphicBar from './components/GraphicBar.vue'
 import Report from './components/Report.vue'
-import store from "./store/store"
 import ReportVehicle from './components/ReportVehicle.vue'
 import ReportOwner from './components/ReportOwner.vue'
 import ReportRevision from './components/ReportRevision.vue'
 import Loading from './components/Loading.vue'
-import ModalCreate from './components/ModalCreate.vue'
+import Modal from './components/Modal.vue'
 
 const app = createApp()
 const pinia = createPinia()
 
-app.use(store);
 app.use(pinia)
 
 app.component('home-page', HomePage)
@@ -42,6 +40,6 @@ app.component('report-vehicle', ReportVehicle)
 app.component('report-owner', ReportOwner)
 app.component('report-revision', ReportRevision)
 app.component('loading', Loading)
-app.component('modal-create', ModalCreate)
+app.component('modal', Modal)
 
 app.mount('#app')
