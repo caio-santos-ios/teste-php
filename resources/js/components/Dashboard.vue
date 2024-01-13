@@ -1,14 +1,12 @@
 
 <template>
     <div class="dashbord">
-        <ListOwner />
         <FormRegisterOwner />  
     </div>
 </template>
 
 
 <script setup>
-    import ListOwner from './ListOwner.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
 </script>
 

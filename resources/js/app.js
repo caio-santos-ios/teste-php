@@ -6,7 +6,7 @@ import HomePage from './components/pages/HomePage.vue'
 import OwnerPage from './components/pages/OwnerPage.vue'
 
 
-import ListOwner from './components/ListOwner.vue'
+import List from './components/List.vue'
 import Dashboard from './components/Dashboard.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
 import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
@@ -31,7 +31,7 @@ app.component('home-page', HomePage)
 app.component('owner-page', OwnerPage)
 
 app.component('dashboard', Dashboard)
-app.component('list-owner', ListOwner)
+app.component('list', List)
 app.component('form-register-generic', FormRegister)
 app.component('form-register-revision', FormRegisterVerision)
 app.component('form-register-owner', FormRegisterOwner)

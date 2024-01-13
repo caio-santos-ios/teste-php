@@ -5,22 +5,30 @@
     <section>
         <div id="header_report">
             <button v-on:click="openModal" id="btn_add_client">Cadastrar cliente</button>
+            <input id="search" placeholder="Busque pelo cpf do cliente" type="text">
         </div>
-        <ListOwner :titles="['Cliente', 'Veiculos', 'Veiculos em Revisão']">
-            <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
+        <List :titles="['Cliente', 'Veiculos', 'Veiculos em Revisão']">
+            <Loading v-if="!loading" style="height: 7rem; width: 7rem;"/>
 
             <li id="item_list" v-for="item in paginatedListVehicles">
                 <p>{{ item.name }}</p>
                 <p>{{ item.vehicles.length }}</p>
                 <p>{{ item.revision_vehicles.length }}</p>
+                <i :id="item.id" class="fa-solid fa-trash"></i>                
+                <i :id="item.id" class="fa-solid fa-pen-to-square"></i>
+                <i :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
 
             <div id="footer_page">
-                <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
+                <button @click="prevPage" :disabled="currentPage === 1">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
                 <span>Página {{ currentPage }} de {{ totalPages }}</span>
-                <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
+                <button @click="nextPage" :disabled="totalPages <= 1">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
-        </ListOwner>
+        </List>
     </section>
     <!--
         <div class="container_filter">
@@ -82,27 +90,30 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
-    import ListOwner from './ListOwner.vue';
+    import List from './List.vue';
     import ModalCreate from './ModalCreate.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/stores'
 
-    const loading = ref(false)
+    const loading = ref(true)
 
     const modal = useModalOpen()
     const list = useListOwner()
-
+    const listOwner = ref([])
     const apiUrl = import.meta.env.VITE_LINK_API;
     
     const openModal = () => modal.openModal()
+    console.log(loading.value)
 
     onMounted(async () => {
         try {
-            loading.value = false
             const response = await axios.get(`${apiUrl}/owners`);
+            loading.value = false
+            console.log(loading.value)
             response.data.map((el) => {
-                list.addOwnerList(el)
+                listOwner.value.push(el)
+                // list.addOwnerList(el)
             })
         } catch (error) {
             loading.value = false
@@ -116,10 +127,10 @@
     const paginatedListVehicles = computed(() => {
         const startIndex = (currentPage.value - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return list.listOwner.slice(startIndex, endIndex);
+        return listOwner.value.slice(startIndex, endIndex);
     })
 
-    const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage));
+    const totalPages = computed(() => Math.ceil(listOwner.value.length / itemsPerPage));
    
     const prevPage = () => {
         if (currentPage.value > 1) {
@@ -346,31 +357,68 @@
 </script>
 
 <style>
+    /* secão de cada pagina */
     section {
         width: 95vw;
         margin: 0 auto;
         padding-top: 5rem;
         display: flex;
         flex-flow: column;
+        align-items: center;
         gap: 1rem;
     }
 
+    /* header do relatorio */ 
     #header_report {
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
+        flex-flow: wrap;
+        max-width: 40rem;
+        width: 100%;
+        gap: 0.5rem;
     }
 
+    /* barra de busca do cliente */
+    #search {
+        width: 100%;
+        max-width: 20rem;
+        height: 2rem;
+        padding: 0 0.5rem;
+    }
+
+    /* botão para adicionar cliente */
     #btn_add_client {
         padding: 0.5rem;
         border: 0;
     }
 
-    @media (min-width: 920px) {
+    @media (min-width: 915px) {
+        /* secão de cada pagina */
         section {
             width: 70vw;
             margin: 0 auto;
             padding-top: 2rem;
+        }
+
+
+        /* header do relatorio */ 
+        #header_report {
+            justify-content: space-between;
+        }
+
+        /* barra de busca do cliente */
+        #search {
+            width: 100%;
+            max-width: 20rem;
+            height: 2rem;
+            padding: 0 0.5rem;
+        }
+
+        /* botão para adicionar cliente */
+        #btn_add_client {
+            padding: 0.5rem;
+            border: 0;
         }
     }
 

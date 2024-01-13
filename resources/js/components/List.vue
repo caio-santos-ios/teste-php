@@ -170,7 +170,7 @@ const addCar = (e) => {
   align-items: center;
   gap: 0.5rem;
   background-color: white;
-  height: 41rem;
+  height: 42rem;
   position: relative;
 }
 
@@ -186,6 +186,27 @@ const addCar = (e) => {
     width: 10rem;
     text-align: center;
   }
+  
+  /* icones da lista */
+  .fa-solid {
+    width: 1.5rem;
+  }
+}
+
+
+/* icone de delete item */
+.fa-trash {
+  color: red;
+}
+
+/* icone de atualizar item */
+.fa-pen-to-square {
+  color: blue;
+}
+
+/* icone de adicionar item */
+.fa-square-plus {
+  color: green;
 }
 
 /* o footer dos relatorio */
@@ -196,17 +217,36 @@ const addCar = (e) => {
   width: 100%;
   position: absolute;
   bottom: 1rem;
+  align-items: center;
 
   > button {
+    background-color: #cbd5e1;
+    border: none;
     padding: 0.3rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
   }
 }
 
 @media (min-width: 915px) {
   /* lista */
   #list {
-   height: 49rem;
+   height: 51rem;
   } 
+
+  /* o footer dos relatorio */
+  #footer_page {
+    > button {
+      background-color: #cbd5e1;
+      border: none;
+      padding: 0.3rem;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+    }
+  }
+
 }
 
 /*
