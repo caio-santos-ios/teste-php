@@ -10,7 +10,7 @@
         </div>
         <List :titles="['Cliente', 'CPF', 'Veiculos', 'Veiculos em Revisão']">
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
-            <li id="item_list" v-for="item in paginatedListVehicles">
+            <li id="item_list" v-for="item in list.listOwner">
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
@@ -144,7 +144,7 @@
             loading.value = false
             response.data.map((el) => {
                 listOwner.value.push(el)
-                // list.addOwnerList(el)
+                list.addOwnerList(el)
             })
             // console.log("REQ FEITA")
         } catch (error) {

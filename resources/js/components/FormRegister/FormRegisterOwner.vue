@@ -64,7 +64,14 @@
 
         try {
             const response = await axios.post(`${apiUrl}/owners`, owner.value)
-            list.listOwner.push(response.data)
+
+            const returnOwner = {
+                revision_vehicles: [],
+                vehicles: [],
+                ...response.data
+            }
+
+            list.listOwner.push(returnOwner)
             isCreateBtn.value = true
             loading.value = false
             toast.success("Cliente cadastrado");
