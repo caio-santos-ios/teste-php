@@ -1,5 +1,6 @@
 import { createApp } from "vue"
 import '@fortawesome/fontawesome-free/css/all.css';
+import { createPinia } from 'pinia'
 
 import HomePage from './components/pages/HomePage.vue'
 import OwnerPage from './components/pages/OwnerPage.vue'
@@ -21,8 +22,10 @@ import Loading from './components/Loading.vue'
 import ModalCreate from './components/ModalCreate.vue'
 
 const app = createApp()
+const pinia = createPinia()
 
 app.use(store);
+app.use(pinia)
 
 app.component('home-page', HomePage)
 app.component('owner-page', OwnerPage)

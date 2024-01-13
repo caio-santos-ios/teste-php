@@ -1,7 +1,9 @@
 <template>
     <main id="main_home">
         <Aside />
-        <Dashboard />
+        <!--
+            <Dashboard />
+        -->
     </main>
 </template>
 

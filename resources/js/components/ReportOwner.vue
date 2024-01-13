@@ -1,7 +1,26 @@
 <template>
+    <ModalCreate v-if="modal.isOpenModal">
+        <FormRegisterOwner />
+    </ModalCreate>
     <section>
-        <button>Cadastrar cliente</button>
-        
+        <div id="header_report">
+            <button v-on:click="openModal" id="btn_add_client">Cadastrar cliente</button>
+        </div>
+        <ListOwner :titles="['Cliente', 'Veiculos', 'Veiculos em Revisão']">
+            <Loading v-if="!loading" style="height: 7rem; width: 7rem;"/>
+
+            <li v-if="loading" id="item_list" v-for="item in paginatedListVehicles">
+                <p>{{ item.name }}</p>
+                <p>{{ item.vehicles.length }}</p>
+                <p>{{ item.revision_vehicles.length }}</p>
+            </li>
+
+            <div class="footer_page">
+                <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
+                <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
+            </div>
+        </ListOwner>
     </section>
     <!--
         <div class="container_filter">
@@ -63,12 +82,68 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
+    import ListOwner from './ListOwner.vue';
+    import ModalCreate from './ModalCreate.vue';
+    import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
+    import Loading from './Loading.vue';
+    import { useModalOpen, useListOwner } from '../store/stores'
+
+    const loading = ref(true)
+
+    const modal = useModalOpen()
+    const list = useListOwner()
+
+    const apiUrl = import.meta.env.VITE_LINK_API;
+    
+    const openModal = () => modal.openModal()
+
+    onMounted(async () => {
+        try {
+            loading.value = false
+            const response = await axios.get(`${apiUrl}/owners`);
+            response.data.map((el) => {
+                list.addOwnerList(el)
+            })
+        } catch (error) {
+            loading.value = false
+            console.log(error)
+        }
+    });
+
+    const itemsPerPage = 15
+    const currentPage = ref(1) 
+
+    const paginatedListVehicles = computed(() => {
+        const startIndex = (currentPage.value - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return list.listOwner.slice(startIndex, endIndex);
+    })
+
+    const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage));
+   
+    const prevPage = () => {
+        if (currentPage.value > 1) {
+            currentPage.value--
+        }
+    }
+
+    const nextPage = () => {
+        if (currentPage.value < totalPages.value) {
+            currentPage.value++
+        }
+    }
+
+/*
+    import axios from 'axios';
+    import { ref, onMounted, computed } from 'vue';
     import { openItem, closeItem, update, destroy } from './Report.vue';
     import Loading from './Loading.vue';
 
     const loading = ref(true)
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
+    const apiUrl = import.meta.env.VITE_LINK_API;
+    console.log(apiUrl)
+
     const listSelected = ref([]) 
     const myFilter = ref('')
     const itemsPerPage = 5
@@ -159,7 +234,7 @@
 
     const newRequest = async () => {
         try {
-            const response = await axios.get(`${baseURL}/owners`)
+            const response = await axios.get(`${apiUrl}/owners`)
             return response.data
         } catch (error) {
             console.log(error)
@@ -168,7 +243,8 @@
 
     onMounted(async () => {
         try {
-            const response = await axios.get(`${baseURL}/owners`)
+            const response = await axios.get(`${apiUrl}/owners`)
+            console.log(response.data)
             listSelected.value = response.data 
             loading.value = false
         } catch (error) {
@@ -266,22 +342,35 @@
             await destroy(e.target.id, 'owners')
         }
     }
+*/
 </script>
 
 <style>
     section {
-        background-color: red;
         width: 95vw;
         margin: 0 auto;
         padding-top: 5rem;
+        display: flex;
+        flex-flow: column;
+        gap: 1rem;
+    }
+
+    #header_report {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #btn_add_client {
+        padding: 0.5rem;
+        border: 0;
     }
 
     @media (min-width: 920px) {
         section {
-            background-color: red;
             width: 70vw;
             margin: 0 auto;
-            padding: 0;
+            padding-top: 2rem;
         }
     }
 

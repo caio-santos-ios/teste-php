@@ -16,7 +16,7 @@
         border: 1px solid rgb(156, 156, 156);
     }
     
-    label {
+    label, select {
         height: 3rem;
         display: flex;
         flex-flow: wrap;
@@ -29,43 +29,54 @@
             width: 100%;
             border-radius: 1rem;
             padding: 1rem;
-            border: 1px solid;
+            border: 0.1rem solid;
         }
     }
-        
-    .gender {
-        display: flex;
-        flex-flow: column;
-        justify-content: center;
-    }
 
-    .btn_register, .btn_finish {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 1rem;
-        border: none;
+    select {
         border-radius: 1rem;
-        background-color: #2929e0;
-        color: white;
-        font-size: 1rem;
-        width: 48%;
-        height: 4rem;
-        margin: 0 auto;
+        border: 0.1rem solid;
     }
 
-    .btn_finish {
-        height: 4rem;
-        width: 60%;
-    }
-    
-    .btn_register:disabled {
-        background-color: #a2a2f4;
+    /* footer com os botões do formulario */
+    #footer_btns {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        
+        > button {
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            width: 7rem;
+            height: 4rem;
+            font-size: 0.9rem;
+        }
+
+        #btn_finish {
+            background-color: rgb(39, 169, 0);
+        }
+
+        #btn_cancel {
+            background-color: rgb(227, 30, 30);
+        }
     }
 
     @media (min-width: 915px) {
         .form_register {
             height: 1rem;
+        }
+
+
+         /* footer com os botões do formulario */
+        #footer_btns {
+            justify-content: space-evenly;
+
+            > button {
+                width: 10rem;
+                font-size: 1rem;
+            }
         }
     }
 </style>

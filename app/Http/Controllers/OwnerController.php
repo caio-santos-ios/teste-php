@@ -10,7 +10,7 @@ class OwnerController extends Controller
 {
     public function index(Request $request)
     {
-        $owners = Owner::all();
+        $owners = Owner::with(['vehicles', 'revisionVehicles'])->get();
             
         $cpf = $request->query('cpf');
 

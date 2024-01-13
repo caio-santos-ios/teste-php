@@ -1,6 +1,13 @@
 <template>
-  <div id="container">
-    <div class="header_container">
+  <ul id="list">
+      <li id="title_list">
+        <p v-for="title in props.titles">{{ title }}</p>
+      </li>
+      <slot></slot>
+  </ul>
+  <!--
+    <div id="container">
+      <div class="header_container">
       <h4 class="title">Clientes Cadastrados</h4>
       <section class="container_search">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -9,7 +16,7 @@
     </div>
     <ul class="list_items">
       <li id="header_title">
-        <p>Nome</p>
+        <p>Cliente</p>
         <p>CPF</p>
         <p>Idade</p>
         <p>Sexo</p>
@@ -36,12 +43,16 @@
       <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
     </div>
   </div>
+  -->
 </template>
 
 <script setup>
-import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
-import axios from 'axios';
-import { ref, computed, onMounted, watch } from 'vue';
+  import axios from 'axios';
+  import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
+  import { ref, computed, onMounted, watch, defineProps } from 'vue';
+  
+  const props = defineProps(['titles'])
+/*
 import { useStore } from 'vuex';
 import Loading from './Loading.vue';
 
@@ -81,6 +92,7 @@ const nextPage = () => {
 onMounted(async () => {
   try {
     const response = await axios.get(`${apiUrl}/owners`);
+    console.log(response)
     listOwner.value = response.data;
     loading.value = false
   } catch (error) {
@@ -93,7 +105,7 @@ watch(mySearch, async () => {
   if(!mySearch) return 
     
   try {
-    const response = await axios.get(`${baseURL}/owners?cpf=${mySearch.value}`);
+    const response = await axios.get(`${apiUrl}/owners?cpf=${mySearch.value}`);
     listOwner.value = response.data;
   } catch (error) {
     console.error(error);
@@ -144,9 +156,38 @@ const addCar = (e) => {
   })
 
 }
+*/
 </script>
 
 <style>
+/* lista */
+#list {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: white;
+  height: 40rem;
+}
+
+/* titulo dos itens e o item da lista */
+#title_list, #item_list {
+  display: flex;
+  align-items: center;
+  background-color: rgb(246, 245, 245);
+  padding: 0.5rem;
+  width: 100%;
+
+  > p {
+    width: 10rem;
+    text-align: center;
+  }
+}
+
+/*
 #container {
   display: flex;
   flex-flow: column;
@@ -365,4 +406,5 @@ const addCar = (e) => {
     font-size: 0.9rem;
   }
 }
+*/
 </style>
