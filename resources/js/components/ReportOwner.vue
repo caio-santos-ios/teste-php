@@ -1,7 +1,7 @@
 <template>
     <Modal v-if="modal.isOpenModal">
         <FormRegisterOwner v-if="isCreate" />
-        <FormUpdateOwner v-if="isUpdate" />
+        <FormUpdateOwner :owner="ownerUpdate" v-if="isUpdate"/>
     </Modal>
     <section>
         <div id="header_report">
@@ -15,7 +15,7 @@
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
                 <p>{{ item.revision_vehicles.length }}</p>
-                <i :id="item.id" class="fa-solid fa-trash"></i>                
+                <i @click="remove" :id="item.id" class="fa-solid fa-trash"></i>                
                 <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
                 <i :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
@@ -94,9 +94,10 @@
     import List from './List.vue';
     import Modal from './Modal.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
-    import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue'
+    import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue';
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/store'
+    import { destroy } from '../components/Report.vue'
 
     const loading = ref(true)
     const search = ref('')
@@ -105,19 +106,36 @@
     const modal = useModalOpen()
     const list = useListOwner()
     const listOwner = ref([])
+    const ownerUpdate = ref('')
 
     const apiUrl = import.meta.env.VITE_LINK_API;
 
+    /* abrir modal de criação */
     const openModalCreate = () => {
         modal.openModal()
         isCreate.value = true
         isUpdate.value = false
     } 
 
-    const openModalUpdate = () => {
+    /* abrir modal de edição */
+    const openModalUpdate = (e) => {
+        const filter = listOwner.value.find(el => el.id == e.target.id)
+        ownerUpdate.value = filter
+
         modal.openModal()
         isCreate.value = false
         isUpdate.value = true
+    }
+
+    /* deletar cliente */
+    const remove = async (e) => {
+        const confirmed = confirm("Deseja deletar o cliente")
+        const filter = listOwner.value.filter(el => el.id != e.target.id)
+
+        if(confirmed){
+            listOwner.value = filter
+            await destroy(e.target.id, 'owners')
+        }
     }
 
     onMounted(async () => {
@@ -128,6 +146,7 @@
                 listOwner.value.push(el)
                 // list.addOwnerList(el)
             })
+            // console.log("REQ FEITA")
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -136,7 +155,6 @@
 
     watch(search, async () => {
         search.value = search.value.replace(/[^\d]/g, '');
-        // search.value = search.value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
 
         try {
             const response = await axios.get(`${apiUrl}/owners?cpf=${search.value}`)
@@ -399,8 +417,8 @@
         align-items: center;
         justify-content: center;
         flex-flow: wrap;
-        width: 100%;
         gap: 0.5rem;
+        width: 100%;
     }
 
     /* barra de busca do cliente */
@@ -410,7 +428,7 @@
         height: 2rem;
         padding: 0 0.5rem;
     }
-
+    
     /* botão para adicionar cliente */
     #btn_add_client {
         padding: 0.5rem;
@@ -424,12 +442,12 @@
             margin: 0 auto;
             padding-top: 2rem;
         }
-
-
+        
+        
         /* header do relatorio */ 
         #header_report {
-            width: 55rem;
             justify-content: space-between;
+            max-width: 55rem;
         }
 
         /* barra de busca do cliente */

@@ -9,7 +9,10 @@ import OwnerPage from './components/pages/OwnerPage.vue'
 import List from './components/List.vue'
 import Dashboard from './components/Dashboard.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
+
 import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
+import FormUpdateOwner from './components/FormUpdate/FormUpdateOwner.vue'
+
 import FormRegisterVehicle from './components/FormRegister/FormRegisterVehicle.vue'
 import FormRegisterVerision from './components/FormRegister/FormRegisterRevision.vue'
 import GraphicBar from './components/GraphicBar.vue'
@@ -32,8 +35,13 @@ app.component('dashboard', Dashboard)
 app.component('list', List)
 app.component('form-register-generic', FormRegister)
 app.component('form-register-revision', FormRegisterVerision)
+
 app.component('form-register-owner', FormRegisterOwner)
+app.component('form-update-owner', FormUpdateOwner)
+
+
 app.component('form-register-vehicle', FormRegisterVehicle)
+app.component('form-update-owner', FormUpdateOwner)
 app.component('graphic-bar', GraphicBar)
 app.component('report', Report)
 app.component('report-vehicle', ReportVehicle)

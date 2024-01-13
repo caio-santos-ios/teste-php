@@ -43,7 +43,7 @@
 
     onMounted(async () => {
         try {
-            const res = await axios.get(`${baseURL}/vehicles`)
+            const res = await axios.get(`${apiUrl}/vehicles`)
             
             const h = res.data.filter(el => el.owner.gender === 'masculino')
             const m = res.data.filter(el => el.owner.gender === 'feminino')
@@ -56,7 +56,7 @@
 
     onMounted(async () => {
         try {
-            const res = await axios.get(`${baseURL}/owners`)
+            const res = await axios.get(`${apiUrl}/owners`)
             
             const h = res.data.filter(el => el.gender === 'masculino')
             const m = res.data.filter(el => el.gender === 'feminino')
@@ -79,7 +79,7 @@
 
     onMounted(async () => {
         try {
-            const res = await axios.get(`${baseURL}/revisions`)
+            const res = await axios.get(`${apiUrl}/revisions`)
             res.data.map(el => {
                 
                 idOwner.value = el.owner.id
@@ -96,7 +96,7 @@
     import { ref } from 'vue';
     import axios from 'axios';
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';    
+    const apiUrl = import.meta.env.VITE_LINK_API;
 
     const itemOpen = ref('');
 
@@ -144,7 +144,7 @@
 
     export const create = async (id, url, payloadCreate) => {
         try {
-            const response = await axios.post(`${baseURL}/${url}/${id}`, payloadCreate)
+            const response = await axios.post(`${apiUrl}/${url}/${id}`, payloadCreate)
             return response
         } catch (error) {
             console.log(error)
@@ -153,7 +153,7 @@
 
     export const createRevision = async (id, payload) => {
         try {
-            const response = await axios.post(`${baseURL}/revisions/${id}`, payload)
+            const response = await axios.post(`${apiUrl}/revisions/${id}`, payload)
             return response
         } catch (error) {
             console.log(error)
@@ -162,7 +162,7 @@
     
     export const update = async (id, url, payloadUpdate) => {
         try {
-            const response = await axios.patch(`${baseURL}/${url}/${id}`, payloadUpdate)
+            const response = await axios.patch(`${apiUrl}/${url}/${id}`, payloadUpdate)
             return response
         } catch (error) {
             console.log(error)
@@ -171,7 +171,7 @@
     
     export const destroy = async (id, url) => {
         try {
-            await axios.delete(`${baseURL}/${url}/${id}`)
+            await axios.delete(`${apiUrl}/${url}/${id}`)
         } catch (error) {
             console.log(error)
         }

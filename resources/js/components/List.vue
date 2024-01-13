@@ -232,7 +232,7 @@ const addCar = (e) => {
   /* lista */
   #list {
     height: 51rem;
-    width: 55rem;
+    max-width: 55rem;
   } 
 
   /* titulo dos itens e o item da lista */
@@ -240,6 +240,24 @@ const addCar = (e) => {
     > p {
       width: 15rem;
     }
+  }
+
+  /* icone de delete item */
+  .fa-trash {
+    color: red;
+    margin: 0 0.3rem;
+  }
+
+  /* icone de atualizar item */
+  .fa-pen-to-square {
+    color: blue;
+    margin: 0 0.3rem;
+  }
+
+  /* icone de adicionar item */
+  .fa-square-plus {
+    color: green;
+    margin: 0 0.3rem;
   }
 
   /* o footer dos relatorio */
