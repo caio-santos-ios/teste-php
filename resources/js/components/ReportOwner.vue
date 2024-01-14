@@ -7,10 +7,16 @@
         <div id="header_report">
             <button v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
             <input :disabled="loading" maxlength="11" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
+            
+            <div class="container_type_report">
+                <button id="btn_report" @click="report">Todas as pessoas</button>
+                <button id="btn_report" @click="reportWoman">Somente mulheres</button>
+                <button id="btn_report" @click="reportMan">Somente homens</button>
+            </div>
         </div>
         <List :titles="['Cliente', 'CPF', 'Veiculos', 'Veiculos em Revisão']">
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
-            <li id="item_list" v-for="item in list.listOwner">
+            <li id="item_list" v-for="item in paginatedListReport">
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
@@ -19,13 +25,12 @@
                 <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
                 <i :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
-
             <div id="footer_page">
                 <button @click="prevPage" :disabled="currentPage === 1">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <span>{{ currentPage }} de {{ totalPages }}</span>
-                <button @click="nextPage" :disabled="totalPages <= 1">
+                <span>{{ currentPage }} de {{ parseInt(totalPages) }}</span>
+                <button @click="nextPage" :disabled="currentPage === totalPages">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -103,12 +108,55 @@
     const search = ref('')
     const isCreate = ref(false)
     const isUpdate = ref(false)
+    const ownerUpdate = ref('')
+    const reportGeral = ref([])
+    const filterSelected = ref('')
+    
+    const listSelected = ref([]) 
+
     const modal = useModalOpen()
     const list = useListOwner()
-    const listOwner = ref([])
-    const ownerUpdate = ref('')
 
     const apiUrl = import.meta.env.VITE_LINK_API;
+
+    const itemsPerPage = 5
+    const currentPage = ref(0)
+
+    const paginatedListReport = computed(() => {
+        const startPage = ( currentPage.value - 1 ) * itemsPerPage
+        const endPage = startPage + itemsPerPage
+        return listSelected.value.slice(startPage, endPage)
+    })
+        
+    const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage))
+    
+    const prevPage = () => {
+        if (currentPage.value > 1) {
+            currentPage.value--
+        }
+    }
+    
+    const nextPage = () => {
+        if (currentPage.value < totalPages.value) {
+            currentPage.value++
+        }
+    }
+
+    /* carrega a lista na montagem */
+    onMounted(async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/owners`)
+            loading.value = false
+            response.data.map((el) => {
+                list.addOwnerList(el)
+            })
+
+            listSelected.value = response.data
+        } catch (error) {
+            loading.value = false
+            console.log(error)
+        }
+    })
 
     /* abrir modal de criação */
     const openModalCreate = () => {
@@ -130,63 +178,62 @@
     /* deletar cliente */
     const remove = async (e) => {
         const confirmed = confirm("Deseja deletar o cliente")
-        const filter = listOwner.value.filter(el => el.id != e.target.id)
+        const filter = list.listOwner.filter(el => el.id != e.target.id)
 
         if(confirmed){
-            listOwner.value = filter
+            list.listOwner = filter
             await destroy(e.target.id, 'owners')
         }
     }
 
-    onMounted(async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/owners`)
-            loading.value = false
-            response.data.map((el) => {
-                listOwner.value.push(el)
-                list.addOwnerList(el)
-            })
-            // console.log("REQ FEITA")
-        } catch (error) {
-            loading.value = false
-            console.log(error)
-        }
-    })
-
+    /* busca cliente pelo cpf */
     watch(search, async () => {
         search.value = search.value.replace(/[^\d]/g, '');
 
         try {
             const response = await axios.get(`${apiUrl}/owners?cpf=${search.value}`)
-            listOwner.value = response.data
-            console.log(response.data)
+            response.data.map((el) => {
+                list.addOwnerList(el)
+            })
         } catch (error) {
             console.log(error)
         }
     })
 
-    const itemsPerPage = 16
-    const currentPage = ref(1) 
-
-    const paginatedListVehicles = computed(() => {
-        const startIndex = (currentPage.value - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return listOwner.value.slice(startIndex, endIndex);
-    })
-
-    const totalPages = computed(() => Math.ceil(listOwner.value.length / itemsPerPage))
-   
-    const prevPage = () => {
-        if (currentPage.value > 1) {
-            currentPage.value--
-        }
+    /* relatorio de todas as pessoas */
+    const report = () => {
+       list.listOwner = reportGeral.value
     }
 
-    const nextPage = () => {
-        if (currentPage.value < totalPages.value) {
-            currentPage.value++
+    /* relatorio somente das mulheres */
+    const reportWoman = () => {
+        if(!filterSelected.value){
+            reportGeral.value = list.listOwner
+
+            const newList = list.listOwner.filter(el => el.gender === 'feminino')
+            list.listOwner = newList
+            return
         }
+        
+        const newList = reportGeral.value.filter(el => el.gender === 'feminino')
+        list.listOwner = newList
     }
+
+    /* relatorio somente dos homens */
+    const reportMan = () => {
+        if(!filterSelected.value){
+            reportGeral.value = list.listOwner
+            
+            const newList = list.listOwner.filter(el => el.gender === 'masculino')
+            list.listOwner = newList
+            filterSelected.value = 'masculino'
+            return
+        }
+
+        const newList = reportGeral.value.filter(el => el.gender === 'masculino')
+        list.listOwner = newList
+    }  
+    
 /*
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
@@ -424,7 +471,7 @@
     /* barra de busca do cliente */
     #search {
         width: 100%;
-        max-width: 20rem;
+        max-width: 30rem;
         height: 2rem;
         padding: 0 0.5rem;
     }
@@ -433,6 +480,22 @@
     #btn_add_client {
         padding: 0.5rem;
         border: 0;
+    }
+
+    /* container com os tipos dos relatorios */
+    .container_type_report {
+        background-color: red;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        height: 2rem;
+        transition: 1s
+    }
+
+    /* botao para mudar os relatorios */
+    #btn_report {
+        width: 4rem;
     }
 
     @media (min-width: 915px) {
@@ -463,29 +526,20 @@
             padding: 0.5rem;
             border: 0;
         }
-    }
 
-    .filter {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-            > P {
-                border-radius: 0.3rem;
-                padding: 0.5rem;
-                border: 1px solid;
+        /* container com os tipos dos relatorios */
+        .container_type_report {
+            background-color: red;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            height: 2rem;
+            transition: 1s
+        }
+
+        /* botao para mudar os relatorios */
+            #btn_report {
+                width: 10rem;
             }
-    }
-
-    .list_owner {
-        display: flex;
-        flex-flow: column;
-        align-items: center;
-        border-radius: 1.5rem;
-        padding: 1.5rem;
-        position: relative;
-        margin: 0 auto;
-        height: 100%;
-        width: 100%;
-        gap: 1rem;
     }
 </style>

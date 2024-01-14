@@ -22,6 +22,8 @@ import ReportOwner from './components/ReportOwner.vue'
 import ReportRevision from './components/ReportRevision.vue'
 import Loading from './components/Loading.vue'
 import Modal from './components/Modal.vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const app = createApp()
 const pinia = createPinia()
@@ -49,5 +51,7 @@ app.component('report-owner', ReportOwner)
 app.component('report-revision', ReportRevision)
 app.component('loading', Loading)
 app.component('modal', Modal)
+app.component('VueDatePicker', VueDatePicker);
+
 
 app.mount('#app')
