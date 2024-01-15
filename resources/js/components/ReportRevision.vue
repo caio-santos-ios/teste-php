@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+    /*
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
     import { update, formateDate, openItem, closeItem } from './Report.vue';
@@ -255,6 +256,7 @@
         isUpdate.value = true
         selectedItem.value = ''
     }
+    */
 </script>
 
 <style>

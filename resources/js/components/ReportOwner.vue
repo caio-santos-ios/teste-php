@@ -5,18 +5,26 @@
     </Modal>
     <section>
         <div id="header_report">
-            <button v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
+            <button :disabled="loading" v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
             <input :disabled="loading" maxlength="11" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
             
-            <div class="container_type_report">
-                <button id="btn_report" @click="report">Todas as pessoas</button>
-                <button id="btn_report" @click="reportWoman">Somente mulheres</button>
-                <button id="btn_report" @click="reportMan">Somente homens</button>
+            <div id="container_type_report">
+                <button :disabled="loading" id="btn_report" @click="report">Todas as pessoas</button>
+                <button :disabled="loading" id="btn_report" @click="reportWoman">Somente mulheres</button>
+                <button :disabled="loading" id="btn_report" @click="reportMan">Somente homens</button>
             </div>
         </div>
-        <List :titles="['Cliente', 'CPF', 'Veiculos', 'Veiculos em Revisão']">
-            <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
-            <li id="item_list" v-for="item in list.listOwner">
+        <List>
+            <li id="title_list">
+                <p>Cliente</p>
+                <p>CPF</p>
+                <p>Veiculos</p>
+                <p>Em revisão</p>
+                <i></i>
+                <i></i>
+                <i></i>
+            </li>
+            <li id="item_list" v-for="item in paginatedList">
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
@@ -25,6 +33,7 @@
                 <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
                 <i :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
+            <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
             <div id="footer_page">
                 <button @click="prevPage" :disabled="currentPage === 1">
                     <i class="fa-solid fa-chevron-left"></i>
@@ -102,37 +111,62 @@
     import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue';
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/store'
-    import { destroy } from '../components/Report.vue'
+    import {destroy} from './Report.vue'
 
     const loading = ref(true)
     const search = ref('')
+
+    const baseURL = import.meta.env.VITE_LINK_URL;    
+
+    const listSelected = ref([]) 
+
     const isCreate = ref(false)
     const isUpdate = ref(false)
+
     const ownerUpdate = ref('')
-    const reportGeral = ref([])
+    const allReport = ref([])
     const filterSelected = ref('')
     
     const modal = useModalOpen()
     const list = useListOwner()
 
-    const apiUrl = import.meta.env.VITE_LINK_API;
-    const baseUrl = 'http://localhost:8000'
-
-    const itemsPerPage = 5
+    const itemsPerPage = 10
     const currentPage = ref(1) 
+
+    const paginatedList = computed(() => {
+        const startPage = ( currentPage.value - 1 ) * itemsPerPage
+        const endPage = startPage + itemsPerPage
+        return listSelected.value.slice(startPage, endPage)
+    })
 
     const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage))
     
-    /* carrega a lista na montagem */
+    const prevPage = () => {
+        if(currentPage.value > 1){
+            currentPage.value--
+        }
+    }
+
+    const nextPage = () => {
+        if(currentPage.value < totalPages.value){
+            currentPage.value++
+        }
+    }
+
+    /* carregar todas vez que um cliente é cadastrado */
+    watch(list.listOwner, () => {
+        console.log(list.listOwner)
+        listSelected.value = list.listOwner
+    })
+
+    /* carrega o relatorio de todas as pessoas */
     onMounted(async () => {
         try {
-            const response = await axios.get(`${baseUrl}/owners`)
+            const response = await axios.get(`${baseURL}/owners`)
             loading.value = false
-            response.data.map((el) => {
-                list.addOwnerList(el)
+            response.data.map(el => {
+                listSelected.value.push(el)
             })
-
-            console.log(response)
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -159,10 +193,9 @@
     /* deletar cliente */
     const remove = async (e) => {
         const confirmed = confirm("Deseja deletar o cliente")
-        const filter = list.listOwner.filter(el => el.id != e.target.id)
-
+        
         if(confirmed){
-            list.listOwner = filter
+            listSelected.value = listSelected.value.filter(el => el.id != e.target.id)
             await destroy(e.target.id, 'owners')
         }
     }
@@ -183,27 +216,27 @@
 
     /* relatorio de todas as pessoas */
     const report = () => {
-       list.listOwner = reportGeral.value
+       list.listOwner = allReport.value
     }
 
     /* relatorio somente das mulheres */
     const reportWoman = () => {
         if(!filterSelected.value){
-            reportGeral.value = list.listOwner
+            allReport.value = list.listOwner
 
             const newList = list.listOwner.filter(el => el.gender === 'feminino')
             list.listOwner = newList
             return
         }
         
-        const newList = reportGeral.value.filter(el => el.gender === 'feminino')
+        const newList = allReport.value.filter(el => el.gender === 'feminino')
         list.listOwner = newList
     }
 
     /* relatorio somente dos homens */
     const reportMan = () => {
         if(!filterSelected.value){
-            reportGeral.value = list.listOwner
+            allReport.value = list.listOwner
             
             const newList = list.listOwner.filter(el => el.gender === 'masculino')
             list.listOwner = newList
@@ -211,7 +244,7 @@
             return
         }
 
-        const newList = reportGeral.value.filter(el => el.gender === 'masculino')
+        const newList = allReport.value.filter(el => el.gender === 'masculino')
         list.listOwner = newList
     }
 /*
@@ -427,27 +460,6 @@
 </script>
 
 <style>
-    /* secão de cada pagina */
-    section {
-        width: 95vw;
-        margin: 0 auto;
-        padding-top: 5rem;
-        display: flex;
-        flex-flow: column;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    /* header do relatorio */ 
-    #header_report {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-flow: wrap;
-        gap: 0.5rem;
-        width: 100%;
-    }
-
     /* barra de busca do cliente */
     #search {
         width: 100%;
@@ -459,19 +471,9 @@
     /* botão para adicionar cliente */
     #btn_add_client {
         padding: 0.5rem;
-        border: 0;
     }
 
-    /* container com os tipos dos relatorios */
-    .container_type_report {
-        background-color: red;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        height: 2rem;
-        transition: 1s
-    }
+   
 
     /* botao para mudar os relatorios */
     #btn_report {

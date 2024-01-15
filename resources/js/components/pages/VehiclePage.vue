@@ -19,7 +19,7 @@
         font-size: 1rem;
     }
 
-    .main_home {
+    #main_report {
         min-height: 100vh;
         display: block;
     }

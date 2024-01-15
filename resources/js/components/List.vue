@@ -1,57 +1,10 @@
 <template>
   <ul id="list">
-      <li id="title_list">
-        <p v-for="title in props.titles">{{ title }}</p>
-      </li>
       <slot></slot>
   </ul>
-  <!--
-    <div id="container">
-      <div class="header_container">
-      <h4 class="title">Clientes Cadastrados</h4>
-      <section class="container_search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input v-model="mySearch" class="search" type="text" placeholder="Pesquise pelo cpf do cliente">
-      </section>
-    </div>
-    <ul class="list_items">
-      <li id="header_title">
-        <p>Cliente</p>
-        <p>CPF</p>
-        <p>Idade</p>
-        <p>Sexo</p>
-      </li>
-      <li v-if="!loading" class="item_is_open" :id="item.id" v-for="item in paginatedListVehicles" :key="item.id">
-        <div class="item_container">
-          <div id="item_header">
-            <p>{{ item.name }}</p>
-            <p>{{ item.cpf }}</p>
-            <p>{{ item.age }}</p> 
-            <p>{{ item.gender }}</p>
-          </div>
-          <i :id="item.id" @click="addCar" class="fa-solid fa-car btn_add_car">
-            <span :id="item.id">Adicionar</span>
-          </i>
-        </div>
-        <FormRegisterVehicle :id="item.id" />
-      </li>
-      <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
-    </ul>
-    <div class="footer_page">
-      <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
-    </div>
-  </div>
-  -->
 </template>
 
-<script setup>
-  import axios from 'axios';
-  import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
-  import { ref, computed, onMounted, watch, defineProps } from 'vue';
-  
-  const props = defineProps(['titles'])
+<script setup>   
 /*
 import { useStore } from 'vuex';
 import Loading from './Loading.vue';
@@ -171,7 +124,6 @@ const addCar = (e) => {
   background-color: white;
   height: 42rem;
   position: relative;
-  padding: 0 0.5rem;
 }
 
 /* titulo dos itens e o item da lista */
@@ -188,7 +140,7 @@ const addCar = (e) => {
   }
   
   /* icones da lista */
-  .fa-solid {
+  i {
     width: 1.5rem;
   }
 }

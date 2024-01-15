@@ -41,7 +41,6 @@
     import LoadingVue from '../Loading.vue';
     import { useModalOpen, useListOwner } from '../../store/store'
     import { defineProps } from 'vue';
-    import { update } from '../Report.vue'
     
     const props = defineProps(['owner'])
 
@@ -66,7 +65,7 @@
         if(owner.value.age < 18) return toast.error("O cliente deve ser maior de 18")
                
         modal.openModal()
-        await update(props.owner.id, 'owners', owner.value)
+
         // loading.value = true
         /*
         try {

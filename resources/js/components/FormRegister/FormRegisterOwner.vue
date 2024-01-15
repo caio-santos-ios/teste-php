@@ -44,7 +44,7 @@
     const modal = useModalOpen()
     const list = useListOwner()
 
-    const apiUrl = import.meta.env.VITE_LINK_API;
+    const baseURL = import.meta.env.VITE_LINK_URL;    
 
     const owner = ref({
         name: '',
@@ -63,7 +63,7 @@
         loading.value = true
 
         try {
-            const response = await axios.post(`${apiUrl}/owners`, owner.value)
+            const response = await axios.post(`${baseURL}/owners`, owner.value)
 
             const returnOwner = {
                 revision_vehicles: [],
@@ -79,7 +79,7 @@
         } catch (error) {
             isCreateBtn.value = true
             loading.value = false
-            console.log(error)
+            console.log(error.response.status)
             return
             if(error.response.status === 409){
                 toast.error("Usuário já possui cadastro")
