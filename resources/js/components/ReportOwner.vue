@@ -7,7 +7,7 @@
         <div id="header_report">
             <button :disabled="loading" v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
             <h4>Média de idade: {{ ageAverage }}</h4>
-            <input :disabled="loading" maxlength="11" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
+            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
             
             <div id="container_type_report">
                 <button :disabled="loading" id="btn_report" @click="report">Todas as pessoas</button>
@@ -26,6 +26,7 @@
                 <i></i>
             </li>
             <li id="item_list" v-for="item in paginatedList">
+                <h4 v-if="paginatedList.length === 0">Sem clientes</h4>
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
@@ -112,9 +113,10 @@
             loading.value = false
             response.data.map(el => {
                 listSelected.value.push(el)
+                allReport.value.push(el)
             })
             const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-            calculeedAgeAverage(sumAge, response.data.length)
+            ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -150,64 +152,60 @@
 
     /* busca cliente pelo cpf */
     watch(search, async () => {
-        search.value = search.value.replace(/[^\d]/g, '');
+        search.value = search.value.replace(/[^0-9.-]/g, '');
 
-        try {
-            const response = await axios.get(`${apiUrl}/owners?cpf=${search.value}`)
-            response.data.map((el) => {
-                list.addOwnerList(el)
-            })
-        } catch (error) {
-            console.log(error)
-        }
+        const filter = allReport.value.filter(el => el.cpf.includes(search.value))
+        
+        listSelected.value = filter
     })
 
     /* relatorio de todas as pessoas */
     const report = () => {
-       list.listOwner = allReport.value
+       listSelected.value = allReport.value
+       const sumAge = allReport.value.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+       ageAverage.value = calculeedAgeAverage(sumAge, allReport.value.length)
     }
 
     /* relatorio somente das mulheres */
     const reportWoman = () => {
         if(!filterSelected.value){
-            allReport.value = list.listOwner
-
-            const newList = list.listOwner.filter(el => el.gender === 'feminino')
-            list.listOwner = newList
+            filterSelected.value = 'feminino'
+            
+            const newList = listSelected.value.filter(el => el.gender === 'feminino')
+            listSelected.value = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-            calculeedAgeAverage(sumAge, newList.length)
+            ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
             return
         }
-        
+
         const newList = allReport.value.filter(el => el.gender === 'feminino')
-        list.listOwner = newList
+        listSelected.value = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-        calculeedAgeAverage(sumAge, newList.length)
+        ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
     }
 
     /* relatorio somente dos homens */
     const reportMan = () => {
         if(!filterSelected.value){
-            allReport.value = list.listOwner
-            
-            const newList = list.listOwner.filter(el => el.gender === 'masculino')
-            list.listOwner = newList
             filterSelected.value = 'masculino'
+            
+            const newList = listSelected.value.filter(el => el.gender === 'masculino')
+            listSelected.value = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-            calculeedAgeAverage(sumAge, newList.length)
+            ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
             return
         }
-
+    
         const newList = allReport.value.filter(el => el.gender === 'masculino')
-        list.listOwner = newList
+        listSelected.value = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-        calculeedAgeAverage(sumAge, newList.length)
+        ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
     }
 
     /* calcula a idade media dos clientes */
     const calculeedAgeAverage = (total, qtd) => {
         const result = total / qtd
-        return result
+        return parseInt(result)
     }
 /*
     import axios from 'axios';

@@ -27,7 +27,7 @@
             <button id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
                 <LoadingVue style="height: 3rem; width: 3rem;" />
             </button>
-            <button id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
+            <button :disabled="!loading" id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
         </div>
     </FormRegister>
 </template>

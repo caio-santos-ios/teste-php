@@ -15,7 +15,7 @@ class OwnerController extends Controller
         $cpf = $request->query('cpf');
 
         if($cpf){
-            $owner = Owner::where('cpf', 'like', '%' . $cpf . '%')->get();
+            $owner = Owner::with(['vehicles', 'revisionVehicles'])->where('cpf', 'like', '%' . $cpf . '%')->get();
 
             return response()->json($owner);
         }
