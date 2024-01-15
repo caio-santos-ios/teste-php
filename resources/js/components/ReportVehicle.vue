@@ -30,7 +30,7 @@
 
     const loading = ref(true)
 
-    const baseURL = 'http://localhost:8000';    
+    const baseURL = import.meta.env.VITE_LINK_URL;    
 
     const listSelected = ref([]) 
     const itemsPerPage = 10
@@ -58,7 +58,7 @@
 
     onMounted(async () => {
         try {
-            const response = await axios.get(`${baseURL}/vehicles`)
+            const response = await axios.get(`https://controle-veiculos-0d837daf7fe2.herokuapp.com/vehicles`)
             loading.value = false
 
             response.data.map(el => {
