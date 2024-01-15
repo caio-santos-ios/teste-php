@@ -4,6 +4,8 @@ import { createPinia } from 'pinia'
 
 import HomePage from './components/pages/HomePage.vue'
 import OwnerPage from './components/pages/OwnerPage.vue'
+import VehiclePage from './components/pages/VehiclePage.vue'
+import RevisionPage from './components/pages/RevisionPage.vue'
 
 
 import List from './components/List.vue'
@@ -32,6 +34,8 @@ app.use(pinia)
 
 app.component('home-page', HomePage)
 app.component('owner-page', OwnerPage)
+app.component('vehicle-page', VehiclePage)
+app.component('revision-page', RevisionPage)
 
 app.component('dashboard', Dashboard)
 app.component('list', List)

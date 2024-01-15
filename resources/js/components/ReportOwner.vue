@@ -16,7 +16,7 @@
         </div>
         <List :titles="['Cliente', 'CPF', 'Veiculos', 'Veiculos em Revisão']">
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
-            <li id="item_list" v-for="item in paginatedListReport">
+            <li id="item_list" v-for="item in list.listOwner">
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
                 <p>{{ item.vehicles.length }}</p>
@@ -29,8 +29,8 @@
                 <button @click="prevPage" :disabled="currentPage === 1">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <span>{{ currentPage }} de {{ parseInt(totalPages) }}</span>
-                <button @click="nextPage" :disabled="currentPage === totalPages">
+                <span>{{ currentPage }} de {{ totalPages }}</span>
+                <button @click="nextPage" :disabled="totalPages <= 1">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -112,46 +112,27 @@
     const reportGeral = ref([])
     const filterSelected = ref('')
     
-    const listSelected = ref([]) 
-
     const modal = useModalOpen()
     const list = useListOwner()
 
     const apiUrl = import.meta.env.VITE_LINK_API;
+    const baseUrl = 'http://localhost:8000'
 
     const itemsPerPage = 5
-    const currentPage = ref(0)
+    const currentPage = ref(1) 
 
-    const paginatedListReport = computed(() => {
-        const startPage = ( currentPage.value - 1 ) * itemsPerPage
-        const endPage = startPage + itemsPerPage
-        return listSelected.value.slice(startPage, endPage)
-    })
-        
     const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage))
     
-    const prevPage = () => {
-        if (currentPage.value > 1) {
-            currentPage.value--
-        }
-    }
-    
-    const nextPage = () => {
-        if (currentPage.value < totalPages.value) {
-            currentPage.value++
-        }
-    }
-
     /* carrega a lista na montagem */
     onMounted(async () => {
         try {
-            const response = await axios.get(`${apiUrl}/owners`)
+            const response = await axios.get(`${baseUrl}/owners`)
             loading.value = false
             response.data.map((el) => {
                 list.addOwnerList(el)
             })
 
-            listSelected.value = response.data
+            console.log(response)
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -167,7 +148,7 @@
 
     /* abrir modal de edição */
     const openModalUpdate = (e) => {
-        const filter = listOwner.value.find(el => el.id == e.target.id)
+        const filter = list.listOwner.find(el => el.id == e.target.id)
         ownerUpdate.value = filter
 
         modal.openModal()
@@ -232,8 +213,7 @@
 
         const newList = reportGeral.value.filter(el => el.gender === 'masculino')
         list.listOwner = newList
-    }  
-    
+    }
 /*
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';

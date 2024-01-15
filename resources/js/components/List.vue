@@ -171,6 +171,7 @@ const addCar = (e) => {
   background-color: white;
   height: 42rem;
   position: relative;
+  padding: 0 0.5rem;
 }
 
 /* titulo dos itens e o item da lista */
