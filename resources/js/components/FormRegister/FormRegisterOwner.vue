@@ -79,10 +79,9 @@
         } catch (error) {
             isCreateBtn.value = true
             loading.value = false
-            console.log(error.response.status)
-            return
-            if(error.response.status === 409){
-                toast.error("Usuário já possui cadastro")
+            console.log(error)
+            if(error.response.status == 500){
+                toast.error("Erro interno, tente novamente")
             }
         }
     }

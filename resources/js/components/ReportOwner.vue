@@ -6,6 +6,7 @@
     <section>
         <div id="header_report">
             <button :disabled="loading" v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
+            <h4>Média de idade: {{ ageAverage }}</h4>
             <input :disabled="loading" maxlength="11" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
             
             <div id="container_type_report">
@@ -45,61 +46,6 @@
             </div>
         </List>
     </section>
-    <!--
-        <div class="container_filter">
-            <div class="filter">
-                <button value="" @click="addFilter" class="btn_filter">
-                <i class="fa-solid fa-filter-circle-xmark"></i>
-            </button>
-            <button value="masculino" @click="addFilter" class="btn_filter">
-                Homem
-                <i class="fa-solid fa-child"></i>
-            </button>
-            <button value="feminino" @click="addFilter" class="btn_filter">
-                Mulher
-                <i class="fa-solid fa-person-dress"></i>
-            </button>
-        </div>
-    </div>
-    <ul class="list_owner">
-        <li class="header_title">
-            <div>
-                <p>Nome</p>
-                <p>Cpf</p>
-                <p>Sexo</p>
-                <p>idade</p>    
-            </div>  
-        </li>   
-        <li v-if="!loading" class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-            <div class="title_report_item">
-                <p>{{ item.name }}</p>
-                <p>{{ item.cpf }}</p>
-                <p>{{ item.gender }}</p>
-                <p>{{ item.age }}</p> 
-            </div>
-            <div id="report_icons">
-                <i v-if="isFinish && selectedItem == item.id" @click="finished" class="fa-solid fa-check"></i>
-                <i v-if="isCancel && selectedItem == item.id" @click="canceled" class="fa-solid fa-xmark"></i>                
-                <i v-if="isCreate && !isFinish || selectedItem != item.id" :id="item.id" @click="updated" class="atualizar fa-solid fa-pen-to-square"></i>
-                <i v-if="isDeleted || selectedItem != item.id" :id="item.id" @click="deleted" class="fa-regular fa-trash-can"></i>
-            </div>
-            
-            <form :id="item.id" class="form_report_update">
-                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.name : inputName" @input="inputName = $event.target.value">
-                <input disabled type="text" :value="item.cpf">
-                <input disabled type="text" :value="item.gender">
-                <input :disabled="!isUpdate" type="text" :value="isUpdate ? item.age : inputAge" @input="inputAge = $event.target.value">
-            </form>
-        </li>
-        <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
-        <h2 v-if="!loading && listSelected.length === 0">Faça o cadastro de clientes</h2>
-    </ul>
-    <div class="footer_page_report">
-        <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-        <span>Página {{ currentPage }} de {{ totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
-    </div>
-    -->
 </template>
 
 <script setup>
@@ -125,6 +71,7 @@
 
     const ownerUpdate = ref('')
     const allReport = ref([])
+    const ageAverage = ref(0)
     const filterSelected = ref('')
     
     const modal = useModalOpen()
@@ -155,8 +102,7 @@
 
     /* carregar todas vez que um cliente é cadastrado */
     watch(list.listOwner, () => {
-        console.log(list.listOwner)
-        listSelected.value = list.listOwner
+        listSelected.value = [...listSelected.value, ...list.listOwner]
     })
 
     /* carrega o relatorio de todas as pessoas */
@@ -167,6 +113,8 @@
             response.data.map(el => {
                 listSelected.value.push(el)
             })
+            const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            calculeedAgeAverage(sumAge, response.data.length)
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -226,11 +174,15 @@
 
             const newList = list.listOwner.filter(el => el.gender === 'feminino')
             list.listOwner = newList
+            const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            calculeedAgeAverage(sumAge, newList.length)
             return
         }
         
         const newList = allReport.value.filter(el => el.gender === 'feminino')
         list.listOwner = newList
+        const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+        calculeedAgeAverage(sumAge, newList.length)
     }
 
     /* relatorio somente dos homens */
@@ -241,11 +193,21 @@
             const newList = list.listOwner.filter(el => el.gender === 'masculino')
             list.listOwner = newList
             filterSelected.value = 'masculino'
+            const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            calculeedAgeAverage(sumAge, newList.length)
             return
         }
 
         const newList = allReport.value.filter(el => el.gender === 'masculino')
         list.listOwner = newList
+        const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+        calculeedAgeAverage(sumAge, newList.length)
+    }
+
+    /* calcula a idade media dos clientes */
+    const calculeedAgeAverage = (total, qtd) => {
+        const result = total / qtd
+        return result
     }
 /*
     import axios from 'axios';
