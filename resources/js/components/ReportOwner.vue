@@ -1,11 +1,14 @@
 <template>
     <Modal v-if="modal.isOpenModal">
         <FormRegisterOwner v-if="isCreateOwner" />
-        <FormUpdateOwner :owner="ownerUpdate" v-if="isUpdate"/>
+        <FormUpdateOwner v-if="isUpdate"/>
         <FormRegisterVehicle v-if="isCreateVehicle" />
     </Modal>
     <section>
         <div id="header_report">
+            <div id="container_date">
+                <h3>Relatorios - Pessoas</h3>
+            </div>
             <button :disabled="loading" v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
             <h4>Média de idade: {{ ageAverage }}</h4>
             <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
@@ -26,7 +29,7 @@
                 <i></i>
                 <i></i>
             </li>
-            <li id="item_list" v-for="item in paginatedList">
+            <li id="item_list" v-if="!loading" v-for="item in paginatedList">
                 <h4 v-if="paginatedList.length === 0">Sem clientes</h4>
                 <p>{{ item.name }}</p>
                 <p>{{ item.cpf }}</p>
@@ -67,8 +70,6 @@
 
     const baseURL = import.meta.env.VITE_LINK_URL;    
 
-    const listSelected = ref([]) 
-
     const isCreateOwner = ref(false)
     const isCreateVehicle = ref(false)
     const isUpdate = ref(false)
@@ -81,13 +82,13 @@
     const modal = useModalOpen()
     const list = useListOwner()
 
-    const itemsPerPage = 10
+    const itemsPerPage = 16
     const currentPage = ref(1) 
 
     const paginatedList = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
         const endPage = startPage + itemsPerPage
-        return listSelected.value.slice(startPage, endPage)
+        return list.listOwner.slice(startPage, endPage)
     })
 
     const totalPages = computed(() => Math.ceil(list.listOwner.length / itemsPerPage))
@@ -104,20 +105,28 @@
         }
     }
 
-    /* carregar todas vez que um cliente é cadastrado */
-    watch(list.listOwner, () => {
-        listSelected.value = [...listSelected.value, ...list.listOwner]
-    })
-
     /* carrega o relatorio de todas as pessoas */
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/owners`)
             loading.value = false
             response.data.map(el => {
-                listSelected.value.push(el)
                 allReport.value.push(el)
+                list.listOwner.push(el)
             })
+
+            list.listOwner.sort(function (a, b) {
+                if (a.vehicles.length > b.vehicles.length) {
+                    return 1;
+                }
+
+                if (a.vehicles.length < b.vehicles.length) {
+                    return -1;
+                }
+                // a must be equal to b
+                return 0;
+            }).reverse()
+                        
             const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
         } catch (error) {
@@ -130,15 +139,17 @@
     const openModalCreate = () => {
         modal.openModal()
         isCreateOwner.value = true
+        isCreateVehicle.value = false
         isUpdate.value = false
     } 
 
     /* abrir modal de edição */
     const openModalUpdate = (e) => {
-        const filter = list.listOwner.find(el => el.id == e.target.id)
-        ownerUpdate.value = filter
+        const findOwner = list.listOwner.find(el => el.id == e.target.id)
+        localStorage.setItem('ownerUpdate', JSON.stringify(findOwner))
         modal.openModal()
         isCreateOwner.value = false
+        isCreateVehicle.value = false
         isUpdate.value = true
     }
 
@@ -154,23 +165,31 @@
         const confirmed = confirm("Deseja deletar o cliente")
         
         if(confirmed){
-            listSelected.value = listSelected.value.filter(el => el.id != e.target.id)
+            list.listOwner = list.listOwner.filter(el => el.id != e.target.id)
             await destroy(e.target.id, 'owners')
         }
     }
 
     /* busca cliente pelo cpf */
     watch(search, async () => {
+        if(filterSelected.value === 'feminino') {
+            list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))       
+            return
+        }
+
+        if(filterSelected.value === 'masculino') {
+            list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))       
+            return
+        }
+
         search.value = search.value.replace(/[^0-9.-]/g, '');
 
-        const filter = allReport.value.filter(el => el.cpf.includes(search.value))
-        
-        listSelected.value = filter
+        list.listOwner = allReport.value.filter(el => el.cpf.includes(search.value))
     })
 
     /* relatorio de todas as pessoas */
     const report = () => {
-       listSelected.value = allReport.value
+       list.listOwner = allReport.value
        const sumAge = allReport.value.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
        ageAverage.value = calculeedAgeAverage(sumAge, allReport.value.length)
     }
@@ -180,15 +199,15 @@
         if(!filterSelected.value){
             filterSelected.value = 'feminino'
             
-            const newList = listSelected.value.filter(el => el.gender === 'feminino')
-            listSelected.value = newList
+            const newList = list.listOwner.filter(el => el.gender === 'feminino')
+            list.listOwner = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
             return
         }
 
         const newList = allReport.value.filter(el => el.gender === 'feminino')
-        listSelected.value = newList
+        list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
     }
@@ -198,15 +217,15 @@
         if(!filterSelected.value){
             filterSelected.value = 'masculino'
             
-            const newList = listSelected.value.filter(el => el.gender === 'masculino')
-            listSelected.value = newList
+            const newList = list.listOwner.filter(el => el.gender === 'masculino')
+            list.listOwner = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
             return
         }
     
         const newList = allReport.value.filter(el => el.gender === 'masculino')
-        listSelected.value = newList
+        list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
     }
@@ -250,7 +269,7 @@
         if(typeFilter === undefined){ 
             myFilter.value = ''
             const res = await newRequest()
-            listSelected.value = res
+            list.listOwner = res
             const sumAge = res.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, res.length)
         } 
@@ -480,7 +499,6 @@
 
         /* container com os tipos dos relatorios */
         .container_type_report {
-            background-color: red;
             width: 100%;
             display: flex;
             justify-content: space-between;

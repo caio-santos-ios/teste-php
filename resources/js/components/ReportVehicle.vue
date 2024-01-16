@@ -1,7 +1,9 @@
 <template>
     <Report>
         <div id="header_report">            
-            <h3>Lista de relatorio - veiculos</h3>
+            <div id="container_date">
+                <h3>Relatorios - Veiculos</h3>
+            </div>
             <div id="container_type_report">
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByAll">Todas os veiculos</button>
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByOwner">Por proprietario</button>
@@ -32,7 +34,7 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <span>Página {{ currentPage }} de {{ totalPages }}</span>
-                <button @click="nextPage" :disabled="currentPage === totalPages">
+                <button @click="nextPage" :disabled="currentPage <= 1">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -57,7 +59,7 @@
     const allReport = ref([])
     const listOwners = ref([])
     const isApplicationFilter = ref(true)
-    const itemsPerPage = 10
+    const itemsPerPage = 16
     const currentPage = ref(1) 
     
     const paginatedList = computed(() => {

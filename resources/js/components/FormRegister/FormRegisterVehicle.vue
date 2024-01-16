@@ -132,9 +132,10 @@
         const idVehicle = localStorage.getItem("idVehicle")
         const id = JSON.parse(idVehicle)
         vehicle.value.owner_id = Number(id)
-        console.log(vehicle.value)
+        
         try {
             const response = await axios.post(`${baseURL}/vehicles`, vehicle.value)
+            localStorage.removeItem('idVehicle')
             console.log(response)
         } catch (error) {
             console.log(error)

@@ -1,158 +1,82 @@
 <template>
-    <div class="container_filter">
-        <div class="filter">
-            <button value="" @click="addFilter" class="btn_filter">
-                <i class="fa-solid fa-filter-circle-xmark"></i>
-            </button>
-            <button value="model" @click="addFilter" class="btn_filter">
-                Marca
-                <i class="fa-brands fa-buromobelexperte"></i>
-            </button>
-            <button value="owner" @click="addFilter" class="btn_filter">
-                Proprietario
-                <i class="fa-solid fa-child"></i>
-            </button>
-            <button value="media-tempo" @click="addFilter" class="btn_filter">
-                Media de tempo
-                <i class="fa-regular fa-clock"></i>
-            </button>
+    <Report>
+        <div id="header_report">            
+            <h3>Relatorios - Revisões</h3>
+            <div id="container_type_report">
+                <div id="container_date">
+                    De:
+                    <VueDatePicker :disabled="loading" v-model="dateInitial" utc></VueDatePicker>
+                    Até:
+                    <VueDatePicker :disabled="loading" v-model="dateLast" utc></VueDatePicker>
+                    <button @click="filterByDate" :disabled="loading" id="btn_report">Buscar</button>
+                </div>
+                <button :disabled="loading" id="btn_report"  @click="orderByAll">Todas as Revisões</button>
+                <button :disabled="loading" id="btn_report"  @click="orderByBrand">Marcas com mais</button>
+                <button :disabled="loading" id="btn_report"  @click="orderByOwner">Pessoas com mais</button>
+            </div>
         </div>
-    </div>
-    <ul class="list_owner">
-        <li v-if="!loading" class="header_title">
-            <div>
-                <p>Proprietario</p>
-                <p>Entrada</p>
-                <p>Marca</p>
-                <p>Valor</p>    
-            </div>
-        </li>   
-        <li class="item_report" :id="item.id" v-for="item in paginatedListReport" :key="item.id">
-            <div class="title_report_item">
-                <p>{{ item.owner.name }}</p>
-                <p>{{ formateDate(item.created_at.slice(0, 10)) }}</p>
-                <p>{{ item.vehicle.model }}</p>
-                <p>R$ {{ item.value }}</p> 
-            </div>
-            <div id="report_icons">
-                <i v-if="isFinish || selectedItem == item.id" :id="item.id" @click="finished" class="fa-solid fa-check"></i>
-                <i v-if="isCancel || selectedItem == item.id" @click="canceled" class="fa-solid fa-xmark"></i>
-                <i v-if="isUpdate && !isFinish || selectedItem != item.id" :id="item.id" @click="finishedRevision" class="fa-regular fa-square-check"></i>
-                <i v-if="isUpdate && !isFinish || selectedItem != item.id" :id="item.id" @click="updated" class="fa-solid fa-pen-to-square"></i>
-            </div>
-            <form :id="item.id" class="form_report_update">
-                <input disabled type="text" :value="item.owner.name">
-                <input disabled type="text" :value="formateDate(item.created_at.slice(0, 10))">
-                <input disabled type="text" :value="item.vehicle.model">
-                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.type_revision : inputType" @input="inputType = $event.target.value">
-                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.description : inputDescription" @input="inputDescription = $event.target.value">
-                <input :disabled="isUpdate" type="text" :value="!isUpdate ? item.value : inputValue" @input="inputValue = $event.target.value">
+        <List>
+            <li id="title_list">
+                <p v-if="isReportOwner || !isReportVehicles">Proprietario</p>
+                <p v-if="!isReportOwner && !isReportVehicles">Marca</p>
+                <p v-if="!isReportOwner && !isReportVehicles">Valor</p>
+                <p v-if="!isReportOwner && !isReportVehicles">Tipo</p>
+                <p v-if="isReportVehicles">Marca</p>
+                <p v-if="isReportVehicles || isReportOwner">Veiculos em revisão</p>
+            </li>
+            <li id="item_list" v-if="!loading" :value="item.id" v-for="item in paginatedList" :key="item.id">
+                <h4 v-if="!loading && paginatedList.length === 0">Sem Revisões</h4>
+                <p v-if="!isReportOwner && !isReportVehicles">{{ item.owner.name }}</p>
+                <p v-if="!isReportOwner && !isReportVehicles">{{ item.vehicle.brand }}</p>
+                <p v-if="!isReportOwner && !isReportVehicles">{{ item.value }}</p>
+                <p v-if="!isReportOwner && !isReportVehicles">{{ item.type_revision }}</p>
+                <p v-if="isReportVehicles || isReportOwner">{{ isReportVehicles ? item.brand : item.name }}</p>
+                <p v-if="isReportVehicles || isReportOwner">{{ item.revision_vehicles.length }}</p>
+            </li>
+            <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
 
-            </form>
-        </li>
-        <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
-        <h2 v-if="!loading && listSelected.length === 0">Sem Revisões</h2>
-    </ul>
-    <div class="footer_page_report">
-        <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-        <span>Página {{ currentPage }} de {{     totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage === totalPages">Próxima</button>
-    </div>
+            <div id="footer_page">
+                <button @click="prevPage" :disabled="currentPage === 1">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                <button @click="nextPage" :disabled="currentPage <= 1">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </List>
+    </Report>
 </template>
 
 <script setup>
-    /*
     import axios from 'axios';
     import { ref, onMounted, computed } from 'vue';
-    import { update, formateDate, openItem, closeItem } from './Report.vue';
-    import { toast } from 'vue3-toastify';
-    import 'vue3-toastify/dist/index.css';
+    import List from './List.vue';
     import Loading from './Loading.vue';
+    import Report from './Report.vue'
+    import moment from 'moment';
 
     const loading = ref(true)
+    const typeReport = ref('all')
+    const isOwner = ref(false)
 
-    const baseURL = 'http://localhost:8000';    
+    const dateInitial = ref('')
+    const dateLast = ref('')
+
+    const baseURL = import.meta.env.VITE_LINK_URL;    
+
+    const reportVehicles = ref([])
+    const isReportVehicles = ref(false)
+    const reportOwner = ref([])
+    const isReportOwner = ref(false)
     const listSelected = ref([]) 
-    const myFilter = ref('')
-    const itemsPerPage = 7
+    const allReport = ref([])
+
+    const isApplicationFilter = ref(true)
+    const itemsPerPage = 16
     const currentPage = ref(1) 
-    const timeAverage = ref(0)
-
-    const selectedItem = ref('')
-    const isUpdate = ref(true)
-    const isCancel = ref(false)
-    const isFinish = ref(false)
-
-    const inputType = ref('')
-    const inputValue = ref('')
-    const inputDescription = ref('')
-
-    const addFilter = async (e) => {
-        const typeFilter = e.target.value
-        console.log(e.target.value)
-
-        if(typeFilter === undefined){ 
-            myFilter.value = ''
-            const list = await newRequest()
-            listSelected.value = list
-        } 
-
-        if(typeFilter === 'owner'){
-            const list = await newRequest()
-
-            const filterModel = (listOwner) => {
-                let count = {}
-                let owner = []
-
-                listOwner.forEach(el => {
-                    const id = el.owner.id;
-                    count[id] = (count[id] || 0) + 1
-                })
-
-                for (const id in count) {
-                    if (count[id] > 1) {
-                        const myListOwner = listOwner.filter(el => el.owner.id === parseInt(id))
-                        owner.push(...myListOwner);
-                    }
-                }
-
-                return owner;
-            }
-
-            return listSelected.value = filterModel(list)
-        }
-
-        if(typeFilter === 'model'){
-            const list = await newRequest()
-
-            const filterModel = (listModel) => {
-                let count = {}
-                let modelCar = []
-
-                listModel.forEach(el => {
-                    const id = el.vehicle.id;
-                    count[id] = (count[id] || 0) + 1
-                })
-
-                for (const id in count) {
-                    if (count[id] > 1) {
-                        const myListModel = listModel.filter(el => el.vehicle.id === parseInt(id))
-                        modelCar.push(...myListModel);
-                    }
-                }
-
-                return modelCar;
-            }
-
-            return listSelected.value = filterModel(list)
-        }
-
-        if(typeFilter === 'media-tempo'){
-            console.log("AQui")
-        }
-    }
-
-    const paginatedListReport = computed(() => {
+    
+    const paginatedList = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
         const endPage = startPage + itemsPerPage
         return listSelected.value.slice(startPage, endPage)
@@ -172,116 +96,110 @@
         }
     }
 
-    const newRequest = async () => {
+     /* carrega o relatorio de todas as pessoas */
+     onMounted(async () => {
         try {
-            const response = await axios.get(`${baseURL}/revisions`)
-            return response.data
+            const response = await axios.get(`${baseURL}/owners`)            
+            response.data.map(el => {
+                if(el.revision_vehicles.length > 0){
+                    reportOwner.value.push(el)
+                }
+            })
         } catch (error) {
-            console.log(error)
-        }
-    }
-
-    onMounted(async () => {
-        try {
-            const response = await axios.get(`${baseURL}/revisions`)
-
             loading.value = false
-            if(response.data.length > 0){
-                response.data.map((el) => {
-                    if(!el.is_done){
-                        listSelected.value.push(el) 
-                    }
-                })
-            }else {
-                listSelected.value = []
-            }
-        } catch (error) {
             console.log(error)
-            loading.value = false
         }
     })
 
-    const finishedRevision = async (e) => {
-        const result = confirm("Revisão finalizada?")
-        if(result){ 
-            const list = listSelected.value.filter(el => el.id != e.target.id)
-            listSelected.value = list
-
-            await update(e.target.id, 'revisions', { is_done: true })
+    /* carrega o relatorio de todos os veiculos */
+    onMounted(async () => {
+        try {
+            const response = await axios.get(`${baseURL}/vehicles`)
+            response.data.map(el => {
+                if(el.revision_vehicles.length > 0){
+                    if(el.revision_vehicles.length > 0){
+                        reportVehicles.value.push(el)
+                    }
+                }
+            })
+        } catch (error) {
+            loading.value = false
+            console.log(error)
         }
-    }
+    })
 
-    const finished = async (e) => {
-        const revision = listSelected.value.find(el => el.id == e.target.id)
-        const revisionUpdate = {
-            description: !inputDescription.value ? revision.description : inputDescription.value,
-            value: !inputValue.value ? revision.value: inputValue.value,
-            type_revision: !inputType.value ? revision.type_revision : inputType.value
+    /* carrega o relatorio de todas as revisões */
+    onMounted(async () => {
+        try {
+            const response = await axios.get(`${baseURL}/revisions`)
+            response.data.map(el => {
+                loading.value = false
+                listSelected.value.push(el)
+                allReport.value.push(el)
+            })
+        } catch (error) {
+            loading.value = false
+            console.log(error)
         }
-        
-        const response = await update(e.target.id, 'revisions', revisionUpdate)
-       
-        const indexRevision = listSelected.value.findIndex(el => el.id == e.target.id)
+    })
 
-        listSelected.value[indexRevision].type_revision = response.data.type_revision
-        listSelected.value[indexRevision].value = response.data.value
-        listSelected.value[indexRevision].description = response.data.description
-        
-        closeItem()
-        isFinish.value = false
-        isCancel.value = false
-        selectedItem.value = ''
+    /* busca pelo relatorio dentro de um periodo */
+    const filterByDate = () => {
+        if(!dateInitial.value || !dateLast.value) return
+
+        dateInitial.value = dateInitial.value.slice(0, 10)
+        dateLast.value = dateLast.value.slice(0, 10)
+
+        const startDate = moment(dateInitial.value).format('YYYY-MM-DD');
+        const endDate = moment(dateLast.value).format('YYYY-MM-DD');
+
+
+        listSelected.value = allReport.value.filter(revision => {
+            const revisionDate = moment(revision.created_at).format('YYYY-MM-DD')
+            return moment(revisionDate).isBetween(startDate, endDate, null, '[]')
+        })
     }
 
-    const updated = async (e) => {
-        if(!selectedItem.value){
-            isCancel.value = false
-            isUpdate.value = false
-            selectedItem.value = e.target.id
-            openItem(e.target.id, 'update')
-            return
-        }
-
-        closeItem()
-        selectedItem.value = ''
-        isCancel.value = false
-        isFinish.value = false
-        isUpdate.value = false
+    /* relatorio de todos as revisões */
+    const orderByAll = () => {
+        isReportOwner.value = false
+        isReportVehicles.value = false
+        listSelected.value = allReport.value
     }
 
-    const canceled = () => {
-        closeItem()
-        isFinish.value = false
-        isCancel.value = false
-        isUpdate.value = true
-        selectedItem.value = ''
+    /* relatorio das marcas com maior número de revisões */
+    const orderByBrand = () => {
+        isReportVehicles.value = true
+        isReportOwner.value = false
+        listSelected.value = reportVehicles.value
     }
-    */
+
+    /* relatorio das pessoas com maior número de revisões */
+    const orderByOwner = () => {
+        isReportOwner.value = true
+        isReportVehicles.value = false
+        listSelected.value = reportOwner.value
+    }
+
+    /* Médie de revisão de uma pessoa  */
+
+    /* Próxima revisão baseada no tempo médio da ultima revisão */
+
 </script>
 
 <style>
-    .filter {
-        display: flex;
-        align-items: center;
-        flex-flow: wrap;
-        justify-content: center;
-
-            > P {
-                border-radius: 0.3rem;
-                padding: 0.5rem;
-                border: 1px solid;
-            }
-    }
-
-    .list_owner {
-        display: flex;
-        flex-flow: column;
-        align-items: center;
-        border-radius: 1.5rem;
-        padding: 1.5rem;
-        position: relative;
-        margin: 0 auto;
-        height: 100%;
+    #container_date {
+        padding: 0.5rem;
         width: 100%;
+        
+        > h3 {
+            text-align: center;
+        }
+
+        > button {
+            width: 100%;
+            margin: 0.5rem 0;
+            height: 2rem;
+        } 
     }
 </style>

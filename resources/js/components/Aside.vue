@@ -162,6 +162,7 @@
         display: flex;
         flex-flow: column;
         padding: 0 0.7rem;
+        gap: 0.5rem
     }
 
     @media (min-width: 915px) {

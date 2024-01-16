@@ -1,5 +1,6 @@
 <template>
     <FormRegister id="form_register_owner" @submit.prevent="updateOwner()">
+        <h4>Editar Cliente</h4>
         <label for="name">Nome cliente
             <input :disabled="loading" required type="text" placeholder="Nome do cliente" v-model="owner.name">
         </label>
@@ -42,64 +43,57 @@
     import { useModalOpen, useListOwner } from '../../store/store'
     import { defineProps } from 'vue';
     
-    const props = defineProps(['owner'])
-
     const modal = useModalOpen()
     const list = useListOwner()
     const listBrand = ref([])
 
-    const apiUrl = import.meta.env.VITE_LINK_API;
+    const baseURL = import.meta.env.VITE_LINK_URL;    
+
+    let ownerUpdate = localStorage.getItem('ownerUpdate')
+    ownerUpdate = JSON.parse(ownerUpdate)
 
     const owner = ref({
-        name: props.owner.name,
-        cpf: props.owner.cpf,
-        age: props.owner.age,
-        gender: props.owner.gender
+        name: ownerUpdate.name,
+        cpf: ownerUpdate.cpf,
+        age: ownerUpdate.age,
+        gender: ownerUpdate.gender
     })
 
     const isCreateBtn = ref(true)
     const loading = ref(false)
 
-    /* lista as marcas dos veiculos */
-    onMounted( async () => {
-        try {
-            const response = await axios.get('https://parallelum.com.br/fipe/api/v1/carros') 
-            console.log(response)
-        } catch (error) {
-            
-        }
-    })
     const listBrandVehicles = () => {}
 
+    /* fecha o modal */
     const closeModal = () => modal.openModal()
 
+    /* atualiza o cliente */
     const updateOwner = async () => {
-        if(owner.value.age < 18) return toast.error("O cliente deve ser maior de 18")
-               
-        modal.openModal()
+        loading.value = true
 
-        // loading.value = true
-        /*
+        if(owner.value.age < 18) return toast.error("O cliente deve ser maior de 18")
+     
         try {
-            const response = await axios.post(`${apiUrl}/owners`, owner.value)
-            list.listOwner.push(response.data)
+            await axios.patch(`${baseURL}/owners/${ownerUpdate.id}`, owner.value)
+            localStorage.removeItem('ownerUpdate')
+
             isCreateBtn.value = true
             loading.value = false
-            toast.success("Cliente cadastrado");
             closeModal()
         } catch (error) {
             isCreateBtn.value = true
             loading.value = false
             console.log(error)
         }
-        */
     }
 
+    /* faz o regex do cpf */
     const validatedCpf = () => {
         owner.value.cpf = owner.value.cpf.replace(/[^\d]/g, '')
         owner.value.cpf = owner.value.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
     }
-
+    
+    /* verifica se tem letra no input */
     const validatedAge = () => {    
         if (!/^\d+$/.test(owner.value.age)) {
             owner.value.age = ''
