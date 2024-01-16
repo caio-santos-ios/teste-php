@@ -115,7 +115,6 @@
         
         try {
             const response = await axios.get(`${apiVehicles}/${vehicle.value.type}/marcas/${brand}/modelos/${e.target.value}/anos`)
-            // listModel.value = response.data.modelos
             listYear.value = response.data
         } catch (error) {
             console.log(error)
