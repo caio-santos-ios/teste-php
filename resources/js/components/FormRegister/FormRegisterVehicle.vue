@@ -83,9 +83,9 @@
     const selectType = async (e) => {
         if(!e.target.value) return console.log("Sem tipo")
         vehicle.value.type = e.target.value
-        
-        try {
-            const response = await axios.get(`${apiVehicles}/${e.target.value}/marcas`)
+    
+    try {
+        const response = await axios.get(`${apiVehicles}/${e.target.value}/marcas`)
             isType.value = false
             listBrand.value = response.data
         } catch (error) {
