@@ -27,7 +27,7 @@
             <button id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
                 <LoadingVue style="height: 3rem; width: 3rem;" />
             </button>
-            <button :disabled="!loading" id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
+            <button id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
         </div>
     </FormRegister>
 </template>
@@ -102,29 +102,4 @@
 </script>
 
 <style>
-    #form_register_owner {
-        display: flex;
-        background-color: white;
-        height: 30rem;
-        width: 100%;
-        max-width: 50rem;
-        border: none;
-        border-radius: 1.5rem;
-    }
-
-    #gender {
-        display: flex;
-
-        > p {
-            width: 100%;
-        }
-        
-        > div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 5rem;
-            height: 2rem;
-        }
-    }
 </style>

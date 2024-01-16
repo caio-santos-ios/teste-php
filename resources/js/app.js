@@ -39,15 +39,15 @@ app.component('revision-page', RevisionPage)
 
 app.component('dashboard', Dashboard)
 app.component('list', List)
+
+
 app.component('form-register-generic', FormRegister)
 app.component('form-register-revision', FormRegisterVerision)
-
 app.component('form-register-owner', FormRegisterOwner)
-app.component('form-update-owner', FormUpdateOwner)
-
-
 app.component('form-register-vehicle', FormRegisterVehicle)
 app.component('form-update-owner', FormUpdateOwner)
+
+
 app.component('graphic-bar', GraphicBar)
 app.component('report', Report)
 app.component('report-vehicle', ReportVehicle)

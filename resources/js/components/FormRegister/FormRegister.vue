@@ -4,6 +4,7 @@
     </form>
 </template>
 <script setup>
+
 </script>
 <style>
     .form_register {

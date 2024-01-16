@@ -1,7 +1,8 @@
 <template>
     <Modal v-if="modal.isOpenModal">
-        <FormRegisterOwner v-if="isCreate" />
+        <FormRegisterOwner v-if="isCreateOwner" />
         <FormUpdateOwner :owner="ownerUpdate" v-if="isUpdate"/>
+        <FormRegisterVehicle v-if="isCreateVehicle" />
     </Modal>
     <section>
         <div id="header_report">
@@ -33,7 +34,7 @@
                 <p>{{ item.revision_vehicles.length }}</p>
                 <i @click="remove" :id="item.id" class="fa-solid fa-trash"></i>                
                 <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
-                <i :id="item.id" class="fa-solid fa-square-plus"></i>
+                <i @click="openModalCreateVehicle" :id="item.id" class="fa-solid fa-square-plus"></i>
             </li>
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
             <div id="footer_page">
@@ -56,6 +57,7 @@
     import Modal from './Modal.vue';
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
     import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue';
+    import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/store'
     import {destroy} from './Report.vue'
@@ -67,7 +69,8 @@
 
     const listSelected = ref([]) 
 
-    const isCreate = ref(false)
+    const isCreateOwner = ref(false)
+    const isCreateVehicle = ref(false)
     const isUpdate = ref(false)
 
     const ownerUpdate = ref('')
@@ -123,10 +126,10 @@
         }
     })
 
-    /* abrir modal de criação */
+    /* abrir modal de criação de clientes */
     const openModalCreate = () => {
         modal.openModal()
-        isCreate.value = true
+        isCreateOwner.value = true
         isUpdate.value = false
     } 
 
@@ -134,10 +137,16 @@
     const openModalUpdate = (e) => {
         const filter = list.listOwner.find(el => el.id == e.target.id)
         ownerUpdate.value = filter
-
         modal.openModal()
-        isCreate.value = false
+        isCreateOwner.value = false
         isUpdate.value = true
+    }
+
+    /* abrir modal de criação de veiculos */
+    const openModalCreateVehicle = (e) => {
+        localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
+        modal.openModal()
+        isCreateVehicle.value = true
     }
 
     /* deletar cliente */
@@ -400,7 +409,7 @@
             closeItem()
             isFinish.value = false
             isCancel.value = false
-            isCreate.value = true
+            isCreateOwner.value = true
             isUpdate.value = true
             isDeleted.value = true
             confirm("Deseja deletar este cliente?")

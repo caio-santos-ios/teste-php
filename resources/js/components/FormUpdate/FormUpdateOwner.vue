@@ -46,6 +46,7 @@
 
     const modal = useModalOpen()
     const list = useListOwner()
+    const listBrand = ref([])
 
     const apiUrl = import.meta.env.VITE_LINK_API;
 
@@ -58,6 +59,17 @@
 
     const isCreateBtn = ref(true)
     const loading = ref(false)
+
+    /* lista as marcas dos veiculos */
+    onMounted( async () => {
+        try {
+            const response = await axios.get('https://parallelum.com.br/fipe/api/v1/carros') 
+            console.log(response)
+        } catch (error) {
+            
+        }
+    })
+    const listBrandVehicles = () => {}
 
     const closeModal = () => modal.openModal()
 

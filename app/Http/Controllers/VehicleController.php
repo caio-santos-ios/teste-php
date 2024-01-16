@@ -22,6 +22,8 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         $data = $request->input();
+        
+        return response()->json($data, 201);    
 
         $owner = Owner::find($data['owner_id']);
 
