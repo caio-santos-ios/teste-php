@@ -12,11 +12,12 @@ import List from './components/List.vue'
 import Home from './components/Home.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
 
-import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
-import FormUpdateOwner from './components/FormUpdate/FormUpdateOwner.vue'
-
 import FormRegisterVehicle from './components/FormRegister/FormRegisterVehicle.vue'
 import FormRegisterVerision from './components/FormRegister/FormRegisterRevision.vue'
+import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
+import FormUpdateOwner from './components/FormUpdate/FormUpdateOwner.vue'
+import FormUpdateVehicle from './components/FormUpdate/FormUpdateVehicle.vue'
+
 import GraphicBar from './components/GraphicBar.vue'
 import Report from './components/Report.vue'
 import ReportVehicle from './components/ReportVehicle.vue'
@@ -46,6 +47,7 @@ app.component('form-register-revision', FormRegisterVerision)
 app.component('form-register-owner', FormRegisterOwner)
 app.component('form-register-vehicle', FormRegisterVehicle)
 app.component('form-update-owner', FormUpdateOwner)
+app.component('form-update-vehicle', FormUpdateVehicle)
 
 
 app.component('graphic-bar', GraphicBar)

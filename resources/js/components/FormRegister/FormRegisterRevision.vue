@@ -1,80 +1,129 @@
 <template>
-    <FormRegister v-if="myRegister" @submit.prevent="registerRevision()">
-        <div class="gender">
-            <input value="hidraulico" type="radio" id="hidraulico" v-model="typeRevision" />
-            <label for="hidraulico">Hidraulico</label>
-        </div>
-
-        <div class="gender">
-            <input value="borracharia" type="radio" id="borracharia" v-model="typeRevision" />
-            <label for="borracharia">Borracharia</label>
-        </div>
-
-        <div class="gender">
-            <input value="eletrica" type="radio" id="eletrica" v-model="typeRevision" />
-            <label for="eletrica">Eletrica</label>
-        </div>
-
-        <div class="gender">
-            <input value="pintura" type="radio" id="pintura" v-model="typeRevision" />
-            <label for="pintura">Pintura</label>
-        </div>
-
-        <div class="gender">
-            <input value="troca de oleo" type="radio" id="troca_oleo" v-model="typeRevision" />
-            <label for="troca_oleo">Troca de óleo</label>
-        </div>
-        
-        
-        <label for="value">Valor
-            <input type="text" placeholder="R$ 100,00" v-model="value">
+    <FormRegister id="form_register_owner" @submit.prevent="registerRevision()">
+        <label for="type">Tipo da Revisão
+            <select required @click="selectType" name="type" id="type">
+                <option value=""></option>
+                <option v-for="(item, index) in tablePrice" :key="index" :value="item.type">{{ item.type }}</option>
+            </select>
         </label>
 
-        <label for="descrition">Descrição
-            <input type="text" placeholder="Descrição do serviço" v-model="description">
+        <label for="value">
+            Valor
+            <button type="button" @click="enableValue">Editar valor</button>
+            <input :disabled="!editValue || !revision.type_revision == 'Outros'" required maxlength="11" minlength="11" type="text" @input="validatedValue" placeholder="R$ 0" v-model="revision.value">
         </label>
 
-        <button type="submit" class="btn_register btn_finish" >Finalizar</button>
-    </FormRegister>   
+        <label for="description">
+            Descrição
+            <input required type="text" placeholder="Decrição" v-model="revision.description">
+        </label>
+
+        <div id="footer_btns">
+            <button id="btn_finish" :disabled="!isCreateBtn" v-if="!loading">Cadastrar</button>
+            <button id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
+                <LoadingVue style="height: 3rem; width: 3rem;" />
+            </button>
+            <button :disabled="!isCreateBtn" id="btn_cancel" @click="closeModal">Cancelar</button>
+        </div>
+    </FormRegister>
 </template>
 
 <script setup>
     import axios from 'axios';
-    import FormRegister from './FormRegister.vue';
-    import { useStore } from 'vuex';
-    import { ref, computed } from 'vue';
+    import { toast } from 'vue3-toastify';
+    import 'vue3-toastify/dist/index.css';
+    import { ref, watch } from 'vue';
+    import FormRegister from './FormRegister.vue'; 
+    import LoadingVue from '../Loading.vue';
+    import { useModalOpen, useListOwner } from '../../store/store'
+    
+    const modal = useModalOpen()
+    const list = useListOwner()
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com'
+    const baseURL = import.meta.env.VITE_LINK_URL;    
 
-    const store = useStore()
+    const isCreateBtn = ref(true)
+    const loading = ref(false)
+    const editValue = ref(false)
+    const tablePrice = ref([
+        {
+            type: 'Pintura',
+            price: 100
+        },
+        {
+            type: 'Troca de oleo',
+            price: 60
+        },
+        {
+            type: 'Troca de um pneu',
+            price: 500
+        },
+        {
+            type: 'Manutenção nos freios',
+            price: 600
+        },
+        {
+            type: 'Outros',
+            price: 0
+        }
+    ])
 
-    const myRegister = computed(() => store.getters.myRegister);
-    const myOwner = computed(() => store.getters.myOwner);
-    const myIdVehicle = computed(() => store.getters.myIdVehicle);
+    const idVehicle = localStorage.getItem('idVehicle')
+    const idOwner = localStorage.getItem('idOwner')
 
-    const isFinish = ref(false)
-    const typeRevision = ref('')
-    const value = ref('')
-    const description = ref('')
+    const revision = ref({
+        type_revision: '',
+        value: '',
+        description: '',
+        owner_id: idOwner
+    })
 
+    const enableValue = () => editValue.value = !editValue.value
+
+    const closeModal = () => modal.openModal()
+
+    /* seleciona o tipo da revisão */
+    const selectType = async (e) => {
+        if(!revision.value.value) {
+            if(!e.target.value) return
+            revision.value.type_revision = e.target.value
+            revision.value.value = tablePrice.value.find(el => el.type == e.target.value).price
+        }
+
+        if(!e.target.value) return
+        revision.value.type_revision = e.target.value
+        revision.value.value = tablePrice.value.find(el => el.type == e.target.value).price
+    }
+
+    /* criação da revisão */
     const registerRevision = async () => {
-        const myRevision = {
-            value: value.value,
-            description: description.value,
-            owner_id: myOwner.value.id, 
-            type_revision: typeRevision.value
-        }
-        console.log(myRevision)
+        if(revision.value.value == 0) return toast.error('Coloque um valor na revisão')
+        loading.value = true
+        isCreateBtn.value = false   
+        console.log(revision.value)
         try {
-            const response = await axios.post(`${baseURL}/revision/${myIdVehicle.value}`, myRevision)
-            store.commit('setRegister')
-            document.location.reload()
+            const response = await axios.post(`${baseURL}/revisions/${idVehicle}`, revision.value)
+            console.log(response)
+            isCreateBtn.value = true
+            loading.value = false
+            toast.success("Revisão cadastrada");
+            closeModal()
         } catch (error) {
+            isCreateBtn.value = true
+            loading.value = false
             console.log(error)
+            if(error.response.status == 500){
+                toast.error("Erro interno, tente novamente")
+            }
         }
+    }
+
+    /* regex do valor da revisão */
+    const validatedValue = () => {
+        revision.value.value = revision.value.value.replace(/[^\d]/g, '')
+        revision.value.value = revision.value.value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3,$4')
     }
 </script>
 
 <style>
-    
 </style>

@@ -1,25 +1,12 @@
 <template>
-    <FormRegister id="form_register_owner" @submit.prevent="updateOwner()">
+    <FormRegister id="form_register_owner" @submit.prevent="updateVehicle()">
         <h4>Editar Cliente</h4>
-        <label for="name">Nome cliente
-            <input :disabled="loading" required type="text" placeholder="Nome do cliente" v-model="owner.name">
-        </label>
-
-        <label for="cpf">
-        CPF
-            <input :disabled="loading" required maxlength="11" minlength="11" type="text" @input="validatedCpf" placeholder="Cpf do cliente" v-model="owner.cpf">
-        </label>
-
-        <label for="age">Idade cliente
-            <input :disabled="loading"  required maxlength="3" type="text" @input="validatedAge" placeholder="Idade do cliente" v-model="owner.age">
-        </label>
-        
-        <label for="gender">
-            Sexo
-            <select :disabled="loading" required id="gender" v-model="owner.gender">
-                <option value="">Selecione o sexo</option>
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
+        <label for="type">Tipo do veiculo
+            <select required @click="selectType" name="type" id="typr">
+                <option value=""></option>
+                <option value="carros">Carros</option>
+                <option value="motos">Motos</option>
+                <option value="caminhoes">Caminhões</option>
             </select>
         </label>
 
@@ -41,29 +28,32 @@
     import FormRegister from '../FormRegister/FormRegister.vue'; 
     import LoadingVue from '../Loading.vue';
     import { useModalOpen } from '../../store/store';
+    import { onMounted } from  'vue'
     
     const modal = useModalOpen()
 
     const baseURL = import.meta.env.VITE_LINK_URL;    
 
-    let ownerUpdate = localStorage.getItem('ownerUpdate')
-    ownerUpdate = JSON.parse(ownerUpdate)
+    let idVehicle = localStorage.getItem('idVehicle')
+    idVehicle = JSON.parse(idVehicle)
 
-    const owner = ref({
-        name: ownerUpdate.name,
-        cpf: ownerUpdate.cpf,
-        age: ownerUpdate.age,
-        gender: ownerUpdate.gender
+    const vehicles = ref({
+       
     })
 
     const isCreateBtn = ref(true)
     const loading = ref(false)
 
+    /* carrega as informações do veiculo selecionado */
+    onMounted(() => {
+        console.log("Aqui")
+    })
+
     /* fecha o modal */
     const closeModal = () => modal.openModal()
 
     /* atualiza o cliente */
-    const updateOwner = async () => {
+    const updateVehicle = async () => {
         loading.value = true
 
         if(owner.value.age < 18) return toast.error("O cliente deve ser maior de 18")
@@ -80,22 +70,6 @@
             loading.value = false
             console.log(error)
         }
-    }
-
-    /* faz o regex do cpf */
-    const validatedCpf = () => {
-        owner.value.cpf = owner.value.cpf.replace(/[^\d]/g, '')
-        owner.value.cpf = owner.value.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-    }
-    
-    /* verifica se tem letra no input */
-    const validatedAge = () => {    
-        if (!/^\d+$/.test(owner.value.age)) {
-            owner.value.age = ''
-            return false;
-        }
-    
-        owner.value.age = parseInt(owner.value.age)
     }
 </script>
 

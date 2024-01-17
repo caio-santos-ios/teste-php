@@ -11,7 +11,7 @@ class RevisionVehicleController extends Controller
 {
     public function index()
     {
-        $findRevisionVehicle = RevisionVehicle::with(['owner', 'vehicle'])->get();
+        $findRevisionVehicle = RevisionVehicle::with(['owner', 'vehicle'])->where('is_done', false)->get();
         
         return $findRevisionVehicle;  
     }

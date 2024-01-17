@@ -42,6 +42,10 @@
   }
 }
 
+#title_list {
+  font-weight: 700;
+}
+
 
 /* icone de delete item */
 .fa-trash {
@@ -81,7 +85,7 @@
 @media (min-width: 915px) {
   /* lista */
   #list {
-    height: 35rem;
+    height: 30rem;
     max-width: 55rem;
   } 
 

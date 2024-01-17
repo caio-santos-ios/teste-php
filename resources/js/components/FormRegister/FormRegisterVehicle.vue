@@ -1,7 +1,7 @@
 <template>
     <FormRegister id="form_register_owner" @submit.prevent="created()">
         <label for="type">Tipo do veiculo
-            <select required @click="selectType" name="type" id="typr">
+            <select required @click="selectType" name="type" id="type">
                 <option value=""></option>
                 <option value="carros">Carros</option>
                 <option value="motos">Motos</option>
@@ -84,8 +84,8 @@
         if(!e.target.value) return
         vehicle.value.type = e.target.value
     
-    try {
-        const response = await axios.get(`${apiVehicles}/${e.target.value}/marcas`)
+        try {
+            const response = await axios.get(`${apiVehicles}/${e.target.value}/marcas`)
             isType.value = false
             listBrand.value = response.data
         } catch (error) {

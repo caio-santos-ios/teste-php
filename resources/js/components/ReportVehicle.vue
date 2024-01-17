@@ -1,6 +1,7 @@
 <template>
      <Modal v-if="modal.isOpenModal">
         <FormRegisterVehicle v-if="isCreateNewVehicle" />
+        <FormRegisterRevision v-if="isCreateRevision" />
     </Modal>
     <Report>
         <div id="header_report">            
@@ -30,12 +31,16 @@
                 <p>{{ isOwner ? 'Veiculos' : 'Entrada' }}</p>
                 <p>{{ isOwner ? 'Em Revisão' : 'Marca'}}</p>
                 <p>{{ isOwner ? 'Entrada' : 'Placa' }}</p>
+                <i></i>
+                <i></i>
             </li>
             <li id="item_list" v-if="!loading" :value="item.id" v-for="item in paginatedList" :key="item.id">
                 <p >{{  isOwner ? item.name : item.owner.name }}</p>
                 <p >{{  isOwner ? item.vehicles.length : item.created_at.slice(0, 10) }}</p>
                 <p >{{  isOwner ? item.revision_vehicles.length : item.brand }}</p>
                 <p >{{  isOwner ? item.created_at.slice(0, 10) : item.plate }}</p>
+                <i @click="" :id="item.id" class="fa-solid fa-trash"></i>         
+                <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>       
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
             <h2 v-if="!loading && listSelected.length === 0">Sem Veiculos</h2>
@@ -61,6 +66,7 @@
     import Report from './Report.vue'
     import { useModalOpen } from '../store/store'
     import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
+    import FormRegisterRevision from './FormRegister/FormRegisterRevision.vue';
     import Modal from './Modal.vue';
     
     const modal = useModalOpen()
@@ -78,9 +84,11 @@
     const allReport = ref([])
     const listOwners = ref([])
     const isApplicationFilter = ref(true)
+    const isCreateNewVehicle = ref(false)
+    const isCreateRevision = ref(false)
+
     const itemsPerPage = 16
     const currentPage = ref(1) 
-    const isCreateNewVehicle = ref(false)
     
     const paginatedList = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
@@ -175,28 +183,29 @@
 
     /* busca pelo cpf do cliente */
     watch(search, async () => {
-        /*
-        if(filterSelected.value === 'feminino') {
-            listOwners.value = listOwners.value.filter(el => el.cpf.includes(search.value))       
-            return
-        }
-
-        if(filterSelected.value === 'masculino') {
-            listOwners.value = listOwners.value.filter(el => el.cpf.includes(search.value))       
-            return
-        }
-        */
-
         search.value = search.value.replace(/[^0-9.-]/g, '');
 
         listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
     })
 
-    /* abrir modal de criação de veiculos */
+    /* abre modal de criação de veiculos */
     const openModalCreateVehicle = (e) => {
         localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
         modal.openModal()
         isCreateNewVehicle.value = true
+        isUpdateVehicle.value = false
+    }
+
+    /* abre o modal de atualizar os veiculos */
+    const openModalCreateRevision = (e) => {
+        const findOwner = allReport.value.find(el => el.id == e.target.id)
+
+        localStorage.setItem('idVehicle', e.target.id)
+        localStorage.setItem('idOwner', findOwner.owner_id)
+
+        modal.openModal()
+        isCreateNewVehicle.value = false
+        isCreateRevision.value = true
     }
 </script>
 
@@ -204,7 +213,7 @@
     #list_search {
         position: fixed;
         width: 100%;
-        top: 10rem;
+        top: 15rem;
         z-index: 1;
         display: flex;
         flex-flow: column;
@@ -213,5 +222,13 @@
         background-color: white;
         height: 30rem;
         overflow-y: auto;
+    }
+
+    @media (min-width: 915px) {
+        #list_search {
+            width: 70%;
+            max-width: 55rem;
+            top: 7rem;
+        }
     }
 </style>

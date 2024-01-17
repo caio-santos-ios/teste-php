@@ -271,13 +271,14 @@
             justify-content: space-between;
             max-width: 55rem;
         }
-
+        
         /* barra de busca do cliente */
         #search {
             width: 100%;
-            max-width: 20rem;
+            max-width: 55rem;
             height: 2rem;
             padding: 0 0.5rem;
+            margin: 0 auto;
         }
 
         /* botão para adicionar cliente */

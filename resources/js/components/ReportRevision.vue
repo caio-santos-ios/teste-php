@@ -23,6 +23,7 @@
                 <p v-if="!isReportOwner && !isReportVehicles">Tipo</p>
                 <p v-if="isReportVehicles">Marca</p>
                 <p v-if="isReportVehicles || isReportOwner">Veiculos em revisão</p>
+                <i></i>
             </li>
             <li id="item_list" v-if="!loading" :value="item.id" v-for="item in paginatedList" :key="item.id">
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.owner.name }}</p>
@@ -31,6 +32,7 @@
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.type_revision }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ isReportVehicles ? item.brand : item.name }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ item.revision_vehicles.length }}</p>
+                <i class="fa-regular fa-square-check"></i>
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
             <h4 v-if="!loading && listSelected.length === 0">Sem Revisões</h4>
@@ -99,14 +101,14 @@
      /* carrega o relatorio de todas as pessoas */
      onMounted(async () => {
         try {
-            const response = await axios.get(`${baseURL}/owners`)            
+            const response = await axios.get(`${baseURL}/owners`)     
+            loading.value = false       
             response.data.map(el => {
                 if(el.revision_vehicles.length > 0){
                     reportOwner.value.push(el)
                 }
             })
         } catch (error) {
-            loading.value = false
             console.log(error)
         }
     })
@@ -123,7 +125,6 @@
                 }
             })
         } catch (error) {
-            loading.value = false
             console.log(error)
         }
     })
@@ -132,11 +133,12 @@
     onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/revisions`)
+            loading.value = false
             response.data.map(el => {
-                loading.value = false
                 listSelected.value.push(el)
                 allReport.value.push(el)
             })
+            console.log(response.data)
         } catch (error) {
             loading.value = false
             console.log(error)
