@@ -82,7 +82,7 @@
     const modal = useModalOpen()
     const list = useListOwner()
 
-    const itemsPerPage = 16
+    const itemsPerPage = 10
     const currentPage = ref(1) 
 
     const paginatedList = computed(() => {

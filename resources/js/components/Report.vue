@@ -50,12 +50,13 @@
     section {
         width: 95vw;
         margin: 0 auto;
-        padding-top: 5rem;
+        padding-top: 10rem;
         display: flex;
         flex-flow: column;
         align-items: center;
         gap: 1rem;
         position: relative;
+        background-color: red;
     }
 
     /* header do relatorio */ 

@@ -5,111 +5,7 @@
 </template>
 
 <script setup>   
-/*
-import { useStore } from 'vuex';
-import Loading from './Loading.vue';
 
-const store = useStore()
-
-const apiUrl = import.meta.env.VITE_LINK_API;
-
-const baseURL = '';
-const mySearch = ref('')
-const listOwner = ref([])
-const itemOpen = ref('') 
-const loading = ref(true) 
-
-const itemsPerPage = 7
-const currentPage = ref(1)
-
-const paginatedListVehicles = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  return listOwner.value.slice(startIndex, endIndex);
-})
-
-const totalPages = computed(() => Math.ceil(listOwner.value.length / itemsPerPage));
-
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
-}
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
-}
-
-onMounted(async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/owners`);
-    console.log(response)
-    listOwner.value = response.data;
-    loading.value = false
-  } catch (error) {
-    loading.value = false;
-    console.log(error)
-  }
-});
-
-watch(mySearch, async () => {
-  if(!mySearch) return 
-    
-  try {
-    const response = await axios.get(`${apiUrl}/owners?cpf=${mySearch.value}`);
-    listOwner.value = response.data;
-  } catch (error) {
-    console.error(error);
-  }
-})
-
-watch(store.getters.myOwners, () => {
-  const lastOwner = store.getters.myOwners[store.getters.myOwners.length - 1]
-  listOwner.value.push(lastOwner)
-})
-
-const addCar = (e) => {
-  const itemOwner = document.querySelectorAll(".item_is_open")
-  const form = document.querySelectorAll(".form_register")
-  
-  itemOpen.value = e.target.id 
-  localStorage.setItem('id', JSON.stringify(e.target.id))
-  
-  form.forEach((el) => {
-    if(!itemOpen.value && e.target.id == el.id) {
-      setTimeout(() => {
-        el.classList.toggle('open_form_register')
-      }, 200)
-
-      return 
-    } 
-    if(e.target.id == el.id){
-      setTimeout(() => {
-        el.classList.toggle('open_form_register')
-      }, 200)
-    }else{
-      el.classList.remove('open_form_register')
-    }
-  })
-
-  itemOwner.forEach((el) => {
-    if(!itemOpen.value) {
-      el.classList.toggle('open_item')      
-      return 
-    } 
-    
-    if(e.target.id == el.id){
-      el.classList.toggle('open_item')
-    }else{
-      el.classList.remove('open_item')
-    }
-
-  })
-
-}
-*/
 </script>
 
 <style>
@@ -122,8 +18,8 @@ const addCar = (e) => {
   align-items: center;
   gap: 0.5rem;
   background-color: white;
-  height: 42rem;
   position: relative;
+  padding: 0 0 2.5rem 0;
 }
 
 /* titulo dos itens e o item da lista */
@@ -168,7 +64,7 @@ const addCar = (e) => {
   gap: 1rem;
   width: 100%;
   position: absolute;
-  bottom: 1rem;
+  bottom: 0;
   align-items: center;
 
   > button {
@@ -184,7 +80,7 @@ const addCar = (e) => {
 @media (min-width: 915px) {
   /* lista */
   #list {
-    height: 51rem;
+    height: 35rem;
     max-width: 55rem;
   } 
 
