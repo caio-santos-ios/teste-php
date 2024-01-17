@@ -56,7 +56,6 @@
         align-items: center;
         gap: 1rem;
         position: relative;
-        background-color: red;
     }
 
     /* header do relatorio */ 
