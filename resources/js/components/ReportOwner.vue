@@ -45,7 +45,7 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <span>{{ currentPage }} de {{ totalPages }}</span>
-                <button @click="nextPage" :disabled="totalPages <= 1">
+                <button @click="nextPage" :disabled="totalPages <= 1 || totalPages === currentPage">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -123,7 +123,6 @@
                 if (a.vehicles.length < b.vehicles.length) {
                     return -1;
                 }
-                // a must be equal to b
                 return 0;
             }).reverse()
                         

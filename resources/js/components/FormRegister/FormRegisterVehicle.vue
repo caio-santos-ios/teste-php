@@ -1,7 +1,7 @@
 <template>
     <FormRegister id="form_register_owner" @submit.prevent="created()">
         <label for="type">Tipo do veiculo
-            <select @click="selectType" name="type" id="typr">
+            <select required @click="selectType" name="type" id="typr">
                 <option value=""></option>
                 <option value="carros">Carros</option>
                 <option value="motos">Motos</option>
@@ -10,21 +10,21 @@
         </label>
 
         <label for="brand">Marca do veiculo
-            <select @click="selectBrand" :disabled="isType" name="brand" id="brand">
+            <select required @click="selectBrand" :disabled="isType" name="brand" id="brand">
                 <option value=""></option>
                 <option v-for="brand in listBrand" :value="brand.codigo">{{ brand.nome }}</option>
             </select>
         </label>
 
         <label for="model">Modelo do veiculo
-            <select @click="selectModel" name="model" id="model">
+            <select required @click="selectModel" :disabled="isType" name="model" id="model">
                 <option value=""></option>
                 <option v-for="model in listModel" :value="model.codigo">{{ model.nome }}</option>
             </select>
         </label>
 
         <label for="year">Ano do veiculo
-            <select @click="selectYear" name="year" id="year">
+            <select required @click="selectYear" :disabled="isType" name="year" id="year">
                 <option value=""></option>
                 <option v-for="year in listYear" :value="year.nome">{{ year.nome }}</option>
             </select>
@@ -32,11 +32,11 @@
 
         <label for="plate">
             Placa do Veiculo
-            <input type="text" name="plate" id="plate" placeholder="Placa" v-model="vehicle.plate">
+            <input required type="text" maxlength="7" minlength="7" name="plate" id="plate" placeholder="Placa" @input="validatedPlate" v-model="vehicle.plate">
         </label>
 
         <div id="footer_btns">
-            <button id="btn_finish" v-if="!loading" type="submit" class="btn_register">Cadastrar</button>
+            <button id="btn_finish" :disabled="!isCreateBtn" v-if="!loading" type="submit" class="btn_register">Cadastrar</button>
             <button id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
                 <LoadingVue style="height: 3rem; width: 3rem;" />
             </button>
@@ -74,7 +74,7 @@
     const listModel = ref([])
     const listYear = ref([])
 
-    const isCreateBtn = ref(true)
+    const isCreateBtn = ref(false)
     const loading = ref(false)
 
     const closeModal = () => modal.openModal()
@@ -95,6 +95,7 @@
  
     /* seleciona a marca do veiculo */
     const selectBrand = async (e) => {
+        console.log(vehicle.value.brand)
         if(!e.target.value) return
         vehicle.value.brand = listBrand.value.find(el => el.codigo == e.target.value).nome
 
@@ -127,18 +128,25 @@
         vehicle.value.year = e.target.value
     }
 
+    /* faz o regex da placa do veiculo */
+    const validatedPlate = () => {
+        const regex = '[A-Z]{3}[0-9][0-9A-Z][0-9]{2}'
+
+        if(vehicle.value.plate.match(regex)){
+            isCreateBtn.value = true
+        }
+    }
+
     /* finaliza cadastro */
     const created = async () => {
         const idVehicle = localStorage.getItem("idVehicle")
         const id = JSON.parse(idVehicle)
         vehicle.value.owner_id = Number(id)
         
-        // return console.log(vehicle.value)
         try {
             const response = await axios.post(`${baseURL}/vehicles`, vehicle.value)
             localStorage.removeItem('idVehicle')
             modal.openModal()
-            console.log(response.data)
         } catch (error) {
             console.log(error)
         }

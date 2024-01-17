@@ -20,6 +20,7 @@
   background-color: white;
   position: relative;
   padding: 0 0 2.5rem 0;
+  min-height: 25rem;
 }
 
 /* titulo dos itens e o item da lista */

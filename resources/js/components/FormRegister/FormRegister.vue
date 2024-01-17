@@ -62,6 +62,11 @@
         #btn_cancel {
             background-color: rgb(227, 30, 30);
         }
+
+        #btn_finish:disabled {
+            background-color: rgb(30, 119, 3);
+            color: rgb(155, 157, 157);
+        }
     }
 
     @media (min-width: 915px) {
