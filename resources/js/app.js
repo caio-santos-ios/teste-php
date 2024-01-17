@@ -9,7 +9,7 @@ import RevisionPage from './components/pages/RevisionPage.vue'
 
 
 import List from './components/List.vue'
-import Dashboard from './components/Dashboard.vue'
+import Home from './components/Home.vue'
 import FormRegister from './components/FormRegister/FormRegister.vue'
 
 import FormRegisterOwner from './components/FormRegister/FormRegisterOwner.vue'
@@ -37,7 +37,7 @@ app.component('owner-page', OwnerPage)
 app.component('vehicle-page', VehiclePage)
 app.component('revision-page', RevisionPage)
 
-app.component('dashboard', Dashboard)
+app.component('home', Home)
 app.component('list', List)
 
 

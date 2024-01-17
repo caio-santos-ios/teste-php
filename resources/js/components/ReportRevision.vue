@@ -25,7 +25,6 @@
                 <p v-if="isReportVehicles || isReportOwner">Veiculos em revisão</p>
             </li>
             <li id="item_list" v-if="!loading" :value="item.id" v-for="item in paginatedList" :key="item.id">
-                <h4 v-if="!loading && paginatedList.length === 0">Sem Revisões</h4>
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.owner.name }}</p>
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.vehicle.brand }}</p>
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.value }}</p>
@@ -34,6 +33,7 @@
                 <p v-if="isReportVehicles || isReportOwner">{{ item.revision_vehicles.length }}</p>
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
+            <h4 v-if="!loading && listSelected.length === 0">Sem Revisões</h4>
 
             <div id="footer_page">
                 <button @click="prevPage" :disabled="currentPage === 1">

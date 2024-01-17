@@ -10,7 +10,7 @@
             <a href="/" class="item_menu">
                 <div id="icon_item">
                     <i class="fa-solid fa-gauge"></i>
-                    <p>Dashboard</p>
+                    <p>Home</p>
                 </div>
             </a>
 
@@ -230,7 +230,6 @@
             /* item do menu aside aberto */
             .item_menu {
                 border: none;
-                background-color: antiquewhite;
 
                 #icon_item {
                     height: 4rem;

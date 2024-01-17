@@ -81,7 +81,7 @@
 
     /* seleciona o tipo do veiculo */
     const selectType = async (e) => {
-        if(!e.target.value) return console.log("Sem tipo")
+        if(!e.target.value) return
         vehicle.value.type = e.target.value
     
     try {
@@ -95,7 +95,7 @@
  
     /* seleciona a marca do veiculo */
     const selectBrand = async (e) => {
-        if(!e.target.value) return console.log("Sem tipo")
+        if(!e.target.value) return
         vehicle.value.brand = listBrand.value.find(el => el.codigo == e.target.value).nome
 
         try {
@@ -109,7 +109,7 @@
 
     /* seleciona o modelo do veiculo */
     const selectModel = async (e) => {
-        if(!e.target.value) return console.log("Sem tipo")
+        if(!e.target.value) return
         vehicle.value.model = listModel.value.find(el => el.codigo == e.target.value).nome
         const brand = listBrand.value.find(el => el.nome == vehicle.value.brand).codigo
         
@@ -123,7 +123,7 @@
 
     /* seleciona o ano do veiculo */
     const selectYear = (e) => {
-        if(!e.target.value) return console.log("Sem tipo")
+        if(!e.target.value) return
         vehicle.value.year = e.target.value
     }
 
@@ -133,10 +133,12 @@
         const id = JSON.parse(idVehicle)
         vehicle.value.owner_id = Number(id)
         
+        // return console.log(vehicle.value)
         try {
             const response = await axios.post(`${baseURL}/vehicles`, vehicle.value)
             localStorage.removeItem('idVehicle')
-            console.log(response)
+            modal.openModal()
+            console.log(response.data)
         } catch (error) {
             console.log(error)
         }

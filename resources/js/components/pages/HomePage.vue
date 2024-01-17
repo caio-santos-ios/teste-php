@@ -1,22 +1,19 @@
 <template>
     <main id="main_home">
         <Aside />
-        <!--
-            <Dashboard />
-        -->
+        <Home />
     </main>
 </template>
 
 <script setup>
     import Aside from '../Aside.vue';
-    import Dashboard from '../Dashboard.vue';
+    import Home from '../Home.vue';
 
 </script>
 
 <style>
     #main_home {
         min-height: 100vh;
-        width: 95vw;
         display: block;   
     }
     

@@ -1,9 +1,13 @@
 <template>
+     <Modal v-if="modal.isOpenModal">
+        <FormRegisterVehicle v-if="isCreateNewVehicle" />
+    </Modal>
     <Report>
         <div id="header_report">            
             <div id="container_date">
                 <h3>Relatorios - Veiculos</h3>
             </div>
+            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
             <div id="container_type_report">
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByAll">Todas os veiculos</button>
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByOwner">Por proprietario</button>
@@ -13,6 +17,13 @@
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByBrand">Por marcas</button>
             </div>
         </div>
+        <ul v-if="search" id="list_search">
+            <li id="item_list" v-for="item in listSearch">
+                <p>{{ item.name }}</p>
+                <p>{{ item.cpf }}</p>
+                <i @click="openModalCreateVehicle" :id="item.id" class="fa-solid fa-square-plus"></i>
+            </li>
+        </ul>
         <List>
             <li id="title_list">
                 <p>Proprietario</p>
@@ -44,23 +55,32 @@
 
 <script setup>
     import axios from 'axios';
-    import { ref, onMounted, computed } from 'vue';
+    import { ref, onMounted, computed, watch } from 'vue';
     import List from './List.vue';
     import Loading from './Loading.vue';
     import Report from './Report.vue'
+    import { useModalOpen } from '../store/store'
+    import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
+    import Modal from './Modal.vue';
     
+    const modal = useModalOpen()
+
+    const search = ref('')
+
     const loading = ref(true)
     const typeReport = ref('all')
     const isOwner = ref(false)
 
     const baseURL = import.meta.env.VITE_LINK_URL;    
 
+    let listSearch = ref([])
     const listSelected = ref([]) 
     const allReport = ref([])
     const listOwners = ref([])
     const isApplicationFilter = ref(true)
     const itemsPerPage = 16
     const currentPage = ref(1) 
+    const isCreateNewVehicle = ref(false)
     
     const paginatedList = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
@@ -130,11 +150,13 @@
         isOwner.value = false
         listSelected.value = allReport.value.filter(el => el.owner.gender == 'masculino')
     }
+
     /* relatorio somente das mulheres */
     const orderByWoman = () => {
         isOwner.value = false
         listSelected.value = allReport.value.filter(el => el.owner.gender == 'feminino')
     }
+
     /* relatorio pelo número do veiculo */
 
     /* relatorio por marcas dos carros */
@@ -150,8 +172,46 @@
             return 0;
         })
     }
+
+    /* busca pelo cpf do cliente */
+    watch(search, async () => {
+        /*
+        if(filterSelected.value === 'feminino') {
+            listOwners.value = listOwners.value.filter(el => el.cpf.includes(search.value))       
+            return
+        }
+
+        if(filterSelected.value === 'masculino') {
+            listOwners.value = listOwners.value.filter(el => el.cpf.includes(search.value))       
+            return
+        }
+        */
+
+        search.value = search.value.replace(/[^0-9.-]/g, '');
+
+        listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
+    })
+
+    /* abrir modal de criação de veiculos */
+    const openModalCreateVehicle = (e) => {
+        localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
+        modal.openModal()
+        isCreateNewVehicle.value = true
+    }
 </script>
 
 <style>
-    
+    #list_search {
+        position: fixed;
+        width: 100%;
+        top: 10rem;
+        z-index: 1;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: white;
+        height: 30rem;
+        overflow-y: auto;
+    }
 </style>

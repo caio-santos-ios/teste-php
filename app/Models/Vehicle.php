@@ -11,7 +11,7 @@ class Vehicle extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['make', 'plate', 'model', 'year', 'owner_id'];
+    protected $fillable = ['plate', 'model', 'brand', 'type', 'year', 'owner_id'];
 
     public function owner()
     {

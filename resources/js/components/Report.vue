@@ -55,6 +55,7 @@
         flex-flow: column;
         align-items: center;
         gap: 1rem;
+        position: relative;
     }
 
     /* header do relatorio */ 
