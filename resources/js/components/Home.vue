@@ -8,7 +8,6 @@
 
 
 <script setup>
-    import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
     import PhotoWelcom  from '../../../resources/assets/photo-welcom.png'
 </script>
 

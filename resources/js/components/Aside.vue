@@ -9,7 +9,7 @@
 
             <a href="/" class="item_menu">
                 <div id="icon_item">
-                    <i class="fa-solid fa-gauge"></i>
+                    <i class="fa-solid fa-house"></i>
                     <p>Home</p>
                 </div>
             </a>
