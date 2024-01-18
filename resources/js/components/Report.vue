@@ -5,6 +5,17 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
+    const baseURL = import.meta.env.VITE_LINK_URL;    
+    
+    export const destroy = async (id, url) => {
+        try {
+            await axios.delete(`${baseURL}/${url}/${id}`)
+        } catch (error) {
+            console.log(error)
+        }
+    }
    
 </script>
 <style>
