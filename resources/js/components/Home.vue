@@ -1,6 +1,6 @@
 
 <template>
-    <div id="dashbord">
+    <div id="home">
         <h1 id="title_home">Seja bem vindo!</h1>
         <img id="photo_welcom" :src="PhotoWelcom" alt="foto-de-bem-vindo">
     </div>
@@ -13,7 +13,7 @@
 
 <style>
     /* container principal do dashboard */
-    #dashbord {
+    #home {
         display: flex;
         justify-content: center;
         flex-flow: column;
@@ -39,7 +39,7 @@
 
     @media (min-width: 915px) {
          /* container principal do dashboard */
-        #dashbord {
+        #home {
             align-items: center;
         }
 
@@ -50,7 +50,7 @@
 
         /* foto de bem vindo */
         #photo_welcom {
-            width: 80%;
+            width: 100%;
             height: 50%;
         }
     }

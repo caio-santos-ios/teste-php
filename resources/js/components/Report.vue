@@ -66,6 +66,7 @@
         flex-flow: wrap;
         gap: 0.5rem;
         width: 100%;
+        max-width: 40rem;
     }
     
     /* container com os tipos dos relatorios */

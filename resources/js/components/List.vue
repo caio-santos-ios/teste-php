@@ -11,7 +11,6 @@
 <style>
 /* lista */
 #list {
-  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-flow: column;
@@ -20,7 +19,9 @@
   background-color: white;
   position: relative;
   padding: 0 0 2.5rem 0;
-  min-height: 25rem;
+  min-height: 35rem;
+  width: 100%;
+  max-width: 40rem;
 }
 
 /* titulo dos itens e o item da lista */
@@ -29,7 +30,8 @@
   align-items: center;
   background-color: rgb(246, 245, 245);
   padding: 0.5rem;
-  width: 100%;
+  width: 95%;
+  max-width: 55rem;
 
   > p {
     width: 8rem;
@@ -71,6 +73,7 @@
   position: absolute;
   bottom: 0;
   align-items: center;
+  padding: 1rem 0;
 
   > button {
     background-color: #cbd5e1;
@@ -82,15 +85,24 @@
   }
 }
 
+@media (min-width: 400px) {
+  /* lista */
+  #list {
+    min-height: 27rem;
+  }
+}
+
 @media (min-width: 915px) {
   /* lista */
   #list {
-    height: 30rem;
+    height: 33rem;
+    width: 100%;
     max-width: 55rem;
   } 
 
   /* titulo dos itens e o item da lista */
   #title_list, #item_list {
+
     > p {
       width: 15rem;
     }
@@ -116,10 +128,11 @@
 
   /* o footer dos relatorio */
   #footer_page {
+
     > button {
       background-color: #cbd5e1;
       border: none;
-      padding: 0.3rem;
+      padding: 0.5rem;
       width: 4rem;
       height: 4rem;
       border-radius: 50%;
