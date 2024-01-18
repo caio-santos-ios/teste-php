@@ -32,8 +32,7 @@
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.type_revision }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ isReportVehicles ? item.brand : item.name }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ item.revision_vehicles.length }}</p>
-                <i @click="revisionDone" :id="item.id" class="fa-regular fa-square-check"></i>
-                <i @click="" :id="item.id" class="fa-solid fa-pen-to-square"></i>
+                <i v-if="!isReportOwner && !isReportVehicles" @click="revisionDone" :id="item.id" class="fa-regular fa-square-check"></i>
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
             <h4 v-if="!loading && listSelected.length === 0">Sem Revisões</h4>
