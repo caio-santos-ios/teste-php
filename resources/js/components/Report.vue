@@ -5,44 +5,6 @@
 </template>
 
 <script>
-    import axios from 'axios'
-
-    const baseURL = import.meta.env.VITE_LINK_URL;    
-
-    const create = async (id, url, payloadCreate) => {
-        try {
-            const response = await axios.post(`${baseURL}/${url}/${id}`, payloadCreate)
-            return response
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const createRevision = async (id, payload) => {
-        try {
-            const response = await axios.post(`${baseURL}/revisions/${id}`, payload)
-            return response
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    
-    const update = async (id, url, payloadUpdate) => {
-        try {
-            const response = await axios.patch(`${baseURL}/${url}/${id}`, payloadUpdate)
-            return response
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    
-    export const destroy = async (id, url) => {
-        try {
-            await axios.delete(`${baseURL}/${url}/${id}`)
-        } catch (error) {
-            console.log(error)
-        }
-    }
    
 </script>
 <style>

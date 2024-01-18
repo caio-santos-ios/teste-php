@@ -126,6 +126,11 @@
     margin: 0 0.3rem;
   }
 
+  /* icone de item feito */
+  .fa-square-check {
+    color: blue;
+  }
+
   /* o footer dos relatorio */
   #footer_page {
 
