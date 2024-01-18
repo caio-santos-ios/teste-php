@@ -128,7 +128,7 @@
 
   /* icone de item feito */
   .fa-square-check {
-    color: blue;
+    color: rgb(255, 183, 0);
   }
 
   /* o footer dos relatorio */
