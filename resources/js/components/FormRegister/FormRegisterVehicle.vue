@@ -17,30 +17,29 @@
         </label>
 
         <label for="model">Modelo do veiculo
-            <select required @click="selectModel" :disabled="isType" name="model" id="model">
+            <select required @click="selectModel" :disabled="listModel.length === 0" name="model" id="model">
                 <option value=""></option>
                 <option v-for="model in listModel" :value="model.codigo">{{ model.nome }}</option>
             </select>
         </label>
 
         <label for="year">Ano do veiculo
-            <select required @click="selectYear" :disabled="isType" name="year" id="year">
+            <select required @click="selectYear" :disabled="listYear.length === 0" name="year" id="year">
                 <option value=""></option>
                 <option v-for="year in listYear" :value="year.nome">{{ year.nome }}</option>
             </select>
         </label>
 
         <label for="plate">
-            Placa do Veiculo
-            <input required type="text" maxlength="7" minlength="7" name="plate" id="plate" placeholder="Placa" @input="validatedPlate" v-model="vehicle.plate">
+            Placa do Veiculo - <span>Formato ( ABC1D23 ou ABC1234 )</span>
+            <input :disabled="vehicle.year.length === 0" required type="text" maxlength="7" minlength="7" name="plate" id="plate" placeholder="Placa" @input="validatedPlate" v-model="vehicle.plate">
         </label>
-
         <div id="footer_btns">
             <button id="btn_finish" :disabled="!isCreateBtn" v-if="!loading" type="submit" class="btn_register">Cadastrar</button>
-            <button id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
-                <LoadingVue style="height: 3rem; width: 3rem;" />
+            <button  id="btn_finish" v-if="loading" :disabled="!isCreateBtn" type="submit" class="btn_register">
+                <Loading style="height: 3rem; width: 3rem;" />
             </button>
-            <button id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
+            <button :disabled="loading" id="btn_cancel" @click="closeModal" type="button">Cancelar</button>
         </div>
     </FormRegister>
 </template>
@@ -49,9 +48,9 @@
     import axios from 'axios';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
-    import { ref, watch } from 'vue';
+    import { ref } from 'vue';
     import FormRegister from './FormRegister.vue'; 
-    import LoadingVue from '../Loading.vue';
+    import Loading from '../Loading.vue';
     import { useModalOpen, useListOwner } from '../../store/store'
     
     const modal = useModalOpen()
@@ -95,8 +94,14 @@
  
     /* seleciona a marca do veiculo */
     const selectBrand = async (e) => {
-        console.log(vehicle.value.brand)
-        if(!e.target.value) return
+        if(!e.target.value) {
+            vehicle.value.brand = ''
+            vehicle.value.model = ''
+            vehicle.value.year = ''
+
+            listModel.value = []
+            return
+        }
         vehicle.value.brand = listBrand.value.find(el => el.codigo == e.target.value).nome
 
         try {
@@ -110,7 +115,14 @@
 
     /* seleciona o modelo do veiculo */
     const selectModel = async (e) => {
-        if(!e.target.value) return
+        if(!e.target.value) {
+            vehicle.value.model = ''
+            vehicle.value.year = ''
+
+            listYear.value = []
+            return
+        }
+        
         vehicle.value.model = listModel.value.find(el => el.codigo == e.target.value).nome
         const brand = listBrand.value.find(el => el.nome == vehicle.value.brand).codigo
         
@@ -124,30 +136,53 @@
 
     /* seleciona o ano do veiculo */
     const selectYear = (e) => {
-        if(!e.target.value) return
+        if(!e.target.value) {
+            vehicle.value.plate = ''
+            vehicle.value.year = ''
+
+            return
+        }
+  
         vehicle.value.year = e.target.value
     }
 
     /* faz o regex da placa do veiculo */
     const validatedPlate = () => {
-        const regex = '[A-Z]{3}[0-9][0-9A-Z][0-9]{2}'
+        const regexMercosul = '[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}'
+        const regexAntigo = '[A-Z]{3}[0-9]{4}'
 
-        if(vehicle.value.plate.match(regex)){
-            isCreateBtn.value = true
+
+        vehicle.value.plate = vehicle.value.plate.toLocaleUpperCase()
+
+        if(vehicle.value.plate.length === 7){
+
+            if(vehicle.value.plate.match(regexMercosul) || vehicle.value.plate.match(regexAntigo)){
+                isCreateBtn.value = true
+                return
+            }
+            isCreateBtn.value = false
+            toast.error("Formato da placa inválida")
         }
     }
 
     /* finaliza cadastro */
     const created = async () => {
+        isCreateBtn.value = true
+        loading.value = true
         const idVehicle = localStorage.getItem("idVehicle")
         const id = JSON.parse(idVehicle)
         vehicle.value.owner_id = Number(id)
         
         try {
-            const response = await axios.post(`${baseURL}/vehicles`, vehicle.value)
+            const res = await axios.post(`${baseURL}/vehicles`, vehicle.value)
+            loading.value = false
             localStorage.removeItem('idVehicle')
             modal.openModal()
+            toast.success("Veiculo criado!")
         } catch (error) {
+            console.log(vehicle.value)
+            loading.value = false
+            if(error.response.status == 400) toast.error("Placa inválida")
             console.log(error)
         }
     }

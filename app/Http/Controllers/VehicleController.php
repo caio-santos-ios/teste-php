@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use App\Models\Owner;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 
 class VehicleController extends Controller
@@ -29,6 +30,14 @@ class VehicleController extends Controller
             throw new HttpResponseException(response()->json(["message" => "Proprietario não encontrado"], 404));
         };
 
+        
+        $findVehicle = Vehicle::where('plate', $data['plate'])->first();
+        
+        
+        if($findVehicle){
+            throw new HttpResponseException(response()->json(["message" => "Placa inválida"], 400));
+        }
+        
         $vehicle = $owner->vehicles()->create($data);
 
         return response()->json($vehicle, 201);    

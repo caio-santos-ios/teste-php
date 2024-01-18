@@ -32,7 +32,7 @@
                 <p v-if="!isReportOwner && !isReportVehicles">{{ item.type_revision }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ isReportVehicles ? item.brand : item.name }}</p>
                 <p v-if="isReportVehicles || isReportOwner">{{ item.revision_vehicles.length }}</p>
-                <i class="fa-regular fa-square-check"></i>
+                <i @click="revisionDone" :id="item.id" class="fa-regular fa-square-check"></i>
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
             <h4 v-if="!loading && listSelected.length === 0">Sem Revisões</h4>
@@ -74,8 +74,7 @@
     const listSelected = ref([]) 
     const allReport = ref([])
 
-    const isApplicationFilter = ref(true)
-    const itemsPerPage = 16
+    const itemsPerPage = 10
     const currentPage = ref(1) 
     
     const paginatedList = computed(() => {
@@ -98,11 +97,25 @@
         }
     }
 
-     /* carrega o relatorio de todas as pessoas */
-     onMounted(async () => {
+    /* finaliza uma revisão */
+    const revisionDone = async (e) => {
+        const res = confirm("Deseja finalizar essa revisão?")
+
+        if(res){
+            listSelected.value = listSelected.value.filter(el => el.id != e.target.id)
+            try {
+                const response = await axios.patch(`${baseURL}/revisions/${e.target.id}`, { is_done: true })
+                console.log(response)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    /* carrega o relatorio de todas as pessoas */
+    onMounted(async () => {
         try {
             const response = await axios.get(`${baseURL}/owners`)     
-            loading.value = false       
             response.data.map(el => {
                 if(el.revision_vehicles.length > 0){
                     reportOwner.value.push(el)
@@ -183,13 +196,14 @@
         listSelected.value = reportOwner.value
     }
 
-    /* Médie de revisão de uma pessoa  */
-
-    /* Próxima revisão baseada no tempo médio da ultima revisão */
-
 </script>
 
 <style>
+    #list_revision {
+        background-color: red;
+        min-height: 25rem;
+    }
+
     #container_date {
         padding: 0.5rem;
         width: 100%;

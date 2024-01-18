@@ -95,7 +95,7 @@
 @media (min-width: 915px) {
   /* lista */
   #list {
-    height: 33rem;
+    height: 35rem;
     width: 100%;
     max-width: 55rem;
   } 

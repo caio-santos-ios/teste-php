@@ -39,7 +39,7 @@
                 <p >{{  isOwner ? item.vehicles.length : item.created_at.slice(0, 10) }}</p>
                 <p >{{  isOwner ? item.revision_vehicles.length : item.brand }}</p>
                 <p >{{  isOwner ? item.created_at.slice(0, 10) : item.plate }}</p>
-                <i @click="" :id="item.id" class="fa-solid fa-trash"></i>         
+                <i @click="removeVehicle" :id="item.id" class="fa-solid fa-trash"></i>         
                 <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>       
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
@@ -50,7 +50,7 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <span>Página {{ currentPage }} de {{ totalPages }}</span>
-                <button @click="nextPage" :disabled="currentPage <= 1">
+                <button @click="nextPage" :disabled="totalPages <= 1 || totalPages === currentPage">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -74,7 +74,6 @@
     const search = ref('')
 
     const loading = ref(true)
-    const typeReport = ref('all')
     const isOwner = ref(false)
 
     const baseURL = import.meta.env.VITE_LINK_URL;    
@@ -87,7 +86,7 @@
     const isCreateNewVehicle = ref(false)
     const isCreateRevision = ref(false)
 
-    const itemsPerPage = 16
+    const itemsPerPage = 10
     const currentPage = ref(1) 
     
     const paginatedList = computed(() => {
@@ -150,6 +149,18 @@
     /* relatorio por proprietario */
     const orderByOwner = () => {
         isOwner.value = true
+
+        listOwners.value.sort((a, b) => {
+            if (a.vehicles.length > b.vehicles.length) {
+                return 1;
+            }
+            
+            if (a.vehicles.length < b.vehicles.length) {
+                return -1;
+            }
+            return 0;
+        }).reverse()
+
         listSelected.value = listOwners.value
     }
 
@@ -183,6 +194,7 @@
 
     /* busca pelo cpf do cliente */
     watch(search, async () => {
+        isCreateNewVehicle.value = false
         search.value = search.value.replace(/[^0-9.-]/g, '');
 
         listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
@@ -193,7 +205,7 @@
         localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
         modal.openModal()
         isCreateNewVehicle.value = true
-        isUpdateVehicle.value = false
+        isCreateRevision.value = false
     }
 
     /* abre o modal de atualizar os veiculos */
@@ -206,6 +218,23 @@
         modal.openModal()
         isCreateNewVehicle.value = false
         isCreateRevision.value = true
+    }
+
+    /* remove veiculo */
+    const removeVehicle = async (e) => {
+        const newList = listSelected.value.filter(el => el.id != e.target.id)
+
+        const res = confirm("Deseja deletar o veiculo?")
+        if(res){
+            
+            listSelected.value = newList
+            try {
+                const res = await axios.delete(`${baseURL}/vehicles/${e.target.id}`)
+                console.log(res)
+            } catch (error) {
+                console.log(error)
+            }
+        }
     }
 </script>
 

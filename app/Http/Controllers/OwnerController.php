@@ -19,7 +19,7 @@ class OwnerController extends Controller
 
             return response()->json($owner);
         }
-
+        
         return response()->json($owners);
     }
 
