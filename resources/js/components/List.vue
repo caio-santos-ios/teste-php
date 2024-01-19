@@ -99,7 +99,7 @@
   display: flex;
   flex-flow: column;
   
-  h5 {
+  h4 {
     text-align: center;
   }
   
@@ -111,7 +111,7 @@
   #header_vehicle, #header_revision {
     font-weight: 800;
     display: flex;
-    gap: 1rem;
+    justify-content: space-around;
   }
   
   #item_vehicle, #item_revision {
@@ -120,10 +120,12 @@
     display: block;    
 
     > .my_item {
+      min-height: 2rem;
       margin-bottom: 0.3rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      justify-content: space-around;
+      background-color: white;
     }
   }
 }
