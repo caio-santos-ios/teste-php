@@ -45,7 +45,6 @@
                     <i @click="openModalCreateVehicle" :id="item.id" class="fa-solid fa-square-plus"></i>
                 </div>
                 <div class="open_item_view" :id="item.id">
-                    <h4 v-if="false">Nenhum veiculo ou revisão cadastrado</h4>
                     <!-- Veiculos -->
                     <div class="vehicles" :id="item.id">
                         <h5 v-if="item.vehicles.length != 0">Veiculos</h5>
@@ -53,6 +52,7 @@
                             <p v-if="item.vehicles.length != 0">Marca</p>
                             <p v-if="item.vehicles.length != 0">Modelo</p>
                             <p v-if="item.vehicles.length != 0">Ano</p>
+                            <p v-if="item.vehicles.length != 0">Placa</p>
                             <i></i>
                         </div>
                         <div id="item_vehicle">
@@ -60,25 +60,28 @@
                                 <p>{{ item.brand }}</p>
                                 <p>{{ item.model }}</p>
                                 <p>{{ item.year }}</p>
+                                <p>{{ item.plate }}</p>
                                 <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Revisões -->
-                    <div class="revision">
-                        <h5 v-if="item.revision_vehicles.length != 0">Revisões</h5>
+                    <div class="revision" :id="item.id">
+                        <h5 v-if="item.revision_vehicles.length === 0">Sem revisões</h5>
+                        <h5 v-if="item.revision_vehicles.length > 0">Revisões</h5>
                         <div id="header_revision">
-                            <p v-if="item.vehicles.length != 0">Marca</p>
-                            <p v-if="item.vehicles.length != 0">Modelo</p>
-                            <p v-if="item.vehicles.length != 0">Ano</p>
-                            <i></i>
+                            <p v-if="item.revision_vehicles.length > 0">Tipo</p>
+                            <p v-if="item.revision_vehicles.length > 0">Valor</p>
+                            <p v-if="item.revision_vehicles.length > 0">Entrada</p>
                         </div>
-                        <div id="item_revision" v-for="item in item.vehicles" :key="item.id">
-                            <p>{{ item.brand }}</p>
-                            <p>{{ item.model }}</p>
-                            <p>{{ item.year }}</p>
-                            <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
+                        <div id="item_revision" v-for="item in item.revision_vehicles" :key="item.id">
+                            <div class="my_item">
+                                <p>{{ item.type_revision }}</p>
+                                <p>{{ item.value }}</p>
+                                <p>{{ item.created_at.slice(0, 10) }}</p>
+                                <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
+                            </div>
                         </div>
                     </div>
 
@@ -305,7 +308,9 @@
         const itemVehicle = document.querySelectorAll('.vehicles')
         itemVehicle.forEach(el => {
             if(el.id == e.target.id){
-                el.classList.toggle('vehicles_open')
+                setTimeout(() => {
+                    el.classList.toggle('vehicles_open')
+                }, 500)
             }else {
                 el.classList.remove('vehicles_open')
             }
@@ -314,7 +319,9 @@
         const itemRevision = document.querySelectorAll('.revision')
         itemRevision.forEach(el => {
             if(el.id == e.target.id){
-                el.classList.toggle('revision_open')
+                setTimeout(() => {
+                    el.classList.toggle('revision_open')
+                }, 500)
             }else {
                 el.classList.remove('revision_open')
             }

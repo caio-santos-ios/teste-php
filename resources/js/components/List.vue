@@ -86,39 +86,37 @@
   max-width: 40rem;
   display: flex;
   flex-flow: column;
-  gap: 4rem;
-}
-
-#header_vehicle {
-  font-weight: 800;
+  gap: 2rem;
 }
 
 /* items de veiculos e revisões fechados */
-
 .vehicles, .revision {
   display: none;
 }
 
 /* items de veiculos e revisões abertos */
-.vehicles_open, .revision_open {
+.revision_open, .vehicles_open {
   display: flex;
   flex-flow: column;
   
   h5 {
     text-align: center;
   }
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    > p {
-      width: 6rem;
-    }
+  
+  p {
+    width: 4rem;
+    text-align: center;
   }
 
-  #item_vehicle {
+  #header_vehicle, #header_revision {
+    font-weight: 800;
+    display: flex;
+    gap: 1rem;
+  }
+  
+  #item_vehicle, #item_revision {
+    overflow-y: auto;
+    background-color: red;
     height: 5rem;
     display: block;    
 
@@ -126,7 +124,7 @@
       margin-bottom: 0.3rem;
       display: flex;
       align-items: center;
-      background-color: red;
+      gap: 1rem;
     }
   }
 }
