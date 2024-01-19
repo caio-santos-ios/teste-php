@@ -116,7 +116,6 @@
   
   #item_vehicle, #item_revision {
     overflow-y: auto;
-    background-color: red;
     height: 5rem;
     display: block;    
 

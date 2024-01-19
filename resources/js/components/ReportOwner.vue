@@ -47,7 +47,8 @@
                 <div class="open_item_view" :id="item.id">
                     <!-- Veiculos -->
                     <div class="vehicles" :id="item.id">
-                        <h5 v-if="item.vehicles.length != 0">Veiculos</h5>
+                        <h5 v-if="item.vehicles.length === 0">Nenhum veiculo</h5>
+                        <h5 v-if="item.vehicles.length > 0">Veiculos</h5>
                         <div id="header_vehicle">
                             <p v-if="item.vehicles.length != 0">Marca</p>
                             <p v-if="item.vehicles.length != 0">Modelo</p>
@@ -68,7 +69,7 @@
 
                     <!-- Revisões -->
                     <div class="revision" :id="item.id">
-                        <h5 v-if="item.revision_vehicles.length === 0">Sem revisões</h5>
+                        <h5 v-if="item.revision_vehicles.length === 0">Nenhuma revisão</h5>
                         <h5 v-if="item.revision_vehicles.length > 0">Revisões</h5>
                         <div id="header_revision">
                             <p v-if="item.revision_vehicles.length > 0">Tipo</p>
@@ -310,7 +311,7 @@
             if(el.id == e.target.id){
                 setTimeout(() => {
                     el.classList.toggle('vehicles_open')
-                }, 500)
+                }, 300)
             }else {
                 el.classList.remove('vehicles_open')
             }
@@ -339,7 +340,6 @@
                 }
             }else {
                 el.classList.remove('is_open_item_view')
-                // itemVehicle[i].remove('vehicles_open')
             }
         })
     }
