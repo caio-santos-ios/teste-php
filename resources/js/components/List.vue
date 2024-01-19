@@ -24,20 +24,31 @@
   max-width: 40rem;
 }
 
+/* item da lista */
+#item {
+  margin: 0 auto;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+  background-color: rgb(246, 245, 245);
+}
+
 /* titulo dos itens e o item da lista */
 #title_list, #item_list {
   display: flex;
   align-items: center;
-  background-color: rgb(246, 245, 245);
-  padding: 0.5rem;
   width: 95%;
-  max-width: 55rem;
+  height: 2rem;
 
   > p {
     width: 8rem;
     text-align: center;
   }
-  
+    
   /* icones da lista */
   i {
     width: 1.5rem;
@@ -48,6 +59,94 @@
   font-weight: 700;
 }
 
+/* cabeçalho do meu item */
+#item_header {
+  background-color: rgb(246, 245, 245);
+  display: flex;
+  width: 100%;
+  height: 2rem;
+}
+
+/* item fechado */
+.open_item_view {
+  height: 0.1rem;
+  transition: 1s;
+  background-color: rgb(246, 245, 245);
+  width: 95%;
+
+}
+
+.vehicles {
+  display: none;
+}
+
+/* item aberto com as informações dos clientes */
+.is_open_item_view {
+  border-top: 0.1rem solid;
+  height: 15rem;
+  transition: 1s;
+  width: 95%;
+  max-width: 40rem;
+  display: flex;
+  flex-flow: column;
+  gap: 4rem;
+}
+
+#header_vehicle {
+  font-weight: 800;
+}
+
+/* items de veiculos e revisões */
+.vehicles_open {
+  display: flex;
+}
+
+.revision_open {
+  display: flex;
+  flex-flow: column;
+  
+  h5 {
+    text-align: center;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    > p {
+      width: 6rem;
+    }
+  }
+
+  #item_vehicle {
+    background-color: blue;
+    height: 5rem;
+    display: block;    
+
+    > .my_item {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      background-color: red;
+    }
+  }
+}
+
+/* aviso que não tem veiculos cadastrado */
+.notice_title {
+  display: none;
+}
+
+.notice_title_open {
+  display: flex;
+}
+
+/* icone de item fechado/aberto */
+.icon_close, .icon_open {
+  color: green;
+  font-size: 2rem;
+}
 
 /* icone de delete item */
 .fa-trash {

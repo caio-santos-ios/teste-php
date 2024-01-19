@@ -3,6 +3,7 @@
         <FormRegisterOwner v-if="isCreateOwner" />
         <FormUpdateOwner v-if="isUpdate"/>
         <FormRegisterVehicle v-if="isCreateVehicle" />
+        <FormRegisterRevision v-if="isCreateRevision"/>
     </Modal>
     <section>
         <div id="header_report">
@@ -21,6 +22,7 @@
         </div>
         <List>
             <li id="title_list">
+                <i></i>
                 <p>Cliente</p>
                 <p>CPF</p>
                 <p>Veiculos</p>
@@ -29,15 +31,60 @@
                 <i></i>
                 <i></i>
             </li>
-            <li id="item_list" v-if="!loading" v-for="item in paginatedList">
-                <h4 v-if="paginatedList.length === 0">Sem clientes</h4>
-                <p>{{ item.name }}</p>
-                <p>{{ item.cpf }}</p>
-                <p>{{ item.vehicles.length }}</p>
-                <p>{{ item.revision_vehicles.length }}</p>
-                <i @click="remove" :id="item.id" class="fa-solid fa-trash"></i>                
-                <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
-                <i @click="openModalCreateVehicle" :id="item.id" class="fa-solid fa-square-plus"></i>
+            <li id="item" v-if="!loading" v-for="item in paginatedList">
+                <div id="item_list">
+                    <h4 v-if="paginatedList.length === 0">Sem clientes</h4>
+                    <i v-if="isViewItem != item.id" @click="detailsOwner" :id="item.id" class="fa-solid fa-caret-right icon_open"></i>
+                    <i v-if="isViewItem == item.id" @click="detailsOwner" :id="item.id" class="fa-solid fa-caret-down icon_close"></i>
+                    <p>{{ item.name }}</p>
+                    <p>{{ item.cpf }}</p>
+                    <p>{{ item.vehicles.length }}</p>
+                    <p>{{ item.revision_vehicles.length }}</p>
+                    <i @click="remove" :id="item.id" class="fa-solid fa-trash"></i>                
+                    <i @click="openModalUpdate" :id="item.id" class="fa-solid fa-pen-to-square"></i>
+                    <i @click="openModalCreateVehicle" :id="item.id" class="fa-solid fa-square-plus"></i>
+                </div>
+                <div class="open_item_view" :id="item.id">
+                    <h4 v-if="false">Nenhum veiculo ou revisão cadastrado</h4>
+                    
+                    <!-- Veiculos -->
+                    <div class="vehicles">
+                        <h5 v-if="item.vehicles.length != 0">Veiculos</h5>
+                        <div id="header_vehicle">
+                            <p v-if="item.vehicles.length != 0">Marca</p>
+                            <p v-if="item.vehicles.length != 0">Modelo</p>
+                            <p v-if="item.vehicles.length != 0">Ano</p>
+                            <i></i>
+                        </div>
+                        <div id="item_vehicle">
+                            <div class="my_item" v-for="item in item.vehicles" :key="item.id">
+                                <p>{{ item.brand }}</p>
+                                <p>{{ item.model }}</p>
+                                <p>{{ item.year }}</p>
+                                <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revisões 
+                        <div id="revision">
+                            <h5 v-if="item.revision_vehicles.length != 0">Revisões</h5>
+                        <div id="header_revision">
+                            <p v-if="item.vehicles.length != 0">Marca</p>
+                            <p v-if="item.vehicles.length != 0">Modelo</p>
+                            <p v-if="item.vehicles.length != 0">Ano</p>
+                            <i></i>
+                        </div>
+                        <div id="item_revision" v-for="item in item.vehicles" :key="item.id">
+                            <p>{{ item.brand }}</p>
+                            <p>{{ item.model }}</p>
+                            <p>{{ item.year }}</p>
+                            <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
+                        </div>
+                    </div>
+                    -->
+
+                </div>
             </li>
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
             <div id="footer_page">
@@ -61,6 +108,7 @@
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
     import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue';
     import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
+    import FormRegisterRevision from './FormRegister/FormRegisterRevision.vue'
     import Loading from './Loading.vue';
     import { useModalOpen, useListOwner } from '../store/store'
     import {destroy} from './Report.vue'
@@ -72,7 +120,9 @@
 
     const isCreateOwner = ref(false)
     const isCreateVehicle = ref(false)
+    const isCreateRevision = ref(false)
     const isUpdate = ref(false)
+    const isViewItem = ref()
 
     const ownerUpdate = ref('')
     const allReport = ref([])
@@ -114,7 +164,6 @@
                 allReport.value.push(el)
                 list.listOwner.push(el)
             })
-
             list.listOwner.sort(function (a, b) {
                 if (a.vehicles.length > b.vehicles.length) {
                     return 1;
@@ -125,7 +174,7 @@
                 }
                 return 0;
             }).reverse()
-                        
+
             const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
         } catch (error) {
@@ -154,9 +203,27 @@
 
     /* abrir modal de criação de veiculos */
     const openModalCreateVehicle = (e) => {
+        isCreateVehicle.value = true
+        isCreateOwner.value = false
+        isUpdate.value = false
+        isCreateRevision.value = false
+        
         localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
         modal.openModal()
-        isCreateVehicle.value = true
+    }
+
+    /* abrir modal de criação de revisão */
+    const openModalCreateRevision = (e) => {
+        isCreateRevision.value = true
+        isCreateOwner.value = false
+        isCreateVehicle.value = false
+        isUpdate.value = false
+
+        const owner = localStorage.getItem('idOwner')
+
+        localStorage.setItem('idVehicle', e.target.id)
+        localStorage.setItem('idOwner', owner)
+        modal.openModal()
     }
 
     /* deletar cliente */
@@ -233,6 +300,34 @@
     const calculeedAgeAverage = (total, qtd) => {
         const result = total / qtd
         return parseInt(result)
+    }
+
+    /* detalhe de cada pessoa */
+    const detailsOwner = (e) => {        
+        const itemVehicle = document.querySelectorAll('.vehicles')
+        itemVehicle.forEach(el => {
+            if(el.id == e.target.id){
+                el.classList.toggle('vehicles_open')
+            }else {
+                el.classList.remove('vehicles_open')
+            }
+        })
+
+        const item = document.querySelectorAll('.open_item_view')
+        item.forEach((el, i) => {
+            if(el.id == e.target.id){
+                localStorage.setItem('idOwner', e.target.id)
+                el.classList.toggle('is_open_item_view')
+                if(isViewItem.value == el.id) {
+                    isViewItem.value = ''
+                }else {
+                    isViewItem.value = el.id
+                }
+            }else {
+                el.classList.remove('is_open_item_view')
+                // itemVehicle[i].remove('vehicles_open')
+            }
+        })
     }
 </script>
 

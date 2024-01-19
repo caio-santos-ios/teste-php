@@ -100,10 +100,9 @@
         if(revision.value.value == 0) return toast.error('Coloque um valor na revisão')
         loading.value = true
         isCreateBtn.value = false   
-        console.log(revision.value)
+
         try {
             const response = await axios.post(`${baseURL}/revisions/${idVehicle}`, revision.value)
-            console.log(response)
             isCreateBtn.value = true
             loading.value = false
             toast.success("Revisão cadastrada");
