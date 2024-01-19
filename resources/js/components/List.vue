@@ -80,7 +80,7 @@
 /* item aberto com as informações dos clientes */
 .is_open_item_view {
   border-top: 0.1rem solid;
-  height: 15rem;
+  height: 20rem;
   transition: 1s;
   width: 95%;
   max-width: 40rem;

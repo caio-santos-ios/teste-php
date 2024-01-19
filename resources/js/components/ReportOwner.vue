@@ -75,9 +75,11 @@
                             <p v-if="item.revision_vehicles.length > 0">Tipo</p>
                             <p v-if="item.revision_vehicles.length > 0">Valor</p>
                             <p v-if="item.revision_vehicles.length > 0">Entrada</p>
+                            <i></i>
                         </div>
-                        <div id="item_revision" v-for="item in item.revision_vehicles" :key="item.id">
-                            <div class="my_item">
+
+                        <div id="item_vehicle">
+                            <div class="my_item" v-for="item in item.revision_vehicles" :key="item.id">
                                 <p>{{ item.type_revision }}</p>
                                 <p>{{ item.value }}</p>
                                 <p>{{ item.created_at.slice(0, 10) }}</p>
@@ -156,6 +158,10 @@
             currentPage.value++
         }
     }
+
+    watch(list.listOwner, () => {
+        console.log(list.listOwner)
+    })
 
     /* carrega o relatorio de todas as pessoas */
     onMounted(async () => {
