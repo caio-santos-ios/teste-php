@@ -46,9 +46,8 @@
                 </div>
                 <div class="open_item_view" :id="item.id">
                     <h4 v-if="false">Nenhum veiculo ou revisão cadastrado</h4>
-                    
                     <!-- Veiculos -->
-                    <div class="vehicles">
+                    <div class="vehicles" :id="item.id">
                         <h5 v-if="item.vehicles.length != 0">Veiculos</h5>
                         <div id="header_vehicle">
                             <p v-if="item.vehicles.length != 0">Marca</p>
@@ -66,9 +65,9 @@
                         </div>
                     </div>
 
-                    <!-- Revisões 
-                        <div id="revision">
-                            <h5 v-if="item.revision_vehicles.length != 0">Revisões</h5>
+                    <!-- Revisões -->
+                    <div class="revision">
+                        <h5 v-if="item.revision_vehicles.length != 0">Revisões</h5>
                         <div id="header_revision">
                             <p v-if="item.vehicles.length != 0">Marca</p>
                             <p v-if="item.vehicles.length != 0">Modelo</p>
@@ -82,7 +81,6 @@
                             <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
                         </div>
                     </div>
-                    -->
 
                 </div>
             </li>
@@ -310,6 +308,15 @@
                 el.classList.toggle('vehicles_open')
             }else {
                 el.classList.remove('vehicles_open')
+            }
+        })
+
+        const itemRevision = document.querySelectorAll('.revision')
+        itemRevision.forEach(el => {
+            if(el.id == e.target.id){
+                el.classList.toggle('revision_open')
+            }else {
+                el.classList.remove('revision_open')
             }
         })
 

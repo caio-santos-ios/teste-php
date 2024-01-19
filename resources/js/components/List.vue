@@ -76,9 +76,6 @@
 
 }
 
-.vehicles {
-  display: none;
-}
 
 /* item aberto com as informações dos clientes */
 .is_open_item_view {
@@ -96,12 +93,14 @@
   font-weight: 800;
 }
 
-/* items de veiculos e revisões */
-.vehicles_open {
-  display: flex;
+/* items de veiculos e revisões fechados */
+
+.vehicles, .revision {
+  display: none;
 }
 
-.revision_open {
+/* items de veiculos e revisões abertos */
+.vehicles_open, .revision_open {
   display: flex;
   flex-flow: column;
   
@@ -120,12 +119,11 @@
   }
 
   #item_vehicle {
-    background-color: blue;
     height: 5rem;
     display: block;    
 
     > .my_item {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       display: flex;
       align-items: center;
       background-color: red;
