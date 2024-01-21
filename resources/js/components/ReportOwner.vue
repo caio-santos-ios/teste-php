@@ -26,7 +26,7 @@
                 <p>Cliente</p>
                 <p>CPF</p>
                 <p>Veiculos</p>
-                <p>Em revisão</p>
+                <p>Revisões</p>
                 <i></i>
                 <i></i>
                 <i></i>
@@ -81,7 +81,7 @@
                         </div>
 
                         <div id="item_vehicle">
-                            <div v-if="item.is_done" class="my_item" v-for="item in item.revision_vehicles" :key="item.id">
+                            <div class="my_item" v-for="item in item.revision_vehicles" :key="item.id">
                                 <p>{{ item.type_revision }}</p>
                                 <p>{{ item.value }}</p>
                                 <p>{{ item.created_at.slice(0, 10) }}</p>
