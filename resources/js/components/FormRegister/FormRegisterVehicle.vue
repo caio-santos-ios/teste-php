@@ -172,11 +172,15 @@
         const idVehicle = localStorage.getItem("idVehicle")
         const id = JSON.parse(idVehicle)
         vehicle.value.owner_id = Number(id)
+
+        const findOwner = list.listOwner.findIndex(el => el.id == vehicle.value.owner_id) 
         
         try {
-            const res = await axios.post(`${baseURL}/vehicles`, vehicle.value)
+            const response = await axios.post(`${baseURL}/vehicles`, vehicle.value)
+            list.listOwner[findOwner].vehicles = [ response.data, ...list.listOwner[findOwner].vehicles ] 
             loading.value = false
             localStorage.removeItem('idVehicle')
+            localStorage.removeItem('idOwner')
             modal.openModal()
             toast.success("Veiculo criado!")
         } catch (error) {

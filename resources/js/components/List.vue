@@ -160,6 +160,10 @@
   color: green;
 }
 
+/* icone de revisão finalizada */
+.fa-square-check {
+  color: #bfbf1f}
+
 /* o footer dos relatorio */
 #footer_page {
   display: flex;

@@ -55,6 +55,7 @@
                             <p v-if="item.vehicles.length != 0">Ano</p>
                             <p v-if="item.vehicles.length != 0">Placa</p>
                             <i></i>
+                            <i></i>
                         </div>
                         <div id="item_vehicle">
                             <div class="my_item" v-for="item in item.vehicles" :key="item.id">
@@ -62,6 +63,7 @@
                                 <p>{{ item.model }}</p>
                                 <p>{{ item.year }}</p>
                                 <p>{{ item.plate }}</p>
+                                <i @click="removeVehicles" :id="item.id" class="fa-solid fa-trash"></i>
                                 <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
                             </div>
                         </div>
@@ -79,11 +81,11 @@
                         </div>
 
                         <div id="item_vehicle">
-                            <div class="my_item" v-for="item in item.revision_vehicles" :key="item.id">
+                            <div v-if="item.is_done" class="my_item" v-for="item in item.revision_vehicles" :key="item.id">
                                 <p>{{ item.type_revision }}</p>
                                 <p>{{ item.value }}</p>
                                 <p>{{ item.created_at.slice(0, 10) }}</p>
-                                <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>
+                                <i @click="finishRevision" :id="item.id" class="fa-regular fa-square-check"></i>
                             </div>
                         </div>
                     </div>
@@ -160,7 +162,7 @@
     }
 
     watch(list.listOwner, () => {
-        console.log(list.listOwner)
+       // console.log(list.listOwner)
     })
 
     /* carrega o relatorio de todas as pessoas */
@@ -244,21 +246,79 @@
         }
     }
 
+    /* finaliza revisão */
+    const finishRevision = async (e) => {
+        const confirmed = confirm('Deseja finalizar essa revisão?')
+
+        if(confirmed){
+
+            const idOwner = localStorage.getItem('idOwner')
+            const indexOwner = list.listOwner.findIndex(el => el.id == idOwner)
+            
+            list.listOwner[indexOwner].revision_vehicles = list.listOwner[indexOwner].revision_vehicles.filter(el => el.id != e.target.id)
+            
+            try {
+                await axios.patch(`${baseURL}/revisions/${e.target.id}`, { is_done: true })
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    /* deletar veivulo */
+    const removeVehicles = async (e) => {
+        const confirmed = confirm('Deseja deletar o veiculo?')
+
+        if(confirmed){   
+            const idOwner = localStorage.getItem('idOwner')
+            const indexOwner = list.listOwner.findIndex(el => el.id == idOwner)
+            
+            const removed = list.listOwner[indexOwner].vehicles.filter(el => el.id != e.target.id)
+            list.listOwner[indexOwner].vehicles = removed
+            try {
+                await axios.delete(`${baseURL}/vehicles/${e.target.id}`)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
     /* busca cliente pelo cpf */
     watch(search, async () => {
+        search.value = search.value.replace(/[^0-9a-zA-Z.-]/g, '')
+        const cpf = '[0-9.-]'
+
         if(filterSelected.value === 'feminino') {
-            list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))       
+            if(search.value.match(cpf)){
+                list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))
+            }else {
+                if(!search.value){
+                    list.listOwner = allReport.value.filter(el => el.gender == 'feminino')
+                }
+
+                list.listOwner = list.listOwner.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+            }
             return
         }
 
         if(filterSelected.value === 'masculino') {
-            list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))       
+            if(search.value.match(cpf)){
+                list.listOwner = list.listOwner.filter(el => el.cpf.includes(search.value))
+            }else {
+                if(!search.value){
+                    list.listOwner = allReport.value.filter(el => el.gender == 'masculino')
+                }    
+                list.listOwner = list.listOwner.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+            }
             return
         }
+        
 
-        search.value = search.value.replace(/[^0-9.-]/g, '');
-
-        list.listOwner = allReport.value.filter(el => el.cpf.includes(search.value))
+        if(search.value.match(cpf)){
+            list.listOwner = allReport.value.filter(el => el.cpf.includes(search.value))
+        }else {
+            list.listOwner = allReport.value.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+        }
     })
 
     /* relatorio de todas as pessoas */
@@ -270,8 +330,8 @@
 
     /* relatorio somente das mulheres */
     const reportWoman = () => {
+        filterSelected.value = 'feminino'
         if(!filterSelected.value){
-            filterSelected.value = 'feminino'
             
             const newList = list.listOwner.filter(el => el.gender === 'feminino')
             list.listOwner = newList
@@ -288,8 +348,8 @@
 
     /* relatorio somente dos homens */
     const reportMan = () => {
+        filterSelected.value = 'masculino'
         if(!filterSelected.value){
-            filterSelected.value = 'masculino'
             
             const newList = list.listOwner.filter(el => el.gender === 'masculino')
             list.listOwner = newList
