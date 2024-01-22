@@ -273,7 +273,7 @@
         }
     }
 
-    /* deletar veivulo */
+    /* deletar veiculo */
     const removeVehicles = async (e) => {
         const confirmed = confirm('Deseja deletar o veiculo?')
 
@@ -282,7 +282,10 @@
             const indexOwner = list.listOwner.findIndex(el => el.id == idOwner)
             
             const removed = list.listOwner[indexOwner].vehicles.filter(el => el.id != e.target.id)
+            list.listOwner[indexOwner].revision_vehicles = list.listOwner[indexOwner].revision_vehicles.filter(el => el.vehicle_id != e.target.id) 
+            
             list.listOwner[indexOwner].vehicles = removed
+
             try {
                 await axios.delete(`${baseURL}/vehicles/${e.target.id}`)
             } catch (error) {

@@ -81,6 +81,8 @@ class VehicleController extends Controller
             throw new HttpResponseException(response()->json(["message" => "Veiculo não encontrado"], 404));
         };
 
+        $findVehicle->revisionVehicles()->delete();
+
         $findVehicle->delete();
 
         return response()->json([], 204);
