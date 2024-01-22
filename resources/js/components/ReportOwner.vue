@@ -331,6 +331,18 @@
 
     /* relatorio de todas as pessoas */
     const report = () => {
+        isViewItem.value = ''
+        filterSelected.value = ''
+
+        const itemVehicle = document.querySelectorAll('.vehicles')
+        itemVehicle.forEach(el => el.classList.remove('vehicles_open'))
+
+        const itemRevision = document.querySelectorAll('.revision')
+        itemRevision.forEach(el => el.classList.remove('revision_open'))
+
+        const item = document.querySelectorAll('.open_item_view')
+        item.forEach(el => el.classList.remove('is_open_item_view'))
+
        list.listOwner = allReport.value
        const sumAge = allReport.value.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
        ageAverage.value = calculeedAgeAverage(sumAge, allReport.value.length)
@@ -339,6 +351,17 @@
     /* relatorio somente das mulheres */
     const reportWoman = () => {
         filterSelected.value = 'feminino'
+        isViewItem.value = ''
+        
+        const itemVehicle = document.querySelectorAll('.vehicles')
+        itemVehicle.forEach(el => el.classList.remove('vehicles_open'))
+
+        const itemRevision = document.querySelectorAll('.revision')
+        itemRevision.forEach(el => el.classList.remove('revision_open'))
+
+        const item = document.querySelectorAll('.open_item_view')
+        item.forEach(el => el.classList.remove('is_open_item_view'))
+
         if(!filterSelected.value){
             
             const newList = list.listOwner.filter(el => el.gender === 'feminino')
@@ -348,6 +371,7 @@
             return
         }
 
+        currentPage.value = 1
         const newList = allReport.value.filter(el => el.gender === 'feminino')
         list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
@@ -357,6 +381,17 @@
     /* relatorio somente dos homens */
     const reportMan = () => {
         filterSelected.value = 'masculino'
+        isViewItem.value = ''
+
+        const itemVehicle = document.querySelectorAll('.vehicles')
+        itemVehicle.forEach(el => el.classList.remove('vehicles_open'))
+
+        const itemRevision = document.querySelectorAll('.revision')
+        itemRevision.forEach(el => el.classList.remove('revision_open'))
+
+        const item = document.querySelectorAll('.open_item_view')
+        item.forEach(el => el.classList.remove('is_open_item_view'))
+
         if(!filterSelected.value){
             
             const newList = list.listOwner.filter(el => el.gender === 'masculino')
@@ -365,7 +400,8 @@
             ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
             return
         }
-    
+
+        currentPage.value = 1
         const newList = allReport.value.filter(el => el.gender === 'masculino')
         list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
