@@ -174,10 +174,8 @@
   justify-content: center;
   gap: 1rem;
   width: 100%;
-  position: absolute;
-  bottom: 0;
   align-items: center;
-  padding: 1rem 0;
+  margin-top: auto;
 
   > button {
     background-color: #cbd5e1;
@@ -199,7 +197,7 @@
 @media (min-width: 915px) {
   /* lista */
   #list {
-    height: 35rem;
+    min-height: 35rem;
     width: 100%;
     max-width: 55rem;
   } 

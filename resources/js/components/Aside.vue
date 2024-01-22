@@ -171,8 +171,8 @@
             position: relative;
             transition: 1s;
             width: 7.5rem;
-            height: 100vh;
-
+            height: 100%;
+                        
             /* lista de relatorios fechado, com o aside fechado */
             #report_menu_open {
                 display: none;

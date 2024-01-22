@@ -10,15 +10,9 @@ class OwnerController extends Controller
 {
     public function index(Request $request)
     {
-        $owners = Owner::with(['vehicles', 'revisionVehicles'])->get();
-            
-        $cpf = $request->query('cpf');
-
-        if($cpf){
-            $owner = Owner::with(['vehicles', 'revisionVehicles'])->where('cpf', 'like', '%' . $cpf . '%')->get();
-
-            return response()->json($owner);
-        }
+        $owners = Owner::with(['vehicles', 'revisionVehicles' => function($query) {
+            $query->where('is_done', false);
+        }])->get();
         
         return response()->json($owners);
     }

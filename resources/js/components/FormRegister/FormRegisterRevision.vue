@@ -102,12 +102,10 @@
         isCreateBtn.value = false   
         
         const findOwner = list.listOwner.findIndex(el => el.id == idOwner) 
-        // return console.log(list.listOwner[findOwner].revision_vehicles)
 
         try {
             const response = await axios.post(`${baseURL}/revisions/${idVehicle}`, revision.value)
             list.listOwner[findOwner].revision_vehicles = [ response.data[0], ...list.listOwner[findOwner].revision_vehicles ]
-            console.log(list.listOwner[findOwner].revision_vehicles)
             isCreateBtn.value = true
             loading.value = false
             toast.success("Revisão cadastrada");

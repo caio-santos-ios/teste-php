@@ -128,6 +128,7 @@
     const isCreateVehicle = ref(false)
     const isCreateRevision = ref(false)
     const isUpdate = ref(false)
+
     const isViewItem = ref()
 
     const ownerUpdate = ref('')
@@ -151,12 +152,14 @@
     
     const prevPage = () => {
         if(currentPage.value > 1){
+            isViewItem.value = ''
             currentPage.value--
         }
     }
 
     const nextPage = () => {
         if(currentPage.value < totalPages.value){
+            isViewItem.value = ''
             currentPage.value++
         }
     }
@@ -195,26 +198,31 @@
 
     /* abrir modal de criação de clientes */
     const openModalCreate = () => {
-        modal.openModal()
         isCreateOwner.value = true
         isCreateVehicle.value = false
+        isCreateRevision.value = false
         isUpdate.value = false
+
+        modal.openModal()
     } 
 
     /* abrir modal de edição */
     const openModalUpdate = (e) => {
         const findOwner = list.listOwner.find(el => el.id == e.target.id)
         localStorage.setItem('ownerUpdate', JSON.stringify(findOwner))
-        modal.openModal()
+        
         isCreateOwner.value = false
         isCreateVehicle.value = false
+        isCreateRevision.value = false
         isUpdate.value = true
+        
+        modal.openModal()
     }
 
     /* abrir modal de criação de veiculos */
     const openModalCreateVehicle = (e) => {
-        isCreateVehicle.value = true
         isCreateOwner.value = false
+        isCreateVehicle.value = true
         isUpdate.value = false
         isCreateRevision.value = false
         
@@ -224,9 +232,9 @@
 
     /* abrir modal de criação de revisão */
     const openModalCreateRevision = (e) => {
-        isCreateRevision.value = true
         isCreateOwner.value = false
         isCreateVehicle.value = false
+        isCreateRevision.value = true
         isUpdate.value = false
 
         const owner = localStorage.getItem('idOwner')

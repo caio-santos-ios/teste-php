@@ -80,6 +80,10 @@
             isCreateBtn.value = true
             loading.value = false
             console.log(error)
+            
+            if(error.response.status == 409){
+                toast.error("Cliente já tem cadastro, faça uma busca")
+            }
             if(error.response.status == 500){
                 toast.error("Erro interno, tente novamente")
             }

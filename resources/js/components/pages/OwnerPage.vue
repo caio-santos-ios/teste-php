@@ -18,25 +18,20 @@
     h2 {
         font-size: 1rem;
     }
-
-    .main_home {
-        min-height: 100vh;
-        display: block;
-    }
-
+    
     @media (min-width: 915px) {
         p, i {
-        font-size: 1rem;
+            font-size: 1rem;
         }
-
+        
         h2 {
             font-size: 1.5rem;
         }
-
+        
         #main_report {
-            min-height: 100vh;
             display: flex;   
             width: 95vw;
+            height: 110vh;
         }
     }
 </style>
