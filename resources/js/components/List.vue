@@ -33,7 +33,7 @@
   gap: 0.5rem;
   position: relative;
   width: 100%;
-  max-width: 40rem;
+  max-width: 55rem;
   background-color: rgb(246, 245, 245);
 }
 
@@ -72,8 +72,7 @@
   height: 0.1rem;
   transition: 1s;
   background-color: rgb(246, 245, 245);
-  width: 95%;
-
+  width: 100%;
 }
 
 
@@ -82,8 +81,8 @@
   border-top: 0.1rem solid;
   height: 20rem;
   transition: 1s;
-  width: 95%;
-  max-width: 40rem;
+  width: 100%;
+  max-width: 50rem;
   display: flex;
   flex-flow: column;
   gap: 2rem;
@@ -98,6 +97,8 @@
 .revision_open, .vehicles_open {
   display: flex;
   flex-flow: column;
+  width: 100%;
+  max-width: 50rem;
   
   h4 {
     text-align: center;
@@ -112,6 +113,7 @@
     font-weight: 800;
     display: flex;
     justify-content: space-around;
+    width: 98%;    
   }
   
   #item_vehicle, #item_revision {
@@ -120,12 +122,13 @@
     display: block;    
 
     > .my_item {
+      width: 100%;
+      background-color: white;
       min-height: 2rem;
       margin-bottom: 0.3rem;
       display: flex;
-      align-items: center;
       justify-content: space-around;
-      background-color: white;
+      align-items: center;
     }
   }
 }
@@ -162,7 +165,8 @@
 
 /* icone de revisão finalizada */
 .fa-square-check {
-  color: #bfbf1f}
+  color: #bfbf1f
+}
 
 /* o footer dos relatorio */
 #footer_page {
@@ -202,28 +206,41 @@
 
   /* titulo dos itens e o item da lista */
   #title_list, #item_list {
+    width: 100%;
+    max-width: 55rem;
 
     > p {
       width: 15rem;
     }
   }
 
+  /* items de veiculos e revisões abertos */
+  .revision_open, .vehicles_open {    
+    p {
+      width: 7rem;
+      text-align: center;
+    }
+
+    i {
+      font-size: 1rem;
+      width: 1rem;
+      text-align: center;
+    }
+  }
+
   /* icone de delete item */
   .fa-trash {
     color: red;
-    margin: 0 0.3rem;
   }
 
   /* icone de atualizar item */
   .fa-pen-to-square {
     color: blue;
-    margin: 0 0.3rem;
   }
 
   /* icone de adicionar item */
   .fa-square-plus {
     color: green;
-    margin: 0 0.3rem;
   }
 
   /* icone de item feito */

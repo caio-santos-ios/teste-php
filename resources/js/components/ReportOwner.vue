@@ -89,7 +89,7 @@
                             </div>
                         </div>
                     </div>
-
+ 
                 </div>
             </li>
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
