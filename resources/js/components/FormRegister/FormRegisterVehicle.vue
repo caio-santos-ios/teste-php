@@ -180,7 +180,6 @@
             list.listOwner[findOwner].vehicles = [ response.data, ...list.listOwner[findOwner].vehicles ] 
             loading.value = false
             localStorage.removeItem('idVehicle')
-            localStorage.removeItem('idOwner')
             modal.openModal()
             toast.success("Veiculo criado!")
         } catch (error) {

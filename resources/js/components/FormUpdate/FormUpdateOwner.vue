@@ -2,21 +2,21 @@
     <FormRegister id="form_register_owner" @submit.prevent="updateOwner()">
         <h4>Editar Cliente</h4>
         <label for="name">Nome cliente
-            <input :disabled="loading" required type="text" placeholder="Nome do cliente" v-model="owner.name">
+            <input :disabled="loading" required type="text" placeholder="Nome do cliente" name="name" :value="owner.name" @change="(e) => valueOwnerUpdate.name = e.target.value">
         </label>
 
         <label for="cpf">
         CPF
-            <input :disabled="loading" required maxlength="11" minlength="11" type="text" @input="validatedCpf" placeholder="Cpf do cliente" v-model="owner.cpf">
+            <input :disabled="loading" required maxlength="11" minlength="11" type="text" name="cpf" @input="validatedCpf" placeholder="Cpf do cliente" :value="owner.cpf" @change="(e) => valueOwnerUpdate.cpf = e.target.value">
         </label>
 
         <label for="age">Idade cliente
-            <input :disabled="loading"  required maxlength="3" type="text" @input="validatedAge" placeholder="Idade do cliente" v-model="owner.age">
+            <input :disabled="loading"  required maxlength="3" type="text" @input="validatedAge" placeholder="Idade do cliente" :value="owner.age" @change="(e) => valueOwnerUpdate.age = e.target.value">
         </label>
         
         <label for="gender">
             Sexo
-            <select :disabled="loading" required id="gender" v-model="owner.gender">
+            <select :disabled="loading" required id="gender" :value="owner.gender">
                 <option value="">Selecione o sexo</option>
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
@@ -40,9 +40,10 @@
     import { ref } from 'vue';
     import FormRegister from '../FormRegister/FormRegister.vue'; 
     import LoadingVue from '../Loading.vue';
-    import { useModalOpen } from '../../store/store';
+    import { useModalOpen, useListOwner } from '../../store/store';
     
     const modal = useModalOpen()
+    const list = useListOwner()
 
     const baseURL = import.meta.env.VITE_LINK_URL;    
 
@@ -56,6 +57,13 @@
         gender: ownerUpdate.gender
     })
 
+    const valueOwnerUpdate = ref({
+        name: '',
+        cpf: '',
+        age: '',
+        gender: ''
+    })
+
     const isCreateBtn = ref(true)
     const loading = ref(false)
 
@@ -66,15 +74,34 @@
     const updateOwner = async () => {
         loading.value = true
 
+        const indexOwner = list.listOwner.findIndex(el => el.id == ownerUpdate.id)
+      
+        const newObj = {}
+        const newValues = Object.values(valueOwnerUpdate.value)
+        newValues.map((el, i) => {
+            if(el){
+                
+                let key = Object.keys(valueOwnerUpdate.value)[i]
+                newObj[key] = el
+                owner.value[key] = el
+       
+                const keys = Object.keys(list.listOwner[indexOwner])
+                keys.map((element) => {
+                    if(element == key) {
+                        list.listOwner[indexOwner][element] = el 
+                    }
+                })
+            }   
+        })
+        
         if(owner.value.age < 18) return toast.error("O cliente deve ser maior de 18")
-     
+        
+        closeModal()
+        
         try {
-            await axios.patch(`${baseURL}/owners/${ownerUpdate.id}`, owner.value)
+            await axios.patch(`${baseURL}/owners/${ownerUpdate.id}`, newObj)
             localStorage.removeItem('ownerUpdate')
-
             isCreateBtn.value = true
-            loading.value = false
-            closeModal()
         } catch (error) {
             isCreateBtn.value = true
             loading.value = false
@@ -84,7 +111,7 @@
 
     /* faz o regex do cpf */
     const validatedCpf = () => {
-        owner.value.cpf = owner.value.cpf.replace(/[^\d]/g, '')
+        owner.value.cpf = valueOwnerUpdate.value.cpf.replace(/[^\d]/g, '')
         owner.value.cpf = owner.value.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
     }
     

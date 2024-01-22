@@ -416,6 +416,9 @@
 
     /* detalhe de cada pessoa */
     const detailsOwner = (e) => {        
+        localStorage.setItem('idOwner', e.target.id)
+        localStorage.removeItem('idVehicle')
+
         const itemVehicle = document.querySelectorAll('.vehicles')
         itemVehicle.forEach(el => {
             if(el.id == e.target.id){
@@ -441,7 +444,6 @@
         const item = document.querySelectorAll('.open_item_view')
         item.forEach((el, i) => {
             if(el.id == e.target.id){
-                localStorage.setItem('idOwner', e.target.id)
                 el.classList.toggle('is_open_item_view')
                 if(isViewItem.value == el.id) {
                     isViewItem.value = ''
