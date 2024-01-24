@@ -16,6 +16,5 @@
         display: flex;
         justify-content: center;
         background-color: rgba(196, 212, 225, 0.475);
-        padding: 0 1rem;
     }
 </style>

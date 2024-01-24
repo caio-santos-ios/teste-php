@@ -202,7 +202,8 @@
         const cpf = '[0-9.-]'
 
         if(search.value.match(cpf)){
-            listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
+            const newSearch = search.value.replace(/[^0-9]/g, '')
+            listSearch = listOwners.value.filter(el => el.cpf.replace(/[^0-9]/g, '').includes(newSearch))
         }else {
             listSearch = listOwners.value.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
         }

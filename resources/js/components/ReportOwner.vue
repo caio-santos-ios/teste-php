@@ -329,7 +329,7 @@
 
     /* busca cliente pelo cpf */
     watch(search, async () => {
-        search.value = search.value.replace(/[^0-9a-zA-Z.-]/g, '')
+        !search.value && search.value.replace(/[^0-9a-zA-Z.-]/)
         const cpf = '[0-9.-]'
 
         if(filterSelected.value === 'feminino') {
@@ -359,7 +359,8 @@
         
 
         if(search.value.match(cpf)){
-            list.listOwner = allReport.value.filter(el => el.cpf.includes(search.value))
+            const newSearch = search.value.replace(/[^0-9]/g, '')
+            list.listOwner = allReport.value.filter(el => el.cpf.replace(/[^0-9]/g, '').includes(newSearch))
         }else {
             list.listOwner = allReport.value.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
         }
