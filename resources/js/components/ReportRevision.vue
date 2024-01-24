@@ -61,8 +61,6 @@
     import GraphicBar from './GraphicBar.vue'; 
 
     const loading = ref(true)
-    const typeReport = ref('all')
-    const isOwner = ref(false)
 
     const dateInitial = ref('')
     const dateLast = ref('')
@@ -215,7 +213,6 @@
         isReportVehicles.value = false
         listSelected.value = reportOwner.value
     }
-
 </script>
 
 <style>

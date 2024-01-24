@@ -216,10 +216,6 @@
                     data: [ageMan.value, ageWoman.value],
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)'
-                }, {
-                    data: [200],
-                    fill: false,
-                    borderColor: 'rgb(54, 162, 235)'
                 }]
             }
         } catch (error) {
@@ -496,6 +492,7 @@
         })
     }
 
+    /* atualiza a media de idade ao cadastrar novo cliente */
     watch(list.listOwner, () => {
         const f = list.listOwner.filter(el => el.gender == 'feminino')
         const sumAgeF = f.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
@@ -504,7 +501,6 @@
         const m = list.listOwner.filter(el => el.gender == 'masculino')
         const sumAgeM = m.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageMan.value = calculeedAgeAverage(sumAgeM, m.length)
-        console.log(ageMan.value)
     })
 </script>
 
