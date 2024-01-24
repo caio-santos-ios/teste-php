@@ -157,26 +157,19 @@
             const response = await axios.get(`${baseURL}/revisions`)
             loading.value = false
             response.data.map(el => {
-                console.log(el)
                 listSelected.value.push(el)
                 allReport.value.push(el)
 
             })
             
             data.value = {
-                labels: arrayGraphic,
+                labels: arrayGraphic.value,
                 datasets: [{
                     type: 'bar',
-                    label: 'Bar Dataset',
-                    data: [10, 20, 30, 40],
+                    label: 'Marca em revisão',
+                    data: dataGraphic.value,
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)'
-                }, {
-                    type: 'line',
-                    label: 'Line Dataset',
-                    data: [50, 50, 50, 50],
-                    fill: false,
-                    borderColor: 'rgb(54, 162, 235)'
                 }]
             };
         } catch (error) {
