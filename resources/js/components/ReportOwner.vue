@@ -199,8 +199,10 @@
             const sumAgeM = m.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageMan.value = calculeedAgeAverage(sumAgeM, m.length)
             
-            const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
-            ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
+            if(response.data.length > 0){
+                const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+                ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
+            }
             
             data.value = {
                 labels: [
@@ -215,8 +217,7 @@
                     backgroundColor: 'rgba(255, 99, 132, 0.2)'
                 }, {
                     type: 'line',
-                    label: 'Line Dataset',
-                    data: [100],
+                    data: [200],
                     fill: false,
                     borderColor: 'rgb(54, 162, 235)'
                 }]
