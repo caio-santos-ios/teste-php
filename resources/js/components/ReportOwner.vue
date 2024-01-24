@@ -505,20 +505,6 @@
         const sumAgeM = m.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageMan.value = calculeedAgeAverage(sumAgeM, m.length)
         console.log(ageMan.value)
-
-        data.value = {
-                labels: [
-                    'Homem',
-                    'Mulher',
-                ],
-                datasets: [{
-                    type: 'bar',
-                    label: 'Média de idade por sexo',
-                    data: [ageMan.value, ageWoman.value],
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
-                }]
-            }
     })
 </script>
 
