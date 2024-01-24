@@ -170,6 +170,11 @@
                     data: dataGraphic.value,
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                }, {
+                    type: 'line',
+                    data: [50, 50, 50, 50],
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)'
                 }]
             };
         } catch (error) {
