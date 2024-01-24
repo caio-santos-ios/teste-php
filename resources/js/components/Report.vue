@@ -16,6 +16,11 @@
             console.log(error)
         }
     }
+
+    export const porcentionGender = (value1, valueTotal) => {
+        const result = 100 * value1
+        return parseInt(result / valueTotal)
+    }
    
 </script>
 <style>

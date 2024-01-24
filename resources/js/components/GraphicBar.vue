@@ -10,8 +10,6 @@
     import { Chart } from 'chart.js/auto';
     import { useStore } from 'vuex';
 
-    const baseURL = 'https://controle-veiculo-c89a5c476b29.herokuapp.com';
-
     const store = useStore();
 
     const title1 = ref('Homem')
@@ -19,7 +17,7 @@
     const m = ref(0)
     const f = ref(0)
 
-    const props = defineProps(['m', 'f', 'title'])
+    const props = defineProps(['type', 'data'])
 
     onMounted(async () => {
         initialGraphic()
@@ -28,18 +26,8 @@
     const initialGraphic = () => {
         const ctx = document.getElementById('bar').getContext('2d')
         new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: [title1.value, title2.value],
-                datasets: [{
-                    label: props.title,
-                    data: [props.m, props.f],
-                    backgroundColor: [
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 99, 132)',
-                    ]
-                }]
-            }
+            type: props.type,
+            data: props.data
         })
     }
 
@@ -47,18 +35,19 @@
   
   <style>
     .graphic_bar {
-        background-color: white;
-        border-radius: 1.5rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        max-width: 50rem;
-        height: 40rem;
+      background-color: white;
+      width: 100%;
+      max-width: 40rem;
+      height: 20rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    @media (min-width: 1562px) {
+    @media (min-width: 915px) {
+      .graphic_bar {
+        max-width: 55rem;
+      }
     }
   </style>
   

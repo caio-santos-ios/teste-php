@@ -5,7 +5,7 @@
         <FormRegisterVehicle v-if="isCreateVehicle" />
         <FormRegisterRevision v-if="isCreateRevision"/>
     </Modal>
-    <section>
+    <Report>
         <div id="header_report">
             <div id="container_date">
                 <h3>Relatorios - Pessoas</h3>
@@ -68,7 +68,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Revisões -->
                     <div class="revision" :id="item.id">
                         <h4 v-if="item.revision_vehicles.length === 0">Nenhuma revisão</h4>
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                     </div>
- 
+                    
                 </div>
             </li>
             <Loading v-if="loading" style="height: 7rem; width: 7rem;"/>
@@ -103,7 +103,8 @@
                 </button>
             </div>
         </List>
-    </section>
+        <GraphicBar v-if="!loading" type="scatter" :data="data"/>
+    </Report>
 </template>
 
 <script setup>
@@ -114,10 +115,12 @@
     import FormRegisterOwner from './FormRegister/FormRegisterOwner.vue';
     import FormUpdateOwner from './FormUpdate/FormUpdateOwner.vue';
     import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
-    import FormRegisterRevision from './FormRegister/FormRegisterRevision.vue'
+    import FormRegisterRevision from './FormRegister/FormRegisterRevision.vue';
     import Loading from './Loading.vue';
-    import { useModalOpen, useListOwner } from '../store/store'
-    import {destroy} from './Report.vue'
+    import { useModalOpen, useListOwner } from '../store/store';
+    import { destroy } from './Report.vue';
+    import GraphicBar from './GraphicBar.vue';
+    import Report from './Report.vue';
 
     const loading = ref(true)
     const search = ref('')
@@ -135,6 +138,10 @@
     const allReport = ref([])
     const ageAverage = ref(0)
     const filterSelected = ref('')
+
+    const ageWoman = ref(0)
+    const ageMan = ref(0)
+    const data = ref({})
     
     const modal = useModalOpen()
     const list = useListOwner()
@@ -162,11 +169,7 @@
             isViewItem.value = ''
             currentPage.value++
         }
-    }
-
-    watch(list.listOwner, () => {
-       // console.log(list.listOwner)
-    })
+    }   
 
     /* carrega o relatorio de todas as pessoas */
     onMounted(async () => {
@@ -188,8 +191,36 @@
                 return 0;
             }).reverse()
 
+            const f = response.data.filter(el => el.gender == 'feminino')
+            const sumAgeF = f.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            ageWoman.value = calculeedAgeAverage(sumAgeF, f.length)
+
+            const m = response.data.filter(el => el.gender == 'masculino')
+            const sumAgeM = m.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
+            ageMan.value = calculeedAgeAverage(sumAgeM, m.length)
+            
             const sumAge = response.data.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, response.data.length)
+            
+            data.value = {
+                labels: [
+                    'Homem',
+                    'Mulher',
+                ],
+                datasets: [{
+                    type: 'bar',
+                    label: 'Média de idade por sexo',
+                    data: [ageMan.value, ageWoman.value],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                }, {
+                    type: 'line',
+                    label: 'Line Dataset',
+                    data: [100],
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)'
+                }]
+            }
         } catch (error) {
             loading.value = false
             console.log(error)
@@ -371,6 +402,7 @@
             list.listOwner = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
+            ageWoman.value = ageAverage
             return
         }
 
@@ -379,6 +411,7 @@
         list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
+        ageWoman.value = ageAverage
     }
 
     /* relatorio somente dos homens */
@@ -401,6 +434,7 @@
             list.listOwner = newList
             const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
             ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
+            ageMan.value = ageAverage
             return
         }
 
@@ -409,6 +443,7 @@
         list.listOwner = newList
         const sumAge = newList.reduce((totalAge, owner) => Number(totalAge) + Number(owner.age), 0)
         ageAverage.value = calculeedAgeAverage(sumAge, newList.length)
+        ageMan.value = ageAverage
     }
 
     /* calcula a idade media dos clientes */

@@ -18,7 +18,6 @@
         justify-content: center;
         flex-flow: column;
         gap: 1rem;
-        min-height: 100vh;
         margin: 0 auto;
         padding: 5rem 1rem;
     }

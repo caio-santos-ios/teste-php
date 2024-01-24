@@ -14,8 +14,6 @@
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByOwner">Por proprietario</button>
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByMan">Somente homens</button>
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByWoman">Somente mulheres</button>
-                <button :disabled="isApplicationFilter" id="btn_report"  @click="">Por número do veiculo</button>
-                <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByBrand">Por marcas</button>
             </div>
         </div>
         <ul v-if="search" id="list_search">
@@ -55,6 +53,7 @@
                 </button>
             </div>
         </List>
+        <GraphicBar v-if="!loading" type="doughnut" :data="data"/>
     </Report>
 </template>
 
@@ -63,12 +62,14 @@
     import { ref, onMounted, computed, watch } from 'vue';
     import List from './List.vue';
     import Loading from './Loading.vue';
-    import Report from './Report.vue'
+    import Report from './Report.vue';
     import { useModalOpen } from '../store/store'
     import FormRegisterVehicle from './FormRegister/FormRegisterVehicle.vue';
     import FormRegisterRevision from './FormRegister/FormRegisterRevision.vue';
     import Modal from './Modal.vue';
-    
+    import GraphicBar from './GraphicBar.vue'; 
+    import { porcentionGender } from './Report.vue'
+
     const modal = useModalOpen()
 
     const search = ref('')
@@ -85,6 +86,8 @@
     const isApplicationFilter = ref(true)
     const isCreateNewVehicle = ref(false)
     const isCreateRevision = ref(false)
+
+    const data = ref({})
 
     const itemsPerPage = 10
     const currentPage = ref(1) 
@@ -133,6 +136,20 @@
                 allReport.value.push(el)
             })
 
+        const m = response.data.filter(el => el.owner.gender == 'masculino')
+        
+        data.value = {
+            labels: ['Homem', 'Mulher'],
+            datasets: [{
+                label: '% de veiculos por sexo',
+                data: [ porcentionGender(m.length, response.data.length), 100 - porcentionGender(m.length, response.data.length) ],
+                backgroundColor: [
+                'rgb(54, 162, 235)',
+                'rgb(255, 99, 132)',
+                ]
+            }]
+        }
+
         } catch (error) {
             isApplicationFilter.value = false
             loading.value = false
@@ -176,28 +193,19 @@
         listSelected.value = allReport.value.filter(el => el.owner.gender == 'feminino')
     }
 
-    /* relatorio pelo número do veiculo */
-
-    /* relatorio por marcas dos carros */
-    const orderByBrand = () => {
-        listSelected.value.sort((a, b) => {
-            if (a.brand > b.brand) {
-                return 1;
-            }
-            
-            if (a.brand < b.brand) {
-                return -1;
-            }
-            return 0;
-        })
-    }
-
     /* busca pelo cpf do cliente */
     watch(search, async () => {
         isCreateNewVehicle.value = false
-        search.value = search.value.replace(/[^0-9.-]/g, '');
+        isCreateRevision.value = false
+        
+        search.value = search.value.replace(/[^0-9a-zA-Z.-]/g, '')
+        const cpf = '[0-9.-]'
 
-        listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
+        if(search.value.match(cpf)){
+            listSearch = listOwners.value.filter(el => el.cpf.includes(search.value))
+        }else {
+            listSearch = listOwners.value.filter(el => el.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+        }
     })
 
     /* abre modal de criação de veiculos */

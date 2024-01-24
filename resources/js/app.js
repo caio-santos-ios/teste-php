@@ -60,4 +60,5 @@ app.component('modal', Modal)
 app.component('VueDatePicker', VueDatePicker);
 
 
+
 app.mount('#app')

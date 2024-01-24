@@ -19,7 +19,7 @@
     
     @media (min-width: 915px) {
         #main_home {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;   
         }
     }

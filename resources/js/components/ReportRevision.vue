@@ -47,6 +47,7 @@
                 </button>
             </div>
         </List>
+        <GraphicBar v-if="!loading" type="scatter" :data="data" />
     </Report>
 </template>
 
@@ -57,6 +58,7 @@
     import Loading from './Loading.vue';
     import Report from './Report.vue'
     import moment from 'moment';
+    import GraphicBar from './GraphicBar.vue'; 
 
     const loading = ref(true)
     const typeReport = ref('all')
@@ -74,8 +76,13 @@
     const listSelected = ref([]) 
     const allReport = ref([])
 
+    const arrayGraphic = ref([])
+    const dataGraphic = ref([])
+
     const itemsPerPage = 10
     const currentPage = ref(1) 
+
+    const data = ref({})
     
     const paginatedList = computed(() => {
         const startPage = ( currentPage.value - 1 ) * itemsPerPage
@@ -133,7 +140,9 @@
             response.data.map(el => {
                 if(el.revision_vehicles.length > 0){
                     if(el.revision_vehicles.length > 0){
-                        reportVehicles.value.push(el)
+                        reportVehicles.value.push(el)                           
+                        arrayGraphic.value.push(el.brand)
+                        dataGraphic.value.push(el.revision_vehicles.length)
                     }
                 }
             })
@@ -148,10 +157,28 @@
             const response = await axios.get(`${baseURL}/revisions`)
             loading.value = false
             response.data.map(el => {
+                console.log(el)
                 listSelected.value.push(el)
                 allReport.value.push(el)
+
             })
-            console.log(response.data)
+            
+            data.value = {
+                labels: arrayGraphic,
+                datasets: [{
+                    type: 'bar',
+                    label: 'Bar Dataset',
+                    data: [10, 20, 30, 40],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                }, {
+                    type: 'line',
+                    label: 'Line Dataset',
+                    data: [50, 50, 50, 50],
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)'
+                }]
+            };
         } catch (error) {
             loading.value = false
             console.log(error)
