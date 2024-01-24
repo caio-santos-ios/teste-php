@@ -31,6 +31,7 @@
                 <i></i>
                 <i></i>
             </li>
+            <h1 v-if="!loading && paginatedList.length === 0">Nenhum cliente cadastrado</h1>
             <li id="item" v-if="!loading" v-for="item in paginatedList">
                 <div id="item_list">
                     <h4 v-if="paginatedList.length === 0">Sem clientes</h4>
