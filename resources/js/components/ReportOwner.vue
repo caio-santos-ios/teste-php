@@ -12,7 +12,7 @@
             </div>
             <button :disabled="loading" v-on:click="openModalCreate" id="btn_add_client">Cadastrar cliente</button>
             <h4>Média de idade: {{ ageAverage }}</h4>
-            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
+            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque os clientes" type="text">
             
             <div id="container_type_report">
                 <button :disabled="loading" id="btn_report" @click="report">Todas as pessoas</button>

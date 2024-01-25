@@ -1,0 +1,80 @@
+swagger: "2.0"
+info:
+  title: "Controle Revisões"
+  description: "API para fazer o controle de revisão"
+  version: 1.0.0
+host: "localhost:8000"
+basePath: /api/
+schemes:
+  - http
+paths:
+  /owners:
+    # ROTA DE GET
+    get:
+      summary: "Lista os proprietarios."
+      tags:
+        - Owner
+      responses:
+        "200":
+          description: "Listagem dos clientes com sucesso."
+          schema:
+            $ref: "#/definitions/response"
+          
+    # ROTA DE POST
+    post:
+      summary: "Cria um novo proprietario."
+      tags:
+        - Owner
+      parameters:
+        - name: "owner_data"
+          in: "body"
+          description: "Dados para criar um novo proprietario"
+          required: true
+          schema:
+            $ref: "#/definitions/ownerInput"
+      responses:
+        "201":
+          description: "Criação do cliente com sucesso."
+          schema:
+            $ref: "#/definitions/response"
+      
+      # ROTA DE GET
+      get:
+        summary: "Busca um proprietario por id."
+        tags:
+          - Owner
+        responses:
+          "200":
+            description: "Busca os proprietarios pelo id"
+
+      # ROTA DE DELETE
+definitions:
+  response:
+    type: "object"
+    properties:
+      owners:
+        type: "array"
+        items:
+          $ref: "#/definitions/owner"
+  owner:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      cpf:
+        type: "string"
+      age:
+        type: "integer"
+      gender: 
+        type: "string"
+  ownerInput:
+    type: "object"
+    properties:
+      name: "string"  
+
+tags:  # Adiciona as definições das tags
+  - name: Owner
+    description: Operações relacionadas a proprietários dos veículos  

@@ -8,7 +8,7 @@
             <div id="container_date">
                 <h3>Relatorios - Veiculos</h3>
             </div>
-            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque pelo cpf do cliente" type="text">
+            <input :disabled="loading" maxlength="14" v-model="search" id="search" placeholder="Busque os clientes" type="text">
             <div id="container_type_report">
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByAll">Todas os veiculos</button>
                 <button :disabled="isApplicationFilter" id="btn_report"  @click="orderByOwner">Por proprietario</button>
