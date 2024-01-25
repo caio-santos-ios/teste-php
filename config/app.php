@@ -156,6 +156,7 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
+        'L5Swagger\L5SwaggerServiceProvider',
         /*
          * Package Service Providers...
          */
@@ -182,6 +183,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'L5Swagger' => 'L5Swagger\Facades\L5Swagger',
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 

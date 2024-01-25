@@ -43,12 +43,12 @@
   align-items: center;
   width: 95%;
   height: 2rem;
-
+  
   > p {
     width: 8rem;
     text-align: center;
   }
-    
+  
   /* icones da lista */
   i {
     width: 1.5rem;
@@ -209,6 +209,10 @@
 
     > p {
       width: 15rem;
+    }
+
+    > i {
+      margin-right: 0.3rem
     }
   }
 

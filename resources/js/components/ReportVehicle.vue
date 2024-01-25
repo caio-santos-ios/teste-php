@@ -37,7 +37,7 @@
                 <p >{{  isOwner ? item.vehicles.length : item.created_at.slice(0, 10) }}</p>
                 <p >{{  isOwner ? item.revision_vehicles.length : item.brand }}</p>
                 <p >{{  isOwner ? item.created_at.slice(0, 10) : item.plate }}</p>
-                <i @click="removeVehicle" :id="item.id" class="fa-solid fa-trash"></i>         
+                <i @click="removeVehicle" :id="item.id" class="fa-solid fa-trash"></i>  
                 <i @click="openModalCreateRevision" :id="item.id" class="fa-solid fa-square-plus"></i>       
             </li>
             <Loading style="height: 10rem; width: 10rem;" v-if="loading"/>
@@ -83,6 +83,7 @@
     const listSelected = ref([]) 
     const allReport = ref([])
     const listOwners = ref([])
+    const listVehicles = ref([])
     const isApplicationFilter = ref(true)
     const isCreateNewVehicle = ref(false)
     const isCreateRevision = ref(false)
@@ -134,6 +135,7 @@
             response.data.map(el => {
                 listSelected.value.push(el)
                 allReport.value.push(el)
+                listVehicles.value.push(el)
             })
 
         const m = response.data.filter(el => el.owner.gender == 'masculino')
@@ -212,21 +214,24 @@
     /* abre modal de criação de veiculos */
     const openModalCreateVehicle = (e) => {
         localStorage.setItem('idVehicle', JSON.stringify(e.target.id))
-        modal.openModal()
+
         isCreateNewVehicle.value = true
         isCreateRevision.value = false
+        
+        modal.openModal()
     }
 
-    /* abre o modal de atualizar os veiculos */
+    /* abre o modal de criação de revisão */
     const openModalCreateRevision = (e) => {
         const findOwner = allReport.value.find(el => el.id == e.target.id)
 
         localStorage.setItem('idVehicle', e.target.id)
         localStorage.setItem('idOwner', findOwner.owner_id)
 
-        modal.openModal()
         isCreateNewVehicle.value = false
         isCreateRevision.value = true
+        
+        modal.openModal()
     }
 
     /* remove veiculo */

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Models\Owner;
 
+
 class OwnerController extends Controller
 {
     public function index(Request $request)
